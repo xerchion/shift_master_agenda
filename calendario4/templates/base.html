@@ -1,0 +1,369 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="es">
+  <head>
+    <title>Shift Master Agenda</title>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="Shift Master Agenda"> 
+    <meta name="keywords" content="shifts"> 
+
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+    <link rel="icon"
+          href="{% static 'assets/images/FONTNATURA.ico' %}"
+          type="image/x-icon">
+    <noscript>
+      <link rel="stylesheet" href="noscript.css" />
+    </noscript>
+    <script>
+			function hideElementWithId(id, option) {
+				const element = document.getElementById(id);
+				if (element) {
+				  element.style.display = option;
+				  var label = document.querySelector("label[for='" + id + "']");
+				  label.style.display = option;
+				}
+			  }						
+			function for_shift_hides(shift) {
+				const day = "{{ day.shift_real }}";
+				hideElementWithId('id_extra_hours','none');
+				hideElementWithId('id_keep_day','none');				
+				hideElementWithId('id_change_payable','none')		
+
+				if (day !== 'D') {
+					hideElementWithId('id_extra_hours','block');
+				}
+				if (day == 'D' && shift !=="D") {
+					hideElementWithId('id_extra_hours','block');
+					hideElementWithId('id_keep_day','block');	
+				}
+				if (day !== 'D' && shift !=="D" && shift !== day) {
+					hideElementWithId('id_extra_hours','block');
+					hideElementWithId('id_change_payable','block')		
+				}			
+				if (day !== 'D' && shift == "D") {
+					hideElementWithId('id_extra_hours','none');
+					hideElementWithId('id_keep_day','none');				
+					hideElementWithId('id_change_payable','none')	
+				}						
+			}
+			function addListeners() {
+				const s = document.getElementById('id_shift')
+				s.addEventListener('change', function(event) {
+					const selectedValue = event.target.value;
+					for_shift_hides(s.value);
+				}
+				);
+			};	
+			document.addEventListener("DOMContentLoaded", function() {
+				// Obtener una lista de elementos por su clase después de que la página se haya cargado
+				var elementos = document.querySelectorAll('.day');
+			
+				// Recorrer todos los elementos
+				elementos.forEach(function(elemento) {
+					// Obtener el color de fondo del atributo "data-color" del elemento
+					var colorFondo = elemento.getAttribute('data-color');	
+
+					// Establecer el color de fondo en el elemento
+					elemento.style.color = colorFondo;
+			
+						
+				var underline = elemento.getAttribute('data-alterDay');		
+				if (underline==="True") {
+					elemento.style.textDecoration = 'underline';
+
+				} else {
+
+					elemento.style.textDecoration = "none";
+				};
+	});
+
+
+			});
+			function evitarNavegacion(event) {
+				// Prevenir el comportamiento predeterminado del enlace
+				event.preventDefault();
+			
+				// Aquí puedes realizar cualquier otra acción que desees en lugar de navegar.
+				// Por ejemplo, mostrar u ocultar elementos, realizar operaciones, etc.
+			}			
+			function hideElementsWithClass(className, option) {
+				const elements = document.querySelectorAll('.' + className);
+				elements.forEach(element => {
+					element.style.display = option;
+				});
+			}
+			function shift_status() {
+
+					//const shiftElement = document.querySelector('shift#form [name="shift"]');
+					//const a = document.getElementById('shift').elements.namedItem('pedro');
+					const inputField = document.getElementById('id_shift');
+					//inputField.style.background = "blue"
+					const shift = inputField.value
+					//hideElementsWithClass('hidden','none');
+					//console.log("Valor: " + shift);
+
+					for_shift_hides(shift)
+					//document.getElementById('form').elements.namedItem('shift').value = shift;
+
+				}				
+				
+			
+			
+			
+				
+					
+					
+				  		
+
+		
+    </script>
+  </head>
+  <body>
+    <!-- Page Wrapper -->
+    <div id="page-wrapper">
+      <!-- Header -->
+      <header id="header" class="alt">
+        <nav>
+          <a href="#menu">Menu</a>
+        </nav>
+        {% block tituloMenu %}
+          <h1>
+            <a href="#">Shift Master Agenda {{ schedule.year }} Turno {{ schedule.team }}</a>
+          </h1>
+        {% endblock tituloMenu %}
+      </header>
+      <!-- Menu -->
+      <nav id="menu">
+        <div class="inner">
+          <p class="major">{{ user.username }}, Turno {{ schedule.team }}</p>
+          <h2 class="major">Menu</h2>
+          {% block links %}
+            <ul class="links">
+              <li>
+                <a href="{% url "home" %}">Home</a>
+              </li>
+              {% if user.username %}
+                <li>
+                  <a href="{% url "agenda" %}">Calendario</a>
+                </li>
+                <li>
+                  <a href="{% url "config" %}">Configuración</a>
+                </li>
+              {% endif %}
+              {% if user.username %}
+                <li>
+                  <a href="{% url "logout" %}">Cerrar Sesión</a>
+                </li>
+              {% else %}
+                <li>
+                  <a href="{% url "login" %}">Log In</a>
+                </li>
+                <li>
+                  <a href="{% url "signup" %}">Alta</a>
+                </li>
+              {% endif %}
+            </ul>
+          {% endblock links %}
+          <a href="#" class="close">Close</a>
+        </div>
+      </nav>
+      {% block banner %}
+        <!-- Banner -->
+        <section id="banner">
+          <div class="inner">
+            {% block tituloPagina %}
+              <h2>Calendario / agenda</h2>
+            {% endblock tituloPagina %}
+          </div>
+        </section>
+      {% endblock banner %}
+      {% block wrapper %}
+        <!-- Wrapper -->
+        <section id="wrapper">
+          <!-- One -->
+          <section id="one" class="wrapper spotlight style1 ">
+            <div class="inner">
+              <a href="#" class="image">
+                <img src="{% static 'assets/images/pic01.jpg' %}" 
+                width="auto"
+                height="auto"
+                alt="Sin imagen" />
+              </a>
+              <div class="content">
+                <h2 class="major">Magna arcu feugiat</h2>
+                <p>
+                  Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
+                </p>
+                <a href="#" class="special">Learn more</a>
+              </div>
+            </div>
+          </section>
+          <!-- Two -->
+          <section id="two" class="wrapper alt spotlight style2">
+            <div class="inner">
+              <a href="#" class="image">
+                <img src="{% static 'assets/images/pic02.jpg' %}" 
+                width="auto"
+                height="auto"
+                alt="Sin imagen" />
+              </a>
+              <div class="content">
+                <h2 class="major">Tempus adipiscing</h2>
+                <p>
+                  Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
+                </p>
+                <a href="#" class="special">Learn more</a>
+              </div>
+            </div>
+          </section>
+          <!-- Three -->
+          <section id="three" class="wrapper spotlight style3">
+            <div class="inner">
+              <a href="#" class="image">
+                <img src="{% static 'assets/images/pic03.jpg' %}"  
+                width="auto"
+                height="auto"
+                alt="Sin imagen" />
+              </a>
+              <div class="content">
+                <h2 class="major">Nullam dignissim</h2>
+                <p>
+                  Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
+                </p>
+                <a href="#" class="special">Learn more</a>
+              </div>
+            </div>
+          </section>
+          <!-- Four -->
+          <section id="four" class="wrapper ">
+            <div class="inner">
+              <h2 class="major">Vitae phasellus</h2>
+              <p>
+                Cras mattis ante fermentum, malesuada neque vitae, eleifend erat. Phasellus non pulvinar erat. Fusce tincidunt, nisl eget mattis egestas, purus ipsum consequat orci, sit amet lobortis lorem lacus in tellus. Sed ac elementum arcu. Quisque placerat auctor laoreet.
+              </p>
+              <section class="features">
+                <article>
+                  <h3 class="major">Enero</h3>
+                  <a href="#" class="image">
+                    <img src="{% static 'assets/images/pic04.jpg' %}"  
+                    width="auto"
+                    height="auto"
+                    alt="Sin imagen" />
+                  </a>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
+                  <a href="#" class="special">Learn more</a>
+                </article>
+                <article>
+                  <a href="#" class="image">
+                    <img src="{% static 'assets/images/pic05.jpg' %}"  
+                    width="auto"
+                    height="auto"
+                    alt="Sin imagen" />
+                  </a>
+                  <h3 class="major">Nisl placerat</h3>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
+                  <a href="#" class="special">Learn more</a>
+                </article>
+                <article>
+                  <a href="#" class="image">
+                    <img src="{% static 'assets/images/pic06.jpg' %}"  
+                    width="auto"
+                    height="auto"
+                    alt="Sin imagen" />
+                  </a>
+                  <h3 class="major">Ante fermentum</h3>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
+                  <a href="#" class="special">Learn more</a>
+                </article>
+                <article>
+                  <a href="#" class="image">
+                    <img src="{% static 'assets/images/pic07.jpg' %}"  
+                    width="auto"
+                    height="auto"
+                    alt="Sin imagen" />
+                  </a>
+                  <h3 class="major">Fusce consequat</h3>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
+                  <a href="#" class="special">Learn more</a>
+                </article>
+              </section>
+              <ul class="actions">
+                <li>
+                  <a href="#" class="button">Browse All</a>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+      {% endblock wrapper %}
+      {% block footer %}
+        <!-- Footer -->
+        <section id="footer">
+          <div class="inner">
+            <h2 class="major">Get in touch</h2>
+            <p>
+              Cras mattis ante fermentum, malesuada neque vitae, eleifend erat. Phasellus non pulvinar erat. Fusce tincidunt, nisl eget mattis egestas, purus ipsum consequat orci, sit amet lobortis lorem lacus in tellus. Sed ac elementum arcu. Quisque placerat auctor laoreet.
+            </p>
+            <form method="post" action="#">
+              <div class="fields">
+                <div class="field">
+                  <label for="name">Name</label>
+                  <input type="text" name="name" id="name" />
+                </div>
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" id="email" />
+                </div>
+                <div class="field">
+                  <label for="message">Message</label>
+                  <textarea name="message" id="message" rows="4"></textarea>
+                </div>
+              </div>
+              <ul class="actions">
+                <li>
+                  <input type="submit" value="Send Message" />
+                </li>
+              </ul>
+            </form>
+            <ul class="contact">
+              <li class="icon solid fa-home">
+                Untitled Inc
+                <br />
+                1234 Somewhere Road Suite #2894
+                <br />
+                Nashville, TN 00000-0000
+              </li>
+              <li class="icon solid fa-phone">(000) 000-0000</li>
+              <li class="icon solid fa-envelope">
+                <a href="#">information@untitled.tld</a>
+              </li>
+              <li class="icon brands fa-twitter">
+                <a href="#">twitter.com/untitled-tld</a>
+              </li>
+              <li class="icon brands fa-facebook-f">
+                <a href="#">facebook.com/untitled-tld</a>
+              </li>
+              <li class="icon brands fa-instagram">
+                <a href="#">instagram.com/untitled-tld</a>
+              </li>
+            </ul>
+            <ul class="copyright">
+              <li>
+                texto.....
+              </li>
+            </ul>
+          </div>
+        </section>
+      {% endblock footer %}
+    </div>
+    <!-- Scripts -->
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
+    <script src="{% static 'assets/js/browser.min.js' %}"></script>
+    <script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
+    <script src="{% static 'assets/js/util.js' %}"></script>
+    <script src="{% static 'assets/js/main.js' %}"></script>
+  </body>
+</html>

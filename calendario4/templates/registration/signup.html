@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block banner %}
+  <section id="banner">
+    <div class="inner">
+      <h2>Registro de Nuevo Usuario</h2>
+      {% if msg %}
+        <h4 class="major">Por favor, solventa el error:</h4>
+        <li>{{ msg }}</li>
+      {% else %}
+        <p class="major">Por favor, introduce tus datos</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock banner %}
+{% block wrapper %}
+  <section id="footer">
+    <div class="inner">
+      <form method="post" action="#">
+        <div class="field">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="fields">
+            Recomendaciones para la contraseña:
+            <li>Debería constar de letras mayúsculas y minúsculas.</li>
+            <li>Debería tener números y signos especiales.</li>
+            <li>Crea una fácil de memorizar para no tener que anotarla.</li>
+            <li>Es obligatorio el uso de 8 caracteres.</li>
+          </div>
+          <div class="field"></div>
+        </div>
+        <ul class="actions copyright ">
+          <li>
+            <input type="submit" value="Entrar" />
+          </li>
+        </ul>
+      </form>
+    </div>
+  </section>
+{% endblock wrapper %}
+{% block footer %}
+{% endblock footer %}
+

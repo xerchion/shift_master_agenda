@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+{% endblock header %}
+{% block tituloPagina %}
+  <h2>Modificación de:</h2>
+  <h2>{{ day.name }}, {{ day.number }} de {{ month_name }}</h2>
+{% endblock tituloPagina %}
+{{ form.errors }}
+{% block wrapper %}
+  <!-- Content -->
+  <div class="wrapper">
+    <div class="inner">
+      {% if form.errors %}
+        <p>Por favor corrige los siguientes errores:</p>
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <style>
+      /* Estilo para ocultar el elemento */
+      .msgConfirm {
+        display: none;
+      }
+
+      /* Estilo para mostrar el elemento cuando se hace hover o starttouch en el otro elemento */
+      .show-on-hover:hover + .msgConfirm,
+      .show-on-touch:focus + .msgConfirm {
+        display: block;
+      }
+      </style>
+      <form method="post" action="#" id="form">
+        {% csrf_token %}
+        <section class="features">
+          <article class="major">
+            <div id="formulario">{{ form.as_p }}</div>
+            <div class="inner">
+              <ul class="actions">
+                <li>
+                  <input type="submit" value="Guardar" />
+                </li>
+                <li>
+                  <input type="submit" value="Cancelar" name="Cancelar" />
+                </li>
+              </ul>
+              <ul class="actions">
+                <li class=" ">
+                  <input class="show-on-hover"
+                         type="submit"
+                         value="Restaurar Dia"
+                         name="restaurar_dia"
+                         id="btnRestaurar" />
+                  <p class="msgConfirm">Esta acción dejará el dia en su estado original</p>
+                </li>
+              </ul>
+            </div>
+          </article>
+          <script>
+          addListeners();
+          shift_status();
+          </script>
+        </section>
+      </form>
+    </div>
+  {% endblock wrapper %}
+</div>
+<script>
+  addListeners();
+  shift_status();
+  </script>
+{% block footer %}
+{% endblock footer %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block banner %}
+  <section id="banner">
+    <div class="inner">
+      <h2>Login</h2>
+      <p>Por favor, introduce tus datos</p>
+    </div>
+  </section>
+{% endblock banner %}
+{% block wrapper %}
+  <section id="footer">
+    <div class="inner">
+      <form method="post" action="#">
+        <div class="field">
+          {% csrf_token %}
+          {{ form.as_p }}
+        </div>
+        <ul class="actions">
+          <li>
+            <input type="submit" value="Entrar" />
+          </li>
+        </ul>
+      </form>
+    </div>
+  </section>
+{% endblock wrapper %}
+{% block footer %}
+{% endblock footer %}

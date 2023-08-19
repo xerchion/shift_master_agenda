@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header %}
+{% endblock header %}
+
+{% block tituloPagina %}
+  <h2>Configuración</h2>
+  {% if message %}<p>{{ message }}</p>{% endif %}
+  <p>Completa o modifica tus datos</p>
+{% endblock tituloPagina %}
+
+{% block wrapper %}
+  <div class="wrapper">
+    <div class="inner">
+      {% if form.errors %}
+        <p>Por favor corrige los siguientes errores:</p>
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <form method="post" action="#">
+        <div class="field">
+          {% csrf_token %}
+          <section class="features">
+            <article class="major">
+              <h3 class="major">Datos Personales</h3>
+              <p class="major">Usuario :  {{ user.username }}</p>
+              <a class="special" href="{% url "changePassword" %}">{{ form.pswd_link }}</a>
+              <a class="special" href="{% url "userColorChange" %}">Cambiar colores</a>
+              {{ form.as_p }}
+            </article>
+          </section>
+        </div>
+        <section>
+          <ul class="inner ">
+            <ul class="actions">
+              <li>
+                <input type="submit" value="Guardar" />
+              </li>
+              <li>
+                <input type="button"
+                       value="Cancelar"
+                       onclick="window.location.href='{% url 'agenda' %}'; return false;">
+              </li>
+            </ul>
+          </ul>
+        </section>
+      </form>
+    </div>
+  </div>
+{% endblock wrapper %}
+
+{% block scripts %}{% endblock scripts %}
+{% block footer %}{% endblock footer %}

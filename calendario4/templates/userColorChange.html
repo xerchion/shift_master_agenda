@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+{% endblock header %}
+{% block tituloPagina %}
+  <h2>Cambio de Colores del calendario</h2>
+{% endblock tituloPagina %}
+{% block wrapper %}
+  <div class="wrapper">
+    <div class="inner">
+      <form method="post" action="#">
+        <div class="field">
+          {% csrf_token %}
+          <section class="features">
+            <article class="major">
+              <h3 class="major">Selecciona tus colores</h3>
+              {{ form.as_p }}
+            </article>
+          </section>
+        </div>
+        <section>
+          <ul class="inner ">
+            <ul class="actions">
+              <li>
+                <input type="submit" value="Guardar Cambios" />
+              </li>
+              <li>
+                <input type="button"
+                       value="Cancelar"
+                       onclick="window.location.href='{% url 'config' %}'; return false;">
+              </li>
+            </ul>
+            <ul class="actions">
+              <li>
+                <input type="submit"
+                       value="Colores por defecto"
+                       name="restaurar_colores"
+                       id="btnRestaurar">
+              </li>
+            </ul>
+          </ul>
+        </section>
+      </form>
+    </div>
+  </div>
+{% endblock wrapper %}
+
+{% block footer %}
+{% endblock footer %}

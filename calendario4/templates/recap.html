@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+{% endblock header %}
+{% block tituloPagina %}
+  <h2> Resumen de {{ recap.name }}</h2>
+{% endblock tituloPagina %}
+
+{% block wrapper %}
+  <div class="wrapper">
+    <div class="inner">
+      <section id="one" class="wrapper alt spotlight style4">
+        <div class="inner">
+          <a href="#" class="image">
+            <img src="{% static 'assets/images/trabajo.jpg' %}" width="auto" height="auto" alt="Trabajo"/>
+          </a>
+          <div class="content">
+            <h2 class="major">Días de trabajo</h2>
+            <p>{{ recap.name }} tiene {{ recap.number_of_days }} dias</p>
+            <p>de los que vas a trabajar {{ recap.workings }} dias</p>
+            <p>y vas a descansar {{ recap.frees }} dias</p>
+          </div>
+        </div>
+      </section>
+      <section id="two" class="wrapper  alt spotlight style5">
+        <div class="inner">
+          <a href="#" class="image ">
+            <img src="{% static 'assets/images/FONTNATURA.jpg' %}" width="auto" height="auto" alt="Turnos"/>
+          </a>
+          <div class="content">
+            <h2 class="major ">Turnos</h2>
+            <p>Mañanas {{ recap.mornings }} dias</p>
+            <p>Tarde {{ recap.evenings }} dias</p>
+            <p>Noches {{ recap.nights }} dias</p>
+          </div>
+        </div>
+      </section>
+      <section id="three" class="wrapper alt spotlight style2">
+        <div class="inner">
+          <a href="#" class="image">
+            <img src="{% static 'assets/images/festivos.jpg' %}" width="auto" height="auto" alt="Festivos"/>
+          </a>
+          <div class="content">
+            <h2 class="major">Festivos</h2>
+            <p>
+              {{ month.name }} tiene {{ recap.holidays }} dia
+              {% if recap.holidays > 1 %}s{% endif %}
+              festivo
+              {% if recap.holidays > 1 %}s{% endif %}
+            </p>
+            <p>
+              tienes como extra festivo
+              {% if recap.holidays > 1 %}s{% endif %}
+                {{ recap.extra_holidays }} dia
+              {% if recap.holidays > 1 %}s{% endif %}
+            </p>
+            <p>
+              {% if recap.holidays_not_worked != 0 %}
+                hay {{ recap.holidays_not_worked }} dia
+                {% if recap.holidays > 1 %}s{% endif %}
+                festivo
+                {% if recap.holidays > 1 %}s{% endif %}
+                que no cobras
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="three" class="wrapper alt spotlight style1">
+        <div class="inner">
+          <a href="#" class="image">
+            <img src="{% static 'assets/images/pluses.jpg' %}" width="auto" height="auto" alt="Pluses"/>
+          </a>
+          <div class="content">
+            <h2 class="major">Pluses</h2>
+            <p>Horas extra {{ recap.overtimes }}</p>
+            <p>Cambios de turno {{ recap.change_payables }}</p>
+            <p>Nocturnidad {{ recap.nights }}</p>
+
+          </div>
+        </div>
+      </section>
+      {% csrf_token %}
+    </div>
+  </div>
+{% endblock wrapper %}
+
+{% block scripts %}{% endblock scripts %}
+{% block footer %}{% endblock footer %}
