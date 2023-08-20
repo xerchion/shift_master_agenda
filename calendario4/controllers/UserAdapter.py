@@ -8,11 +8,11 @@ class UserAdapter:
     def __init__(self) -> None:
         self.user = ""
 
-    def add_new_user(self, name, pswd):
+    def add_new_user(self, name, pswd, team):
         new_user = User.objects.create_user(username=name, password=pswd)
         new_user.save()
 
-        new_myuser = MyUser(user_name=name, user=new_user)
+        new_myuser = MyUser(user_name=name, user=new_user, team=team)
         self.apply_default_colors(new_user)
 
         new_myuser.save()

@@ -71,7 +71,6 @@ def change_password(request):
 
 
 @login_required
-@necessary_team
 def agenda(request):
     schedule = request.schedule
     weekdays = WEEK_DAYS_LETTER
