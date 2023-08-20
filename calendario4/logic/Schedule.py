@@ -219,7 +219,7 @@ class Schedule:
             day.shift.extra_hours = alter_day.extra_hours
             day.shift.keep_day = alter_day.keep_day
             day.shift.change_payable = alter_day.change_payable
-            day.alterDay = True
+            day.alter_day = True
 
             self.months[n_month].days[n_day] = day
 

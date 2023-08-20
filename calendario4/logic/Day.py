@@ -11,13 +11,12 @@ class Day:
         self.date = date
         self.name = self.say_your_name()
         self.number = date.day
-        self.own_business = False
         self.holiday = False
         self.shift = Shift("D")
         self.shift_real = self.shift.primal
         self.working = False
         self.colour = ""
-        self.alterDay = False
+        self.alter_day = False
         self.comments = ""
 
     def set_shift(self, shift):

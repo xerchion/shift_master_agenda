@@ -19,7 +19,7 @@ FIXED_SERIE_AMOUNT_DAYS = [2, 2, 3, 4, 3, 2, 2, 5, 2, 3, 2, 5]
 TEAM_VALUES_SERIE = KINDS_SHIFTS[:4] * 3
 TEAM_POSITION_DAYS = {"A": 19, "B": 33, "C": 12, "D": 26, "E": 5}
 
-# alterDay Constants
+# AlterDay Constants
 DAY_MODIFIED_OK = "Dia modificado con exito"
 
 # signUpController
