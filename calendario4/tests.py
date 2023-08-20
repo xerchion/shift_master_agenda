@@ -104,15 +104,6 @@ class AlterDayModelTest(TestCase):
         self.assertEqual(alter_day.shift, "N")
 
 
-"""class AlterDayTests(TestCase):
-    user_adapter = UserAdapter()
-    #user = user_adapter.add_new_user("usuarioJuan", "password")
-    schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-    day = schedule.months[1].days[1]
-    controller = AlterDayController(1, "2023-2-2", schedule)
-    controller.restart_day()"""
-
-
 class ViewsTest(TestCase):
     def test_home_load(self):
         response = self.client.get(reverse("home"))
@@ -172,10 +163,10 @@ class ViewsTests(TestCase):
             # Values: text to search in the view
             'agenda': 'Calendario',
             'config': 'Datos Personales',
-            'recapYear': 'Resumen de',
+            'recap_year': 'Resumen de',
             'signup': 'Registro de Nuevo Usuario',
-            'changePassword': 'Cambio de contraseña',
-            'userColorChange': 'Cambio de Colores'
+            'change_pass': 'Cambio de contraseña',
+            'change_color_days': 'Cambio de Colores'
         }
 
     def test_views(self):
@@ -190,7 +181,7 @@ class ViewsTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         # This view has a month's number argument
         month = "1"
-        view_url = reverse('recapMonth', kwargs={'month': month})
+        view_url = reverse('recap_month', kwargs={'month': month})
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Resumen de")
@@ -199,7 +190,7 @@ class ViewsTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         # This view has a date argument
         argument = "2023-02-02"
-        view_url = reverse('alterDay', kwargs={'date': argument})
+        view_url = reverse('alter_day', kwargs={'date': argument})
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Datos del turno")

@@ -16,8 +16,8 @@ class ScheduleMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
-            views_with_schedule = ["agenda", "alterDay", "recapMonth",
-                                   "recapYear"]
+            views_with_schedule = ["agenda", "alter_day", "recap_month",
+                                   "recap_year"]
             current_view = resolve(request.path_info).url_name
             if current_view in views_with_schedule:
                 user_id = request.user.id

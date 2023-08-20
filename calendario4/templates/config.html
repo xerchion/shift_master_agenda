@@ -28,8 +28,8 @@
             <article class="major">
               <h3 class="major">Datos Personales</h3>
               <p class="major">Usuario :  {{ user.username }}</p>
-              <a class="special" href="{% url "changePassword" %}">{{ form.pswd_link }}</a>
-              <a class="special" href="{% url "userColorChange" %}">Cambiar colores</a>
+              <a class="special" href="{% url "change_pass" %}">{{ form.pswd_link }}</a>
+              <a class="special" href="{% url "change_color_days" %}">Cambiar colores</a>
               {{ form.as_p }}
             </article>
           </section>

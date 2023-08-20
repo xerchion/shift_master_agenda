@@ -5,7 +5,7 @@
     <div class="inner">
       {% block tituloPagina %}
         <h2 class="rojo">Calendario {{ schedule.year }} Turno {{ schedule.team }}</h2>
-        <a href="{% url 'recapYear' %}" class="special">Ver resumen Anual</a>
+        <a href="{% url 'recap_year' %}" class="special">Ver resumen Anual</a>
         <style>
 									/* Estilos para el contenedor que centra los elementos */
 									.flex-container {
@@ -60,7 +60,7 @@
             </style>
             <article class="elemento wrapper  spotlight style1 major">
               <h2 class=" major">{{ month.name }}</h2>
-              <a href="{% url 'recapMonth' month=month.number %}" class="special">Resumen mensual</a>
+              <a href="{% url 'recap_month' month=month.number %}" class="special">Resumen mensual</a>
 
             </article>
             <article class="elementos-container wrapper  " justify="center">
@@ -72,7 +72,7 @@
               {% for day in month.days %}
                 {% if day.date %}
                   <div class="elemento">
-                    <a href="{% url 'alterDay' date=day.date %}">
+                    <a href="{% url 'alter_day' date=day.date %}">
                       <h2 class="centrar  day"
                           data-color="{{ day.colour }}"
                           data-alterDay="{{ day.alterDay }}">{{ day.number }}</h2>

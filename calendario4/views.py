@@ -59,7 +59,7 @@ def sign_up_view(request):
 
 
 @login_required
-def change_password(request):
+def change_pass(request):
     if request.method == "POST":
         form = CustomPasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -67,7 +67,7 @@ def change_password(request):
             return redirect("login")
     else:
         form = CustomPasswordChangeForm(request.user)
-    return render(request, "changePassword.html", {"form": form})
+    return render(request, "change_pass.html", {"form": form})
 
 
 @login_required
@@ -94,11 +94,11 @@ def alter_day(request, date):
         "month_name": controller.month_name,
         "form": form,
     }
-    return render(request, "alterDay.html", context)
+    return render(request, "alter_day.html", context)
 
 
 @login_required
-def user_color_change(request):
+def change_color_days(request):
     user_id = request.user.id
     user = User.objects.get(id=user_id)
     user_colors = Color.objects.get(user=user_id)
@@ -108,7 +108,7 @@ def user_color_change(request):
         if "restaurar_colores" in request.POST:
             user_adapter = UserAdapter()
             user_adapter.restart_colors(user)
-            return redirect("userColorChange")
+            return redirect("change_color_days.html")
 
         if form.is_valid():
             colors = form.save(commit=False)
@@ -121,7 +121,7 @@ def user_color_change(request):
         else:
             form = ColorForm(instance=user)
     context = {"form": form}
-    return render(request, "userColorChange.html", context)
+    return render(request, "change_color_days.html", context)
 
 
 @login_required
