@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block banner %}
-  <section id="banner">
-    <div class="inner">
+{% block titulo_pagina %}
       <h2>Registro de Nuevo Usuario</h2>
       {% if msg %}
         <h4 class="major">Por favor, solventa el error:</h4>
@@ -10,9 +8,7 @@
       {% else %}
         <p class="major">Por favor, introduce tus datos</p>
       {% endif %}
-    </div>
-  </section>
-{% endblock banner %}
+{% endblock titulo_pagina %}
 {% block wrapper %}
   <section id="footer">
     <div class="inner">

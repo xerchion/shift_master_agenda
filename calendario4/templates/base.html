@@ -127,19 +127,21 @@
         <nav>
           <a href="#menu">Menu</a>
         </nav>
-        {% block tituloMenu %}
-          <h1>
-            <a href="#">Shift Master Agenda 0.4.1
-              {% if schedule.team %}Turno {{ schedule.team }}{% endif %}
-            </a>{{ schedule.year }}
-          </h1>
-        {% endblock tituloMenu %}
+        <!-- Titulo barra ocultable y Menu -->
+        <h1>
+          <a href="#">Shift Master Agenda 0.4.1
+            {% if schedule.team %}Turno {{ schedule.team }}{% endif %}
+          </a>{{ schedule.year }}
+        </h1>
       </header>
-
       <!-- Menu -->
       <nav id="menu">
         <div class="inner">
-          <p class="major">{{ user.username }}, Turno {{ schedule.team }}</p>
+          {% if user.username %}
+            <p class="major">{{ user.username }}, Turno {{ schedule.team }}</p>
+          {% else %}
+            <p class="major">Invitado, Turno no asignado</p>
+          {% endif %}
           <h2 class="major">Menu</h2>
           {% block links %}
             <ul class="links">
@@ -175,216 +177,69 @@
         <!-- Banner -->
         <section id="banner">
           <div class="inner ">
-            {% block tituloPagina %}
+            {% block titulo_pagina %}
               <h2>Calendario / agenda</h2>
-            {% endblock tituloPagina %}
+            {% endblock titulo_pagina %}
           </div>
         </section>
       {% endblock banner %}
       {% block wrapper %}
-        <!-- Wrapper -->
-        <section id="wrapper">
-          <!-- One -->
-          <section id="one" class="wrapper spotlight alt style1 ">
-            <div class="inner">
-              <a href="#" class="image">
-                <img src="{% static 'assets/images/only_month.jpg' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-              </a>
-              <div class="content">
-                <h2 class="major">Shift Management:</h2>
+      {% endblock wrapper %}
+      {% block footer %}
+        <!-- Footer -->
+        <section id="footer">
+          <div class="inner">
+            <h2 class="major">Contact</h2>
+            <p>I appreciate your interest in my project and value your input.</p>
+            <p>Your feedback helps me enhance the project and create a better experience for everyone.</p>
+            <form method="post" action="#" class="major">
+              <div class="fields major">
+                <div class="field">
+                  <label for="name">Name</label>
+                  <input type="text" name="name" id="name" />
+                </div>
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" id="email" />
+                </div>
+                <div class="field">
+                  <label for="message">Message</label>
+                  <textarea name="message" id="message" rows="4"></textarea>
+                </div>
+              </div>
+              <ul class="actions">
+                <li>
+                  <input type="submit" value="Send Message" />
+                </li>
+              </ul>
+            </form>
+            <ul class="contact">
+              <li class="icon solid fa-envelope">
+                <a href="#">sergioucedoberdejo@hotmail.com</a>
+              </li>
+            </ul>
+            <ul class="copyright">
+              <li>GNU General Public License v3.0.</li>
+              <li>
+                <p>You are free to use, modify, and distribute the code</p>
+                <p>in accordance with the terms and conditions of this license.</p>
                 <p>
-                  Easily generate a dynamic calendar/agenda for
-                  varying work shifts:
-                  <h3>Morning, afternoon and night</h3>
-                  Users can  and modify assigned shifts.
+                  For more details, please review the     <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" class="">license document</a>
                 </p>
-                <a href="{% url "agenda" %}" class="special">Go to Agenda</a>
-              </div>
-            </div>
-          </section>
-          <!-- Two -->
-          <section id="two" class="wrapper alt spotlight style2">
-            <div class="inner ">
-              <a href="#" class="">
-                <img src="{% static 'assets/images/morning.png' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-                <img src="{% static 'assets/images/afternoon.png' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-                <img src="{% static 'assets/images/night.jpg' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-                <img src="{% static 'assets/images/intensive.png' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-              </a>
-              <div class="content">
-                <h2 class="major">Color-Coded Shifts:</h2>
-                <p>
-                  Each work shift is associated with a
-                  customizable color, making it easy to differentiate between different shifts.
-                </p>
-                <a href="{% url "change_color_days" %}" class="special">Change colours</a>
-              </div>
-            </div>
-          </section>
-          <!-- Three -->
-          <section id="three" class="wrapper spotlight alt style3">
-            <div class="inner">
-              <a href="#" class="">
-                <img src="{% static 'assets/images/holiday.png' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-                <img src="{% static 'assets/images/holiday_workable.png' %}"
-                     width="auto"
-                     height="auto"
-                     alt="Sin imagen" />
-              </a>
-              <div class="content">
-                <h2 class="major">Holiday Marking:</h2>
-                <p>The app calculates holidays and highlights them on the calendar for quick reference.</p>
-                <p>It also takes into account the holidays that the user works.</p>
-                <a href="{% url "change_color_days" %}" class="special">Change colours</a>
-              </div>
-            </section>
-            <!-- Three -->
-            <section id="three" class="wrapper spotlight  style4">
-              <div class="inner">
-                <a href="#" class="">
-                  <img src="{% static 'assets/images/alter_day.png' %}"
-                       width="auto"
-                       height="auto"
-                       alt="Sin imagen" />
-                  <img src="{% static 'assets/images/free.png' %}"
-                       width="auto"
-                       height="auto"
-                       alt="Sin imagen" />
-                </a>
-                <div class="content">
-                  <h2 class="major">Altered days Marking:</h2>
-                  <p>The days that the user modifies are highlighted with underlining.</p>
-                  <p>And, of course, rest days are also reflected.</p>
-                  <a href="{% url "change_color_days" %}" class="special">Change colours</a>
-                </div>
-              </section>
-              <!-- User Profiles -->
-              <section id="four" class="wrapper ">
-                <div class="inner">
-                  <h2 class="major">User Profiles:</h2>
-                  <p>
-                    The app includes tables in the database to store user profiles, making it easy to manage and assign shifts.
-                    Tailor the app to your preferences through the user configuration screen.
-                    Additionally, the user can adjust shifts, apply bonuses, and manage overtime hours, among other features.
-                  </p>
-                  <section class=" spotlight alt style3">
-                    <article>
-                      <div class="image">
-                        <img src="{% static 'assets/images/personal_data.jpg' %}"
-                             width="auto"
-                             height="auto"
-                             alt="Sin imagen" />
-                      </div>
-                      <div class="image">
-                        <img src="{% static 'assets/images/shift_data_change.jpg' %}"
-                             width="auto"
-                             height="auto"
-                             alt="Sin imagen" />
-                      </div>
-                    </article>
-                  </section>
-                </div>
-              </section>
-              <!-- monthly and yearly summaries -->
-              <section id="four" class="wrapper ">
-                <div class="inner">
-                  <h2 class="major">Monthly and yearly summaries:</h2>
-                  <p>
-                    The app also includes total or partial summaries of the total days per shift, breaks, bonuses, and overtime hours
-                  </p>
-                  <section class=" spotlight alt style3">
-                    <article>
-                      <div class="image">
-                        <img src="{% static 'assets/images/personal_data.jpg' %}"
-                             width="auto"
-                             height="auto"
-                             alt="Sin imagen" />
-                      </div>
-                      <div class="image">
-                        <img src="{% static 'assets/images/shift_data_change.jpg' %}"
-                             width="auto"
-                             height="auto"
-                             alt="Sin imagen" />
-                      </div>
-                    </article>
-                  </section>
-                </div>
-              </section>
-            </section>
-          {% endblock wrapper %}
-          {% block footer %}
-            <!-- Footer -->
-            <section id="footer">
-              <div class="inner">
-                <h2 class="major">Contact</h2>
-                <p>I appreciate your interest in my project and value your input.</p>
-                <p>Your feedback helps me enhance the project and create a better experience for everyone.</p>
-                <form method="post" action="#" class="major">
-                  <div class="fields major">
-                    <div class="field">
-                      <label for="name">Name</label>
-                      <input type="text" name="name" id="name" />
-                    </div>
-                    <div class="field">
-                      <label for="email">Email</label>
-                      <input type="email" name="email" id="email" />
-                    </div>
-                    <div class="field">
-                      <label for="message">Message</label>
-                      <textarea name="message" id="message" rows="4"></textarea>
-                    </div>
-                  </div>
-                  <ul class="actions">
-                    <li>
-                      <input type="submit" value="Send Message" />
-                    </li>
-                  </ul>
-                </form>
-                <ul class="contact">
-                  <li class="icon solid fa-envelope">
-                    <a href="#">sergioucedoberdejo@hotmail.com</a>
-                  </li>
-                </ul>
-                <ul class="copyright">
-                  <li>GNU General Public License v3.0.</li>
-                  <li>
-                    <p>You are free to use, modify, and distribute the code</p>
-                    <p>in accordance with the terms and conditions of this license.</p>
-                    <p>
-                      For more details, please review the     <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" class="">license document</a>
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </section>
+              </li>
+            </ul>
           </div>
-        </div>
-      {% endblock footer %}
+        </section>
+      </div>
     </div>
-    <!-- Scripts -->
-    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
-    <script src="{% static 'assets/js/browser.min.js' %}"></script>
-    <script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
-    <script src="{% static 'assets/js/util.js' %}"></script>
-    <script src="{% static 'assets/js/main.js' %}"></script>
-  </body>
+  {% endblock footer %}
+</div>
+<!-- Scripts -->
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
+<script src="{% static 'assets/js/browser.min.js' %}"></script>
+<script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
+<script src="{% static 'assets/js/util.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
+</body>
 </html>

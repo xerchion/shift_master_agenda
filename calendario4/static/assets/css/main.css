@@ -85,6 +85,8 @@ input, select, textarea {
 	-ms-appearance: none;
 	appearance: none;
 }
+/* Mines */
+
 
 /* Basic */
 
@@ -4181,3 +4183,5 @@ input, select, textarea {
   .boton:active {
 	background-color: #dc3545; /* Nuevo color del botón al ser pulsado */
   }	
+
+  

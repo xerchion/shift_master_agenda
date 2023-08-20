@@ -1,99 +1,96 @@
 {% extends "base.html" %}
 {% load static %}
-<div id="page-wrapper">
-  <section id="banner">
-    <div class="inner">
-      {% block tituloPagina %}
-        <h2 class="rojo">Calendario {{ schedule.year }} Turno {{ schedule.team }}</h2>
+{% block titulo_pagina %}
+  <h2 class="rojo">Calendario {{ schedule.year }} Turno {{ schedule.team }}</h2>
+{% endblock titulo_pagina %}
+{% block wrapper %}
+  <div id="page-wrapper">
+    <section id="banner">
+      <div class="inner">
         <a href="{% url 'recap_year' %}" class="special">Ver resumen Anual</a>
         <style>
-									/* Estilos para el contenedor que centra los elementos */
-									.flex-container {
-										display: flex;
-										flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas */
+                  /* Estilos para el contenedor que centra los elementos */
+                  .flex-container {
+                    display: flex;
+                    flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas */
 
-										justify-content: center; /* Alineación horizontal en el centro */
-									}
-							
-									/* Estilos opcionales para los elementos (puedes adaptarlos según tus necesidades) */
-									.mes {
-										margin: 20px;
-										padding: 10px;
-									}
-								
+                    justify-content: center; /* Alineación horizontal en el centro */
+                  }
+              
+                  /* Estilos opcionales para los elementos (puedes adaptarlos según tus necesidades) */
+                  .mes {
+                    margin: 20px;
+                    padding: 10px;
+                  }
+                
         </style>
-        <section class="banner flex-container">
+        <!-- Accesos directos a meses -->
+        <a href="#" class="special">Accesos directos</a>
+        <section class="flex-container ">
           {% for month in schedule.months_view %}
-            <a href="#seccion_{{ month.number }}" class="mes  ">{{ month.name }}</a>
-            </>
+            <a href="#seccion_{{ month.number }}" class="mes  ">
+              <h1>{{ month.number }}</h1>
+            </a>
           {% endfor %}
         </section>
-      {% endblock tituloPagina %}
-    </div>
-  </section>
-  {% block wrapper %}
-    <!-- Calendario -->
-    <section id="four" class="wrapper ">
-      <div class="inner">
-        <section class="features">
-          {% for month in schedule.months_view %}
-            <article class=" wrapper alt spotlight style5   "
-                     id="seccion_{{ month.number }}"></article>
-            <style>
+      </div>
+    </section>
+  </div>
+  <!-- Calendario -->
+  <section id="four" class="wrapper">
+    <div class="inner">
+      <section class="features">
+        {% for month in schedule.months_view %}
+          <div id="seccion_{{ month.number }}"></div>
+          <style>
 											.elementos-container {
 												display: flex;
 												flex-wrap: wrap;
 												justify-content: space-between;
 											}
 											.elemento {
-												width: calc(100% / 7 ); /* Para que haya espacio entre los elementos */
-												/* Agrega otros estilos que desees para cada elemento */
+												width: calc(100% / 7 ); 
 											}
 											.centrar {
-												width: 100%; /* O cualquier otro ancho que desees */
-    											text-align: center; /* Centra el contenido dentro del contenedor */
+												width: 100%; 
+    											text-align: center; 
 											.oculto{
 												display: none;
 											
 											}
 										
-            </style>
-            <article class="elemento wrapper  spotlight style1 major">
-              <h2 class=" major">{{ month.name }}</h2>
-              <a href="{% url 'recap_month' month=month.number %}" class="special">Resumen mensual</a>
-
-            </article>
-            <article class="elementos-container wrapper  " justify="center">
-              {% for letter in weekdays %}
-                <div class="elemento major">
-                  <h3 class="centrar major">{{ letter }}</h3>
+          </style>
+          <article class="elemento wrapper  spotlight style1 major">
+            <h2 class=" major">{{ month.name }}</h2>
+            <a href="{% url 'recap_month' month=month.number %}" class="special">Resumen mensual</a>
+          </article>
+          <article class="elementos-container wrapper  " justify="center">
+            {% for letter in weekdays %}
+              <div class="elemento major">
+                <h3 class="centrar major">{{ letter }}</h3>
+              </div>
+            {% endfor %}
+            {% for day in month.days %}
+              {% if day.date %}
+                <div class="elemento">
+                  <a href="{% url 'alter_day' date=day.date %}">
+                    <h2 class="centrar  day"
+                        data-color="{{ day.colour }}"
+                        data-alter_day="{{ day.alter_day }}">{{ day.number }}</h2>
+                  </a>
                 </div>
-              {% endfor %}
-              {% for day in month.days %}
-                {% if day.date %}
-                  <div class="elemento">
-                    <a href="{% url 'alter_day' date=day.date %}">
-                      <h2 class="centrar  day"
-                          data-color="{{ day.colour }}"
-                          data-alter_day="{{ day.alter_day }}">{{ day.number }}</h2>
-                    </a>
-                  </div>
-                {% else %}
-                  <div class="elemento">
-                    <h2 class="centrar "></h2>
-                  </div>
-                {% endif %}
-              {% endfor %}
-              <article class=" major inner    ">
-
-              </article>
-            </article>
-          {% endfor %}
-        </div>
+              {% else %}
+                <div class="elemento">
+                  <h2 class="centrar "></h2>
+                </div>
+              {% endif %}
+            {% endfor %}
+            <article class=" major inner    "></article>
+          </article>
+        {% endfor %}
       </section>
     </div>
   </section>
 {% endblock wrapper %}
-
 {% block footer %}
 {% endblock footer %}

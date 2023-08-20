@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% block header %}
-{% endblock header %}
-{% block tituloPagina %}
+
+{% block titulo_pagina %}
   <h2>Modificación de:</h2>
   <h2>{{ day.name }}, {{ day.number }} de {{ month_name }}</h2>
-{% endblock tituloPagina %}
+{% endblock titulo_pagina %}
+
 {{ form.errors }}
 {% block wrapper %}
   <!-- Content -->

@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block header %}
-{% endblock header %}
-
-{% block tituloPagina %}
+{% block titulo_pagina %}
   <h2>Configuración</h2>
   {% if message %}<p>{{ message }}</p>{% endif %}
   <p>Completa o modifica tus datos</p>
-{% endblock tituloPagina %}
+{% endblock titulo_pagina %}
 
 {% block wrapper %}
   <div class="wrapper">

@@ -1,193 +1,157 @@
 {% extends "base.html" %}
 {% load static %}
-<head>
-  <title>Shift Master Agenda</title>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, user-scalable=no" />
-  <noscript>
-    <link rel="stylesheet" href="noscript.css" />
-  </noscript>
-</head>
-<body class="is-preload">
-  <div id="page-wrapper">
-    <header id="header" class="alt">
-      <nav>
-        <a href="#menu">Menu</a>
-      </nav>
-    </header>
-
-    {% block banner %}
-      <section id="banner">
-        <div class="inner">
-          <h2>Bienvenido {{ user.username }}</h2>
-          <p>Shift Master Agenda 0.4.1 </p>
-        </div>
-      </section>
-    {% endblock banner %}
-
-    <section id="wrapper">
-      <section id="one" class="wrapper spotlight style1">
-        <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/pic01.jpg' %}"
-                 alt="Sin imagen"
-                 height="auto"
-                 width="auto" />
-          </a>
-          <div class="content">
-            <h2 class="major">Magna arcu feugiat</h2>
-            <p>
-              Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
-            </p>
-            <a href="#" class="special">Learn more</a>
-          </div>
-        </div>
-      </section>
-      <section id="two" class="wrapper alt spotlight style2">
-        <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/pic02.jpg' %}"
-                 alt="Sin imagen"
-                 height="auto"
-                 width="auto" />
-          </a>
-          <div class="content">
-            <h2 class="major">Tempus adipiscing</h2>
-            <p>
-              Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
-            </p>
-            <a href="#" class="special">Learn more</a>
-          </div>
-        </div>
-      </section>
-      <section id="three" class="wrapper spotlight style3">
-        <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/pic03.jpg' %}"
-                 alt="Sin imagen"
-                 height="auto"
-                 width="auto" />
-          </a>
-          <div class="content">
-            <h2 class="major">Nullam dignissim</h2>
-            <p>
-              Lorem ipsum dolor sit amet, etiam lorem adipiscing elit. Cras turpis ante, nullam sit amet turpis non, sollicitudin posuere urna. Mauris id tellus arcu. Nunc vehicula id nulla dignissim dapibus. Nullam ultrices, neque et faucibus viverra, ex nulla cursus.
-            </p>
-            <a href="#" class="special">Learn more</a>
-          </div>
-        </div>
-      </section>
-      <section id="four" class="wrapper ">
-        <div class="inner">
-          <h2 class="major">Vitae phasellus</h2>
-          <p>
-            Cras mattis ante fermentum, malesuada neque vitae, eleifend erat. Phasellus non pulvinar erat. Fusce tincidunt, nisl eget mattis egestas, purus ipsum consequat orci, sit amet lobortis lorem lacus in tellus. Sed ac elementum arcu. Quisque placerat auctor laoreet.
-          </p>
-          <section class="features">
-            <article>
-              <h3 class="major">Enero</h3>
-              <a href="#" class="image">
-                <img src="{% static 'assets/images/pic04.jpg' %}"
-                     alt="Sin imagen"
-                     height="auto"
-                     width="auto" />
-              </a>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
-              <a href="#" class="special">Learn more</a>
-            </article>
-            <article>
-              <a href="#" class="image">
-                <img src="{% static 'assets/images/pic05.jpg' %}"
-                     alt="Sin imagen"
-                     height="auto"
-                     width="auto" />
-              </a>
-              <h3 class="major">Nisl placerat</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
-              <a href="#" class="special">Learn more</a>
-            </article>
-            <article>
-              <a href="#" class="image">
-                <img src="{% static 'assets/images/pic06.jpg' %}"
-                     alt="Sin imagen"
-                     height="auto"
-                     width="auto" />
-              </a>
-              <h3 class="major">Ante fermentum</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
-              <a href="#" class="special">Learn more</a>
-            </article>
-            <article>
-              <a href="#" class="image">
-                <img src="{% static 'assets/images/pic07.jpg' %}"
-                     alt="Sin imagen"
-                     height="auto"
-                     width="auto" />
-              </a>
-              <h3 class="major">Fusce consequat</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing vehicula id nulla dignissim dapibus ultrices.</p>
-              <a href="#" class="special">Learn more</a>
-            </article>
-          </section>
-          <ul class="actions">
-            <li>
-              <a href="#" class="button">Browse All</a>
-            </li>
-          </ul>
-        </div>
-      </section>
-    </section>
-    <section id="footer">
+{% block titulo_pagina %}
+  <h2>Bienvenido {{ user.username }}</h2>
+  <p>Shift Master Agenda 0.4.1</p>
+{% endblock titulo_pagina %}
+{% block wrapper %}
+  <!-- Wrapper -->
+  <section id="wrapper">
+    <!-- One -->
+    <section id="one" class="wrapper spotlight alt style1 ">
       <div class="inner">
-        <h2 class="major">Get in touch</h2>
-        <p>
-          Cras mattis ante fermentum, malesuada neque vitae, eleifend erat. Phasellus non pulvinar erat. Fusce tincidunt, nisl eget mattis egestas, purus ipsum consequat orci, sit amet lobortis lorem lacus in tellus. Sed ac elementum arcu. Quisque placerat auctor laoreet.
-        </p>
-        <form method="post" action="#">
-          <div class="fields">
-            <div class="field">
-              <label for="name">Name</label>
-              <input type="text" name="name" id="name" />
-            </div>
-            <div class="field">
-              <label for="email">Email</label>
-              <input type="email" name="email" id="email" />
-            </div>
-            <div class="field">
-              <label for="message">Message</label>
-              <textarea name="message" id="message" rows="4"></textarea>
-            </div>
-          </div>
-          <ul class="actions">
-            <li>
-              <input type="submit" value="Send Message" />
-            </li>
-          </ul>
-        </form>
-        <ul class="contact">
-          <li class="icon solid fa-home">
-            Untitled Inc
-            <br />
-            1234 Somewhere Road Suite #2894
-            <br />
-            Nashville, TN 00000-0000
-          </li>
-          <li class="icon solid fa-phone">(000) 000-0000</li>
-          <li class="icon solid fa-envelope">
-            <a href="#">information@untitled.tld</a>
-          </li>
-          <li class="icon brands fa-twitter">
-            <a href="#">twitter.com/untitled-tld</a>
-          </li>
-          <li class="icon brands fa-facebook-f">
-            <a href="#">facebook.com/untitled-tld</a>
-          </li>
-          <li class="icon brands fa-instagram">
-            <a href="#">instagram.com/untitled-tld</a>
-          </li>
-        </ul>
+        <a href="#" class="image">
+          <img src="{% static 'assets/images/only_month.jpg' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+        </a>
+        <div class="content">
+          <h2 class="major">Shift Management:</h2>
+          <p>
+            Easily generate a dynamic calendar/agenda for
+            varying work shifts:
+            <h3>Morning, afternoon and night</h3>
+            Users can  and modify assigned shifts.
+          </p>
+          <a href="{% url "agenda" %}" class="special">Go to Agenda</a>
+        </div>
       </div>
     </section>
-  </div>
-</body>
+    <!-- Two -->
+    <section id="two" class="wrapper alt spotlight style2">
+      <div class="inner ">
+        <a href="#" class="">
+          <img src="{% static 'assets/images/morning.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+          <img src="{% static 'assets/images/afternoon.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+          <img src="{% static 'assets/images/night.jpg' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+          <img src="{% static 'assets/images/intensive.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+        </a>
+        <div class="content">
+          <h2 class="major">Color-Coded Shifts:</h2>
+          <p>
+            Each work shift is associated with a
+            customizable color, making it easy to differentiate between different shifts.
+          </p>
+          <a href="{% url "change_color_days" %}" class="special">Change colours</a>
+        </div>
+      </div>
+    </section>
+    <!-- Three -->
+    <section id="three" class="wrapper spotlight alt style3">
+      <div class="inner">
+        <a href="#" class="">
+          <img src="{% static 'assets/images/holiday.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+          <img src="{% static 'assets/images/holiday_workable.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+        </a>
+        <div class="content">
+          <h2 class="major">Holiday Marking:</h2>
+          <p>The app calculates holidays and highlights them on the calendar for quick reference.</p>
+          <p>It also takes into account the holidays that the user works.</p>
+          <a href="{% url "change_color_days" %}" class="special">Change colours</a>
+        </div>
+      </div>
+    </section>
+    <!-- Three -->
+    <section id="three" class="wrapper spotlight  style4">
+      <div class="inner">
+        <a href="#" class="">
+          <img src="{% static 'assets/images/alter_day.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+          <img src="{% static 'assets/images/free.png' %}"
+               width="auto"
+               height="auto"
+               alt="Sin imagen" />
+        </a>
+        <div class="content">
+          <h2 class="major">Altered days Marking:</h2>
+          <p>The days that the user modifies are highlighted with underlining.</p>
+          <p>And, of course, rest days are also reflected.</p>
+          <a href="{% url "change_color_days" %}" class="special">Change colours</a>
+        </div>
+      </div>
+    </section>
+    <!-- User Profiles -->
+    <section id="four" class="wrapper ">
+      <div class="inner">
+        <h2 class="major">User Profiles:</h2>
+        <p>
+          The app includes tables in the database to store user profiles, making it easy to manage and assign shifts.
+          Tailor the app to your preferences through the user configuration screen.
+          Additionally, the user can adjust shifts, apply bonuses, and manage overtime hours, among other features.
+        </p>
+        <section class=" spotlight alt style3">
+          <article>
+            <div class="image">
+              <img src="{% static 'assets/images/personal_data.jpg' %}"
+                   width="auto"
+                   height="auto"
+                   alt="Sin imagen" />
+            </div>
+            <div class="image">
+              <img src="{% static 'assets/images/shift_data_change.jpg' %}"
+                   width="auto"
+                   height="auto"
+                   alt="Sin imagen" />
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+    <!-- monthly and yearly summaries -->
+    <section id="four" class="wrapper ">
+      <div class="inner">
+        <h2 class="major">Monthly and yearly summaries:</h2>
+        <p>
+          The app also includes total or partial summaries of the total days per shift, breaks, bonuses, and overtime hours
+        </p>
+        <section class=" spotlight alt style3">
+          <article>
+            <div class="image">
+              <img src="{% static 'assets/images/personal_data.jpg' %}"
+                   width="auto"
+                   height="auto"
+                   alt="Sin imagen" />
+            </div>
+            <div class="image">
+              <img src="{% static 'assets/images/shift_data_change.jpg' %}"
+                   width="auto"
+                   height="auto"
+                   alt="Sin imagen" />
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+  </section>
+{% endblock wrapper %}
