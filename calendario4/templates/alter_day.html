@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block titulo_pagina %}
   <h2>Modificación de:</h2>
   <h2>{{ day.name }}, {{ day.number }} de {{ month_name }}</h2>
 {% endblock titulo_pagina %}
-
 {{ form.errors }}
 {% block wrapper %}
   <!-- Content -->
@@ -36,7 +34,6 @@
         <section class="features">
           <article class="major">
             <h3 class="major">Datos del turno</h3>
-
             <div id="formulario">{{ form.as_p }}</div>
             <div class="inner">
               <ul class="actions">
@@ -71,6 +68,6 @@
 <script>
   addListeners();
   shift_status();
-  </script>
+</script>
 {% block footer %}
 {% endblock footer %}

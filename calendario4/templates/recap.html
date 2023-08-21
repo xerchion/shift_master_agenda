@@ -1,88 +1,56 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block titulo_pagina %}
-  <h2> Resumen de {{ recap.name }}</h2>
+  <h2>Resumen de {{ recap.name }}</h2>
 {% endblock titulo_pagina %}
-
 {% block wrapper %}
   <div class="wrapper">
     <div class="inner">
-      <section id="one" class="wrapper alt spotlight style4">
+      <section id="one" class="wrapper alt spotlight style1">
         <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/trabajo.jpg' %}" width="auto" height="auto" alt="Trabajo"/>
-          </a>
+          <a href="#" class="image"></a>
           <div class="content">
-            <h2 class="major">Días de trabajo</h2>
-            <p>{{ recap.name }} tiene {{ recap.number_of_days }} dias</p>
-            <p>de los que vas a trabajar {{ recap.workings }} dias</p>
-            <p>y vas a descansar {{ recap.frees }} dias</p>
+            <h2 class="major">Días de trabajo {{ recap.name }}</h2>
+            <h2>Total dias:  {{ recap.number_of_days }}</h2>
+            <h2>Trabajo: {{ recap.workings }}</h2>
+            <h2>Descanso: {{ recap.frees }}</h2>
           </div>
         </div>
       </section>
-      <section id="two" class="wrapper  alt spotlight style5">
+      <section id="two" class="wrapper alt spotlight style2">
         <div class="inner">
-          <a href="#" class="image ">
-            <img src="{% static 'assets/images/FONTNATURA.jpg' %}" width="auto" height="auto" alt="Turnos"/>
-          </a>
-          <div class="content">
-            <h2 class="major ">Turnos</h2>
-            <p>Mañanas {{ recap.mornings }} dias</p>
-            <p>Tarde {{ recap.evenings }} dias</p>
-            <p>Noches {{ recap.nights }} dias</p>
+          <a href="#" class="image"></a>
+          <div class=" content ">
+            <h2 class="major">Reparto de Turnos</h2>
+            <h2>Mañana: {{ recap.mornings }}</h2>
+            <h2>Tarde: {{ recap.evenings }}</h2>
+            <h2>Noche: {{ recap.nights }}</h2>
           </div>
         </div>
       </section>
-      <section id="three" class="wrapper alt spotlight style2">
+      <section id="three" class="wrapper alt spotlight style3">
         <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/festivos.jpg' %}" width="auto" height="auto" alt="Festivos"/>
-          </a>
-          <div class="content">
-            <h2 class="major">Festivos</h2>
-            <p>
-              {{ month.name }} tiene {{ recap.holidays }} dia
-              {% if recap.holidays > 1 %}s{% endif %}
-              festivo
-              {% if recap.holidays > 1 %}s{% endif %}
-            </p>
-            <p>
-              tienes como extra festivo
-              {% if recap.holidays > 1 %}s{% endif %}
-                {{ recap.extra_holidays }} dia
-              {% if recap.holidays > 1 %}s{% endif %}
-            </p>
-            <p>
-              {% if recap.holidays_not_worked != 0 %}
-                hay {{ recap.holidays_not_worked }} dia
-                {% if recap.holidays > 1 %}s{% endif %}
-                festivo
-                {% if recap.holidays > 1 %}s{% endif %}
-                que no cobras
-              {% endif %}
-            </p>
-          </div>
-        </div>
-      </section>
-      <section id="three" class="wrapper alt spotlight style1">
-        <div class="inner">
-          <a href="#" class="image">
-            <img src="{% static 'assets/images/pluses.jpg' %}" width="auto" height="auto" alt="Pluses"/>
-          </a>
+          <a href="#" class="image"></a>
           <div class="content">
             <h2 class="major">Pluses</h2>
-            <p>Horas extra {{ recap.overtimes }}</p>
-            <p>Cambios de turno {{ recap.change_payables }}</p>
-            <p>Nocturnidad {{ recap.nights }}</p>
-
+            <h2>Horas extra: {{ recap.overtimes }}</h2>
+            <h2>Cambios de turno: {{ recap.change_payables }}</h2>
+            <h2>Nocturnidad: {{ recap.nights }}</h2>
           </div>
         </div>
       </section>
-      {% csrf_token %}
+      <section id="four" class="wrapper alt spotlight style4">
+        <div class="inner">
+          <a href="#" class="image"></a>
+          <div class="content">
+            <h2 class="major">Festivos</h2>
+            <h2>Total Festivos {{ recap.holidays }}</h2>
+            <h2>Extra Festivos {{ recap.extra_holidays }}</h2>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 {% endblock wrapper %}
-
-{% block scripts %}{% endblock scripts %}
-{% block footer %}{% endblock footer %}
+{% block footer %}
+{% endblock footer %}

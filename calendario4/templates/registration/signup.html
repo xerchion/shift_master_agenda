@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 {% block titulo_pagina %}
-      <h2>Registro de Nuevo Usuario</h2>
-      {% if msg %}
-        <h4 class="major">Por favor, solventa el error:</h4>
-        <li>{{ msg }}</li>
-      {% else %}
-        <p class="major">Por favor, introduce tus datos</p>
-      {% endif %}
+  <h2>Registro de Nuevo Usuario</h2>
+  {% if msg %}
+    <h4 class="major">Por favor, solventa el error:</h4>
+    <li>{{ msg }}</li>
+  {% else %}
+    <p class="major">Por favor, introduce tus datos</p>
+  {% endif %}
 {% endblock titulo_pagina %}
 {% block wrapper %}
   <section id="footer">
@@ -36,4 +36,3 @@
 {% endblock wrapper %}
 {% block footer %}
 {% endblock footer %}
-
