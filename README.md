@@ -10,7 +10,7 @@
 
 
 
-The project aims to generate a versatile work shift calendar, accommodating morning, afternoon, and night shifts. Users can effortlessly customize work shifts on chosen days using distinct colors. Notably, holidays are prominently indicated. The system offers flexibility for shift changes, including adjustments for overtime and additional bonuses."
+The project aims to generate a versatile work shift calendar, accommodating morning, afternoon, and night shifts. Users can effortlessly customize work shifts on chosen days using distinct colors. Notably, holidays are prominently indicated. The system offers flexibility for shift changes, including adjustments for overtime and additional bonuses.
 
 ## Features
 
@@ -40,11 +40,11 @@ Here are some screenshots of the app, showcasing the monthly view of the calenda
 
 
 
-## Usage
+<!-- ## Usage
 
 You can experience the full functionality of the application as a guest by visiting the project's website: soon...
 
-Feel free to explore all the features, such as generating calendars, modifying shifts, and experimenting with color-coded schedules, even when accessing as a guest.
+Feel free to explore all the features, such as generating calendars, modifying shifts, and experimenting with color-coded schedules, even when accessing as a guest. -->
 
 
 ## Credits
