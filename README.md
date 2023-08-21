@@ -8,8 +8,9 @@
 
 ## Description
 
-Python and Django
-"The project aims to generate a versatile work shift calendar, accommodating morning, afternoon, and night shifts. Users can effortlessly customize work shifts on chosen days using distinct colors. Notably, holidays are prominently indicated. The system offers flexibility for shift changes, including adjustments for overtime and additional bonuses."
+
+
+The project aims to generate a versatile work shift calendar, accommodating morning, afternoon, and night shifts. Users can effortlessly customize work shifts on chosen days using distinct colors. Notably, holidays are prominently indicated. The system offers flexibility for shift changes, including adjustments for overtime and additional bonuses."
 
 ## Features
 
