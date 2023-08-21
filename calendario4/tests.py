@@ -1,15 +1,12 @@
-from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.contrib.auth.models import AnonymousUser, User
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from .config.constants import BASE_DAY_COLORS
-# from .controllers.alterDayController import AlterDayController
-
+from .controllers.UserAdapter import UserAdapter
 from .logic.Pattern import Pattern
 from .logic.Schedule import Schedule
 from .models import AlterDay, MyUser
-from .controllers.UserAdapter import UserAdapter
-from django.contrib.auth.models import AnonymousUser
 
 
 class PatternTest(TestCase):
