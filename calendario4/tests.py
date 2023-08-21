@@ -9,6 +9,7 @@ from .logic.Pattern import Pattern
 from .logic.Schedule import Schedule
 from .models import AlterDay, MyUser
 from .controllers.UserAdapter import UserAdapter
+from django.contrib.auth.models import AnonymousUser
 
 
 class PatternTest(TestCase):
@@ -97,56 +98,69 @@ class MyUserModelTest(TestCase):
 
 
 class AlterDayModelTest(TestCase):
-    def test_alter_day_creation(self):
-        user = User.objects.create_user(username="testuser",
-                                        password="testpassword")
-        alter_day = AlterDay.objects.create(shift="N", user=user)
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser",
+                                             password="testpassword")
+
+    def test_creation(self):
+        alter_day = AlterDay.objects.create(shift="N", user=self.user)
         self.assertEqual(alter_day.shift, "N")
 
+    def text_modify(self):
+        ...
 
-class ViewsTest(TestCase):
-    def test_home_load(self):
-        response = self.client.get(reverse("home"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "home.html")
+    def test_restore(self):
+        ...
 
 
 class RecapTests(TestCase):
+
+    # Crea un schedule de ejemplo para usar en las pruebas
+    schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+
+    def check_recap(self, calculate, data):
+        recap = calculate()
+        # Loop through the data dictionary and check each field in recap
+        for key, value in data.items():
+            self.assertEqual(getattr(recap, key), value)
+
     def test_recap_month(self):
-        # tests November 2023 plain
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        recap = schedule.months[10].calculate_recap()
-        self.assertEqual(recap.name, "Noviembre")
-        self.assertEqual(recap.number_of_days, 30)
-        self.assertEqual(recap.mornings, 4)
-        self.assertEqual(recap.evenings, 5)
-        self.assertEqual(recap.nights, 7)
-        self.assertEqual(recap.workings, 16)
-        self.assertEqual(recap.frees, 14)
-        self.assertEqual(recap.holidays, 1)
-        self.assertEqual(recap.extra_holidays, 1)
-        self.assertEqual(recap.holidays_not_worked, 0)
-        self.assertEqual(recap.change_payables, 0)
-        self.assertEqual(recap.keep_days, 0)
-        self.assertEqual(recap.overtimes, 0)
+        # November data test
+        data = {
+            "name": "Noviembre",
+            "number_of_days": 30,
+            "mornings": 4,
+            "evenings": 5,
+            "nights": 7,
+            "workings": 16,
+            "frees": 14,
+            "holidays": 1,
+            "extra_holidays": 1,
+            "holidays_not_worked": 0,
+            "change_payables": 0,
+            "keep_days": 0,
+            "overtimes": 0
+        }
+        self.check_recap(self.schedule.months[10].calculate_recap, data)
 
     def test_recap_year(self):
-        # tests 2023 plain
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        recap = schedule.calculate_recap_year()
-        self.assertEqual(recap.name, 2023)
-        self.assertEqual(recap.number_of_days, 365)
-        self.assertEqual(recap.mornings, 72)
-        self.assertEqual(recap.evenings, 73)
-        self.assertEqual(recap.nights, 75)
-        self.assertEqual(recap.workings, 220)
-        self.assertEqual(recap.frees, 145)
-        self.assertEqual(recap.holidays, 15)
-        self.assertEqual(recap.extra_holidays, 6)
-        self.assertEqual(recap.holidays_not_worked, 9)
-        self.assertEqual(recap.change_payables, 0)
-        self.assertEqual(recap.keep_days, 0)
-        self.assertEqual(recap.overtimes, 0)
+        # 2023 data test
+        data = {
+            "name": 2023,
+            "number_of_days": 365,
+            "mornings": 72,
+            "evenings": 73,
+            "nights": 75,
+            "workings": 220,
+            "frees": 145,
+            "holidays": 15,
+            "extra_holidays": 6,
+            "holidays_not_worked": 9,
+            "change_payables": 0,
+            "keep_days": 0,
+            "overtimes": 0
+        }
+        self.check_recap(self.schedule.calculate_recap_year, data)
 
 
 class ViewsTests(TestCase):
@@ -158,7 +172,28 @@ class ViewsTests(TestCase):
         self.user_adapter = UserAdapter()
         self.user = self.user_adapter.add_new_user(self.username,
                                                    self.password, self.team)
-        self.views = {
+
+    def check_views(self, views):
+        for view, text in views.items():
+            response = self.client.get(reverse(view))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, text)
+        return response
+
+    # views tests without user required
+    def test_no_logged_in_user(self):
+        views = {
+            # Key: view name
+            # Value: text to search in the view
+            'home': 'Bienvenido',
+            'signup': 'Registro de Nuevo Usuario',
+        }
+        response = self.check_views(views)
+        self.assertIsInstance(response.context['user'], AnonymousUser)
+
+    # views tests with user required
+    def test_load_views(self):
+        views = {
             # Key: view name
             # Values: text to search in the view
             'agenda': 'Calendario',
@@ -168,16 +203,11 @@ class ViewsTests(TestCase):
             'change_pass': 'Cambio de contraseña',
             'change_color_days': 'Cambio de Colores'
         }
-
-    def test_views(self):
         self.client.login(username=self.username, password=self.password)
-        for view, text in self.views.items():
-            response = self.client.get(reverse(view))
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, text)
+        self.check_views(views)
 
     # views tests with arguments
-    def test_recap_month_view(self):
+    def test_recap_month_load(self):
         self.client.login(username=self.username, password=self.password)
         # This view has a month's number argument
         month = "1"
@@ -186,7 +216,7 @@ class ViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Resumen de")
 
-    def test_alter_day_view(self):
+    def test_alter_day_load(self):
         self.client.login(username=self.username, password=self.password)
         # This view has a date argument
         argument = "2023-02-02"
