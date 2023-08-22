@@ -13,3 +13,5 @@ class Recap:
         self.change_payables = 0
         self.keep_days = 0
         self.overtimes = 0
+        self.laborals = 0
+        self.days_weekend = 0

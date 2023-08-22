@@ -42,6 +42,12 @@ class Day:
     def is_extra_holiday(self):
         return self.holiday and not self.shift.is_free()
 
+    def is_holiday(self):
+        return self.holiday
+
+    def is_change_payable(self):
+        return self.shift.change_payable
+
     def say_your_name(self):
         return WEEK_DAYS[self.date.weekday()]
 

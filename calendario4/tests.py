@@ -11,6 +11,43 @@ from .logic.Pattern import Pattern
 from .logic.Schedule import Schedule
 from .models import AlterDay, MyUser, Color
 
+# tests de prueba nueva funcionalidad:
+
+
+class TestPrueba(TestCase):
+    def OK_test_TestCountersRecap_TEMPORALY(self):
+        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        month = schedule.months[1]
+        recap = month.calculate_recap()
+        re = month.create_recap()
+        atributos = [
+            attr
+            for attr in dir(recap)
+            if not callable(getattr(recap, attr)) and not attr.startswith("__")
+        ]
+        atributos_re = [
+            attr
+            for attr in dir(re)
+            if not callable(getattr(re, attr)) and not attr.startswith("__")
+        ]
+        if len(atributos) != len(atributos_re):
+            print(len(atributos), "////", len(atributos_re))
+            assert False, "nO TIENE LOS MISMOS ATRIBUTOS"
+        if recap == re:
+            assert False, "todo correcto"
+        else:
+            for atributo in atributos:
+                if getattr(recap, atributo) == getattr(re, atributo):
+                    print(f"Los tributos '{atributo}' son iguales en ambos objetos.")
+                    print("tODO CORRECTO")
+
+                else:
+                    print(
+                        f"Los atributos '{atributo}' NNNNNNNoooooOOOOOo son iguales en ambos objetos."
+                    )
+                    print(getattr(recap, atributo), "----", getattr(re, atributo))
+
+
 #  Logic Tests_______________________________________________________________
 
 
@@ -27,6 +64,44 @@ class PatternTest(TestCase):
 
 
 class ScheduleTest(TestCase):
+    def setUp(self):
+        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        self.attrs = ["colors", "months", "months_view", "team", "year"]
+
+    def test_extract_current__integrity(self):
+        # TODO actualizar docsting
+        """This method is for checking the current composition of the models:
+        Name and number of fields.
+        Use it only if the integrity test fails;
+        this will indicate that some model has changed,
+        and you will need to update the "data" field with the result of this method.
+        Manually copy the console output into the "data" field of the integrity test.
+        """
+        data = {}
+        attrs = dir(Schedule)
+        print("Todos los Metodos:")
+        print(attrs)
+        metodos_instancia = [attr for attr in attrs if not attr.startswith("__")]
+        print("Metodos de instancia:")
+        print(metodos_instancia)
+        attrs = [
+            attr
+            for attr in dir(self.schedule)
+            if not callable(getattr(self.schedule, attr)) and not attr.startswith("__")
+        ]
+        print("Atributos de instancia:")
+        print(attrs)
+
+        # TODO ya tengo los atributos en attrs, puedes usarlos para los test...
+
+    def test_integrity_global(self):
+        attrs = [
+            attr
+            for attr in dir(self.schedule)
+            if not callable(getattr(self.schedule, attr)) and not attr.startswith("__")
+        ]
+        self.assertEqual(1, self.attrs, "No coinciden")
+
     def test_months(self):
         schedule = Schedule(2023, "C", BASE_DAY_COLORS)
         number_of_months = len(schedule.months)
@@ -85,8 +160,10 @@ class RecapTests(TestCase):
             "change_payables": 0,
             "keep_days": 0,
             "overtimes": 0,
+            "laborals": 22,
+            "days_weekend": 8,
         }
-        self.check_recap(self.schedule.months[10].calculate_recap, data)
+        self.check_recap(self.schedule.months[10].create_recap, data)
 
     def test_recap_year(self):
         # 2023 data test
@@ -104,8 +181,11 @@ class RecapTests(TestCase):
             "change_payables": 0,
             "keep_days": 0,
             "overtimes": 0,
+            "laborals": 260,
+            "days_weekend": 105,
         }
         self.check_recap(self.schedule.calculate_recap_year, data)
+
 
 # Model Tests_______________________________________________________________
 
@@ -235,6 +315,7 @@ class ColorModelTest(TestCase):
         old_color.save()
         color_db = Color.objects.get(user=self.user)
         self.assertEqual(color_db.morning, "Blue")
+
 
 # Views Tests_______________________________________________________________
 

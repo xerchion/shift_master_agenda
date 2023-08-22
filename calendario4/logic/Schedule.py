@@ -22,9 +22,9 @@ class Schedule:
         self.__create()
         self.__fill_with_pattern()
         self.create_spaces()
-        self.__fill_with_holydays()
+        self.fill_holydays()
         self.__update_schedule()
-        self.__fill_with_colors()
+        self.fill_colors()
 
     def __create(self):
         self.months = Month.create_months_struct(self)
@@ -35,7 +35,7 @@ class Schedule:
             cont += 1
             last_month_day = monthrange(self.year, i + 1)[1]
             cont2 = 0
-            for day in range(0, last_month_day):
+            for _ in range(0, last_month_day):
                 cont2 += 1
                 self.months[i].days.append(Day(actual_day))
                 actual_day += timedelta(days=1)
@@ -70,15 +70,12 @@ class Schedule:
 
             assert tam == tam_sum, "La suma no corresponde"
 
-    def __fill_with_colors(self):
+    def fill_colors(self):
         for month in self.months:
             for day in month.days:
                 day.aply_color(self.colors)
 
-    def fill_colors(self):
-        self.__fill_with_colors()
-
-    def __fill_with_holydays(self):
+    def fill_holydays(self):
         year = self.year
         # From Spain
         for i in holidays.Spain(years=year).items():
@@ -115,6 +112,15 @@ class Schedule:
         return self.months[month - 1].days[day - 1]
 
     def set_altered_day(self, day, form):
+        """Check if a day has been modified by the user
+
+        Args:
+            day (Day): day to check
+            form (Form): Form response
+
+        Returns:
+            Boolean
+        """
         form = self.clean_data_form(form)
         if form.shift != day.shift_real:
             return True
@@ -129,6 +135,14 @@ class Schedule:
         return False
 
     def clean_data_form(self, form):
+        """Clear the form of empty or null data
+
+        Args:
+            form (Form): Form response
+
+        Returns:
+            Form: cleaned
+        """
         if not form.extra_hours:
             form.extra_hours = "0"
         if not form.comments:
@@ -143,7 +157,7 @@ class Schedule:
             update_day.shift.changed = True
             update_day.shift.new = form.shift
             update_day.shift_real = form.shift
-            self.__fill_with_colors()
+            self.fill_colors()
 
         update_day.shift.overtime = form.extra_hours
         update_day.shift.keep_day = form.keep_day
@@ -168,13 +182,13 @@ class Schedule:
 
             self.months[n_month].days[n_day] = day
 
-        self.__fill_with_colors()
+        self.fill_colors()
 
     def calculate_recap_year(self):
         recap = Recap()
         recap.name = self.year
         for month in self.months:
-            recap_month = month.calculate_recap()
+            recap_month = month.create_recap()
             for attr_name, attr_value in vars(recap_month).items():
                 if attr_name != "name":
                     current_value = getattr(recap, attr_name, 0)
