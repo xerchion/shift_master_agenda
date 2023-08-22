@@ -19,10 +19,7 @@ class Day:
         self.alter_day = False
         self.comments = ""
 
-    def set_shift(self, shift):
-        assert shift in KINDS_SHIFTS
-        self.shift.primal = shift
-
+    # TODO SIN APLICAR, USALO Y AÑADE A RECAPS
     def set_shift_change(self, new_shift, payed=False):
         assert new_shift in KINDS_SHIFTS and payed is False or payed
         self.shift.set_shift_change(new_shift, payed)
