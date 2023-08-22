@@ -9,7 +9,6 @@ from .Day import Day
 from .Month import Month
 from .Pattern import Pattern
 from .Recap import Recap
-from .Week import Week
 
 
 class Schedule:
@@ -48,60 +47,6 @@ class Schedule:
             for day in month.days:
                 day.shift.primal = pattern.pattern[i]
                 i += 1
-
-    def create_weeks(self):
-        def calculate_weeks_month(month):
-            number = 0
-            for day in month.days:
-                if day.number == 1 and day.name != "Lunes":
-                    number += 1
-                if day.name == "Lunes":
-                    number += 1
-            return number
-
-        def create_weeks_struct(total):
-            assert type(total).__name__ == "int", (
-                "El tipo no es correcto :"
-                + type(total).__name__
-                + "Deberia ser un entero"
-            )
-            weeks = []
-            for _ in range(total):
-                weeks.append(Week(0))
-            for i, week in enumerate(weeks):
-                print("Semana: ", i)
-                for day in range(7):
-                    weeks[i].days.append(Day(date(2000, 1, 1)))
-            assert len(weeks) == total, (
-                "la cantidad de semanas no corresponde."
-                + "salen: "
-                + str(len(weeks))
-                + ", pero deberian ser:"
-                + str(total)
-            )
-            return weeks
-
-        for i, month in enumerate(self.months):
-            weeks_on_month = calculate_weeks_month(month)
-            self.months[i].weeks = create_weeks_struct(weeks_on_month)
-
-            day = self.months[i].days[0]
-            date_actual_day = day.date
-            count = 0
-            week_count = 0
-            while date_actual_day.month == i + 1:
-                if date_actual_day.day == 1:
-                    count_for = 0
-                    for x in range(0, date_actual_day.weekday()):
-                        count_for += 1
-                    assert count_for == date_actual_day.weekday(), "mal"
-                date_data = Day(date(2000, 1, 1))
-                self.months[i].weeks[week_count].days.append(date_data)
-
-                count += 1
-                date_actual_day += timedelta(days=1)
-            tam = len(self.months[i].days)
-            assert count == tam, "El tamaño no corresponde "
 
     def create_spaces(self):
         for i, month in enumerate(self.months):
