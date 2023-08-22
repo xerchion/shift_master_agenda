@@ -1,12 +1,17 @@
+from django.apps import apps
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from .config.constants import BASE_DAY_COLORS
+from .controllers.alterDayController import AlterDayController
 from .controllers.UserAdapter import UserAdapter
+from .forms import AlterDayForm
 from .logic.Pattern import Pattern
 from .logic.Schedule import Schedule
-from .models import AlterDay, MyUser
+from .models import AlterDay, MyUser, Color
+
+#  Logic Tests_______________________________________________________________
 
 
 class PatternTest(TestCase):
@@ -22,7 +27,6 @@ class PatternTest(TestCase):
 
 
 class ScheduleTest(TestCase):
-
     def test_months(self):
         schedule = Schedule(2023, "C", BASE_DAY_COLORS)
         number_of_months = len(schedule.months)
@@ -55,63 +59,7 @@ class ScheduleTest(TestCase):
         self.assertEqual(schedule.months[5].days[0].holiday, True)
 
 
-class UserModelTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        # Crear un usuario de ejemplo para usar en las pruebas
-        User.objects.create_user(username="ejemplo", password="contraseña123")
-
-    def test_object_name_is_username(self):
-        user = User.objects.get(id=1)
-        expected_object_name = user.username
-        self.assertEquals(expected_object_name, str(user))
-
-    def test_user_creation(self):
-        user_count = User.objects.count()
-        self.assertEqual(user_count, 1)
-
-
-class MyUserModelTest(TestCase):
-    def test_my_user_creation(self):
-        user = User.objects.create_user(username="usuarioJuan",
-                                        password="password")
-        my_user = MyUser.objects.create(
-            user=user,
-            user_name="usuarioJuan",
-            team="A",
-            name="Juan",
-            second_name="Sierra",
-            category=1,
-            password="password",
-        )
-
-        self.assertEqual(my_user.user, user)
-        self.assertEqual(my_user.user_name, "usuarioJuan")
-        self.assertEqual(my_user.team, "A")
-        self.assertEqual(my_user.name, "Juan")
-        self.assertEqual(my_user.second_name, "Sierra")
-        self.assertEqual(my_user.category, 1)
-        self.assertEqual(my_user.password, "password")
-
-
-class AlterDayModelTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username="testuser",
-                                             password="testpassword")
-
-    def test_creation(self):
-        alter_day = AlterDay.objects.create(shift="N", user=self.user)
-        self.assertEqual(alter_day.shift, "N")
-
-    def text_modify(self):
-        ...
-
-    def test_restore(self):
-        ...
-
-
 class RecapTests(TestCase):
-
     # Crea un schedule de ejemplo para usar en las pruebas
     schedule = Schedule(2023, "C", BASE_DAY_COLORS)
 
@@ -136,7 +84,7 @@ class RecapTests(TestCase):
             "holidays_not_worked": 0,
             "change_payables": 0,
             "keep_days": 0,
-            "overtimes": 0
+            "overtimes": 0,
         }
         self.check_recap(self.schedule.months[10].calculate_recap, data)
 
@@ -155,20 +103,152 @@ class RecapTests(TestCase):
             "holidays_not_worked": 9,
             "change_payables": 0,
             "keep_days": 0,
-            "overtimes": 0
+            "overtimes": 0,
         }
         self.check_recap(self.schedule.calculate_recap_year, data)
 
+# Model Tests_______________________________________________________________
 
-class ViewsTests(TestCase):
+
+class ModelsIntegrity(TestCase):
+    def extract_current_models_integrity(self):
+        """This method is for checking the current composition of the models:
+        Name and number of fields.
+        Use it only if the integrity test fails;
+        this will indicate that some model has changed,
+        and you will need to update the "data" field with the result of this method.
+        Manually copy the console output into the "data" field of the integrity test.
+        """
+        data = {}
+        models = apps.get_models()
+        for model in models:
+            model_name = model.__name__
+            field_count = len(model._meta.fields)
+            data[model_name] = field_count
+        print(data)
+
+    def test_model_integrity(self):
+        data = {
+            "LogEntry": 8,
+            "Permission": 4,
+            "Group": 2,
+            "User": 11,
+            "ContentType": 3,
+            "Session": 3,
+            "Team": 4,
+            "Category": 4,
+            "MyUser": 8,
+            "Color": 9,
+            "AlterDay": 8,
+        }
+        for model in apps.get_models():
+            number_of_fields = len(model._meta.fields)
+            self.assertEqual(number_of_fields, data[model.__name__])
+
+
+class UserModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Crear un usuario de ejemplo para usar en las pruebas
+        User.objects.create_user(username="ejemplo", password="contraseña123")
+
+    def test_object_name_is_username(self):
+        user = User.objects.get(id=1)
+        expected_object_name = user.username
+        self.assertEquals(expected_object_name, str(user))
+
+    def test_user_creation(self):
+        user_count = User.objects.count()
+        self.assertEqual(user_count, 1)
+
+
+class MyUserModelTest(TestCase):
+    def test_my_user_creation(self):
+        user = User.objects.create_user(username="usuarioJuan", password="password")
+        my_user = MyUser.objects.create(
+            user=user,
+            user_name="usuarioJuan",
+            team="A",
+            name="Juan",
+            second_name="Sierra",
+            category=1,
+            password="password",
+        )
+
+        self.assertEqual(my_user.user, user)
+        self.assertEqual(my_user.user_name, "usuarioJuan")
+        self.assertEqual(my_user.team, "A")
+        self.assertEqual(my_user.name, "Juan")
+        self.assertEqual(my_user.second_name, "Sierra")
+        self.assertEqual(my_user.category, 1)
+        self.assertEqual(my_user.password, "password")
+
+
+class AlterDayModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        self.day = AlterDay.objects.create(shift="N", user=self.user, date="2023-05-05")
+
+    def test_creation(self):
+        alter_day = AlterDay.objects.create(shift="N", user=self.user)
+        self.assertEqual(alter_day.shift, "N")
+
+    def test_modify(self):
+        controller = AlterDayController(self.user.id, self.day.date, self.schedule)
+        self.day.shift = "T"
+        form = AlterDayForm(instance=self.day)
+        controller.save_day(form)
+
+        day_modified = AlterDay.objects.get(user=self.user)
+        self.assertEqual(self.day.shift, day_modified.shift)
+
+    def test_restore(self):
+        # whith alterDay exists
+        controller = AlterDayController(self.user.id, self.day.date, self.schedule)
+        self.assertEqual(controller.exists_day(), True)
+        controller.restart_day()
+        self.assertEqual(controller.exists_day(), False)
+        # no exists
+        controller = AlterDayController(self.user.id, "2023-01-01", self.schedule)
+        self.assertEqual(controller.exists_day(), False)
+        controller.restart_day()
+        self.assertEqual(controller.exists_day(), False)
+
+
+class ColorModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.color = Color.objects.create(morning="Verde", user=self.user)
+
+    def test_creation(self):
+        color_db = Color.objects.get(user=self.user)
+        self.assertEqual(color_db.morning, "Verde")
+
+    def test_modify(self):
+        old_color = self.color
+        old_color.morning = "Blue"
+        old_color.save()
+        color_db = Color.objects.get(user=self.user)
+        self.assertEqual(color_db.morning, "Blue")
+
+# Views Tests_______________________________________________________________
+
+
+class LoadViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.username = 'Perico'
-        self.password = 'Palotes'
+        self.username = "Perico"
+        self.password = "Palotes"
         self.team = "C"
         self.user_adapter = UserAdapter()
-        self.user = self.user_adapter.add_new_user(self.username,
-                                                   self.password, self.team)
+        self.user = self.user_adapter.add_new_user(
+            self.username, self.password, self.team
+        )
 
     def check_views(self, views):
         for view, text in views.items():
@@ -177,28 +257,26 @@ class ViewsTests(TestCase):
             self.assertContains(response, text)
         return response
 
-    # views tests without user required
-    def test_no_logged_in_user(self):
+    def test_views_without_login_required(self):
         views = {
             # Key: view name
             # Value: text to search in the view
-            'home': 'Bienvenido',
-            'signup': 'Registro de Nuevo Usuario',
+            "home": "Bienvenido",
+            "signup": "Registro de Nuevo Usuario",
         }
         response = self.check_views(views)
-        self.assertIsInstance(response.context['user'], AnonymousUser)
+        self.assertIsInstance(response.context["user"], AnonymousUser)
 
-    # views tests with user required
-    def test_load_views(self):
+    def test_views_with_login_required(self):
         views = {
             # Key: view name
             # Values: text to search in the view
-            'agenda': 'Calendario',
-            'config': 'Datos Personales',
-            'recap_year': 'Resumen de',
-            'signup': 'Registro de Nuevo Usuario',
-            'change_pass': 'Cambio de contraseña',
-            'change_color_days': 'Cambio de Colores'
+            "agenda": "Calendario",
+            "config": "Datos Personales",
+            "recap_year": "Resumen de",
+            "signup": "Registro de Nuevo Usuario",
+            "change_pass": "Cambio de contraseña",
+            "change_color_days": "Cambio de Colores",
         }
         self.client.login(username=self.username, password=self.password)
         self.check_views(views)
@@ -208,7 +286,7 @@ class ViewsTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         # This view has a month's number argument
         month = "1"
-        view_url = reverse('recap_month', kwargs={'month': month})
+        view_url = reverse("recap_month", kwargs={"month": month})
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Resumen de")
@@ -217,7 +295,7 @@ class ViewsTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         # This view has a date argument
         argument = "2023-02-02"
-        view_url = reverse('alter_day', kwargs={'date': argument})
+        view_url = reverse("alter_day", kwargs={"date": argument})
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Datos del turno")

@@ -45,7 +45,7 @@ class AlterDayController:
         return False
 
     def exists_day(self):
-        """Return True exists in Database"""
+        """Return True if exists in Database"""
         self.day_saved = AlterDay.objects.filter(user=self.user,
                                                  date=self.date).first()
         return True if self.day_saved else False

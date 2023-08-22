@@ -92,7 +92,7 @@ def alter_day(request, date):
     context = {
         "day": controller.day,
         "month_name": controller.month_name,
-        "form": form,
+        "form": form
     }
     return render(request, "alter_day.html", context)
 
