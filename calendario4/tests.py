@@ -101,7 +101,7 @@ class ScheduleTest(TestCase):
             message = "La integridad de: " + name + "ha cambiado"
             self.assertEqual(attrs, obj_attrs, message)
 
-        # Schedule
+        # Schedule integrity
         check_integrity_attrs(self.schedule, self.sch_attrs)
         # Month
         check_integrity_attrs(self.schedule.months[1], self.month_attrs)
