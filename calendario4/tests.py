@@ -43,7 +43,7 @@ class TestPrueba(TestCase):
 
                 else:
                     print(
-                        f"Los atributos '{atributo}' NNNNNNNoooooOOOOOo son iguales en ambos objetos."
+                        f"Los atributos '{atributo}' no son iguales en ambos objetos."
                     )
                     print(getattr(recap, atributo), "----", getattr(re, atributo))
 
@@ -88,30 +88,6 @@ class ScheduleTest(TestCase):
             "overtime",
             "primal",
         ]
-
-    def test_extract_current__integrity(self):
-        # TODO actualizar docsting
-        """This method is for checking the current composition of the models:
-        Name and number of fields.
-        Use it only if the integrity test fails;
-        this will indicate that some model has changed,
-        and you will need to update the "data" field with the result of this method.
-        Manually copy the console output into the "data" field of the integrity test.
-        """
-        data = {}
-        attrs = dir(Schedule)
-        # print("Todos los Metodos:")
-        # print(attrs)
-        metodos_instancia = [attr for attr in attrs if not attr.startswith("__")]
-        # print("Metodos de instancia:")
-        # print(metodos_instancia)
-        attrs = [
-            attr
-            for attr in dir(self.schedule)
-            if not callable(getattr(self.schedule, attr)) and not attr.startswith("__")
-        ]
-        # print("Atributos de instancia:")
-        # print(attrs)
 
     def test_integrity_attrs_schedule(self):
         def check_integrity_attrs(object, obj_attrs):

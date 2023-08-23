@@ -16,7 +16,7 @@ repos:
       hooks:
       -   id: django-test
           name: "Run Django tests"
-          entry: python manage.py test
+          entry: C:/Users/SERGIO/Desktop/cal4/venv/Scripts/python.exe manage.py test
           language: system
           pass_filenames: false
           types: [python]
