@@ -27,17 +27,14 @@ def parse_colors(colors):
 
 def init_tables_constants():
     CATEGORY = [
-        {"id": 1, "number": 1, "text": "Tácnico Titulado Superior",
-         "precio1": None},
-        {"id": 2, "number": 2, "text": "Técnico Titulado Medio",
-         "precio1": None},
+        {"id": 1, "number": 1, "text": "Tácnico Titulado Superior", "precio1": None},
+        {"id": 2, "number": 2, "text": "Técnico Titulado Medio", "precio1": None},
         {"id": 3, "number": 3, "text": "Técnico No Titulado", "precio1": None},
         {"id": 4, "number": 4, "text": "Encargado", "precio1": None},
         {"id": 5, "number": 5, "text": "Capataz de turno", "precio1": None},
         {"id": 6, "number": 6, "text": "Almacenero", "precio1": None},
         {"id": 7, "number": 7, "text": "Oficial de 2ª", "precio1": None},
-        {"id": 8, "number": 8, "text": "Operario de embotellado",
-         " precio1": None},
+        {"id": 8, "number": 8, "text": "Operario de embotellado", " precio1": None},
         {"id": 9, "number": 9, "text": "Auxiliar", "precio1": None},
         {"id": 10, "number": 10, "text": "Oficial de 3ª", "precio1": None},
     ]

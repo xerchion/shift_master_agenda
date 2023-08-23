@@ -18,7 +18,8 @@ class Month:
         assert_comment = "Num incorrecto de meses: " + str(len(months))
         assert len(months) == 12, assert_comment
         return months
-# no Usado
+
+    # no Usado
 
     def fill_day_shifts(self, pattern):
         for day in self.days:
@@ -43,7 +44,7 @@ class Month:
         return sum(1 for day in self.days if day.is_working())
 
     def count_laborable_days(self):
-        return sum(1 for day in self.days if day.is_laboral())                                     
+        return sum(1 for day in self.days if day.is_laboral())
 
     def count_change_payables(self):
         return sum(1 for day in self.days if day.is_change_payable())
@@ -59,7 +60,8 @@ class Month:
         result.mornings = self.count_shift("M")
         result.evenings = self.count_shift("T")
         result.nights = self.count_shift("N")
-        result.workings = result.mornings + result.evenings + result.nights
+        result.split_intensive = self.count_shift("P")
+        result.workings = result.mornings + result.evenings + result.nights + result.split_intensive
         result.frees = self.count_shift("D")
         result.holidays = self.count_holidays()
         result.extra_holidays = self.count_extra_holidays()

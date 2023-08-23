@@ -6,8 +6,7 @@ from .config.constants import WEEK_DAYS_LETTER
 from .controllers.alterDayController import AlterDayController
 from .controllers.signUpController import SignUpController
 from .controllers.UserAdapter import UserAdapter
-from .forms import (ColorForm, CustomPasswordChangeForm, SignUpForm,
-                    UserConfigForm)
+from .forms import ColorForm, CustomPasswordChangeForm, SignUpForm, UserConfigForm
 from .models import Color, MyUser
 
 
@@ -89,11 +88,7 @@ def alter_day(request, date):
         return redirect(controller.url_redirection)
     else:
         form = controller.without_post()
-    context = {
-        "day": controller.day,
-        "month_name": controller.month_name,
-        "form": form
-    }
+    context = {"day": controller.day, "month_name": controller.month_name, "form": form}
     return render(request, "alter_day.html", context)
 
 

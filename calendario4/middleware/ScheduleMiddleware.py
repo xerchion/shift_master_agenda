@@ -16,8 +16,7 @@ class ScheduleMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
-            views_with_schedule = ["agenda", "alter_day", "recap_month",
-                                   "recap_year"]
+            views_with_schedule = ["agenda", "alter_day", "recap_month", "recap_year"]
             current_view = resolve(request.path_info).url_name
             if current_view in views_with_schedule:
                 user_id = request.user.id
@@ -28,8 +27,7 @@ class ScheduleMiddleware:
                 schedule = None
 
                 if my_user.team in TEAMS_LIST:
-                    schedule = Schedule(datetime.today().year, my_user.team,
-                                        colors)
+                    schedule = Schedule(datetime.today().year, my_user.team, colors)
                     schedule.load_alter_days_db(user)
 
                 request.schedule = schedule

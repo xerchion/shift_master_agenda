@@ -60,8 +60,7 @@ TEAMS_LIST = [team["letter"] for team in TEAMS_INITIAL]
 # Categories
 # Initial data to DB
 CATEGORY = [
-    {"id": 1, "number": 1, "text": "Técnico Titulado Superior",
-     "precio1": None},
+    {"id": 1, "number": 1, "text": "Técnico Titulado Superior", "precio1": None},
     {"id": 2, "number": 2, "text": "Técnico Titulado Medio", "precio1": None},
     {"id": 3, "number": 3, "text": "Técnico No Titulado", "precio1": None},
     {"id": 4, "number": 4, "text": "Encargado", "precio1": None},

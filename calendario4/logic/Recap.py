@@ -5,6 +5,7 @@ class Recap:
         self.mornings = 0
         self.evenings = 0
         self.nights = 0
+        self.split_intensive = 0
         self.workings = 0
         self.frees = 0
         self.holidays = 0

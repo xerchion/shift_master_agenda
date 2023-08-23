@@ -25,8 +25,7 @@ class AlterDayController:
         new_day = Day(self.day.date)
         new_day.shift.primal = self.day.shift.primal
         new_day.shift_real = self.day.shift.primal
-        day_saved = AlterDay.objects.filter(user=self.user,
-                                            date=self.day.date).first()
+        day_saved = AlterDay.objects.filter(user=self.user, date=self.day.date).first()
         if day_saved:
             day_saved.delete()
         return
@@ -46,8 +45,7 @@ class AlterDayController:
 
     def exists_day(self):
         """Return True if exists in Database"""
-        self.day_saved = AlterDay.objects.filter(user=self.user,
-                                                 date=self.date).first()
+        self.day_saved = AlterDay.objects.filter(user=self.user, date=self.date).first()
         return True if self.day_saved else False
 
     def save_day(self, form):

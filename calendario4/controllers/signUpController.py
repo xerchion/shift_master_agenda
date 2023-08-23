@@ -1,7 +1,6 @@
 from django.contrib.auth import login, logout
 
-from ..config.constants import (NAME_USER_EXISTS, PASSWORDS_NOT_MATCH,
-                                USER_SIGNUP_OK)
+from ..config.constants import NAME_USER_EXISTS, PASSWORDS_NOT_MATCH, USER_SIGNUP_OK
 from ..forms import SignUpForm
 from ..models import MyUser
 from .UserAdapter import UserAdapter
@@ -26,8 +25,9 @@ class SignUpController:
             new_user = False
         else:
             self.message = USER_SIGNUP_OK
-            new_user = self.user_adapter.add_new_user(user.user_name,
-                                                      user.password, None)
+            new_user = self.user_adapter.add_new_user(
+                user.user_name, user.password, None
+            )
         return (new_user, self.message)
 
     def post(self):

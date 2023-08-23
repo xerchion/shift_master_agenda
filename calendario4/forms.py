@@ -7,8 +7,7 @@ from .models import AlterDay, Color, MyUser
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario", max_length=200)
     password = forms.CharField(
-        widget=forms.PasswordInput(), label="Contraseña", min_length=5,
-        max_length=20
+        widget=forms.PasswordInput(), label="Contraseña", min_length=5, max_length=20
     )
 
     repeat_pass = forms.CharField(
@@ -30,15 +29,11 @@ class UserConfigForm(forms.ModelForm):
 class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["old_password"].widget.attrs.update(
-            {"class": "form-control"})
-        self.fields["new_password1"].widget.attrs.update(
-            {"class": "form-control"})
-        self.fields["new_password2"].widget.attrs.update(
-            {"class": "form-control"})
+        self.fields["old_password"].widget.attrs.update({"class": "form-control"})
+        self.fields["new_password1"].widget.attrs.update({"class": "form-control"})
+        self.fields["new_password2"].widget.attrs.update({"class": "form-control"})
         print(
-            self.fields["new_password2"].widget.attrs.update(
-                {"class": "form-control"})
+            self.fields["new_password2"].widget.attrs.update({"class": "form-control"})
         )
 
     # Prueba de campo con opciones, seleccionable

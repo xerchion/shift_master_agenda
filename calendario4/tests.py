@@ -9,7 +9,7 @@ from .controllers.UserAdapter import UserAdapter
 from .forms import AlterDayForm
 from .logic.Pattern import Pattern
 from .logic.Schedule import Schedule
-from .models import AlterDay, MyUser, Color
+from .models import AlterDay, Color, MyUser
 
 # tests de prueba nueva funcionalidad:
 
@@ -66,7 +66,28 @@ class PatternTest(TestCase):
 class ScheduleTest(TestCase):
     def setUp(self):
         self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        self.attrs = ["colors", "months", "months_view", "team", "year"]
+        self.sch_attrs = ["colors", "months", "months_view", "team", "year"]
+        self.month_attrs = ["days", "name", "number", "weeks"]
+        self.day_attrs = [
+            "alter_day",
+            "colour",
+            "comments",
+            "date",
+            "holiday",
+            "name",
+            "number",
+            "shift",
+            "shift_real",
+            "working",
+        ]
+        self.shift_attrs = [
+            "change_payable",
+            "changed",
+            "keep_day",
+            "new",
+            "overtime",
+            "primal",
+        ]
 
     def test_extract_current__integrity(self):
         # TODO actualizar docsting
@@ -79,30 +100,41 @@ class ScheduleTest(TestCase):
         """
         data = {}
         attrs = dir(Schedule)
-        print("Todos los Metodos:")
-        print(attrs)
+        # print("Todos los Metodos:")
+        # print(attrs)
         metodos_instancia = [attr for attr in attrs if not attr.startswith("__")]
-        print("Metodos de instancia:")
-        print(metodos_instancia)
+        # print("Metodos de instancia:")
+        # print(metodos_instancia)
         attrs = [
             attr
             for attr in dir(self.schedule)
             if not callable(getattr(self.schedule, attr)) and not attr.startswith("__")
         ]
-        print("Atributos de instancia:")
-        print(attrs)
+        # print("Atributos de instancia:")
+        # print(attrs)
 
-        # TODO ya tengo los atributos en attrs, puedes usarlos para los test...
+    def test_integrity_attrs_schedule(self):
+        def check_integrity_attrs(object, obj_attrs):
+            """Check that the attributes of an object have not changed."""
+            attrs = [
+                attr
+                for attr in dir(object)
+                if not callable(getattr(object, attr)) and not attr.startswith("__")
+            ]
+            name = type(object).__name__
+            message = "La integridad de: " + name + "ha cambiado"
+            self.assertEqual(attrs, obj_attrs, message)
 
-    def test_integrity_global(self):
-        attrs = [
-            attr
-            for attr in dir(self.schedule)
-            if not callable(getattr(self.schedule, attr)) and not attr.startswith("__")
-        ]
-        self.assertEqual(1, self.attrs, "No coinciden")
+        # Schedule
+        check_integrity_attrs(self.schedule, self.sch_attrs)
+        # Month
+        check_integrity_attrs(self.schedule.months[1], self.month_attrs)
+        # Day
+        check_integrity_attrs(self.schedule.months[1].days[1], self.day_attrs)
+        # Shift
+        check_integrity_attrs(self.schedule.months[1].days[1].shift, self.shift_attrs)
 
-    def test_months(self):
+    def test_months_len(self):
         schedule = Schedule(2023, "C", BASE_DAY_COLORS)
         number_of_months = len(schedule.months)
         self.assertEqual(number_of_months, 12)
