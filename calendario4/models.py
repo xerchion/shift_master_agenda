@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+
 from .config.constants import SHIFTS
 
 
@@ -110,7 +111,7 @@ class AlterDay(models.Model):
         verbose_name="Turno ",
         choices=SHIFTS,
     )
-    extra_hours = models.CharField(
+    overtime = models.CharField(
         default="0", null=True, blank=True, verbose_name="Horas extra ", max_length=2
     )
     comments = models.CharField(

@@ -23,29 +23,29 @@
 				  var label = document.querySelector("label[for='" + id + "']");
 				  label.style.display = option;
 				}
-			  }						
+			  }
 			function for_shift_hides(shift) {
 				const day = "{{ day.shift_real }}";
-				hideElementWithId('id_extra_hours','none');
-				hideElementWithId('id_keep_day','none');				
-				hideElementWithId('id_change_payable','none')		
+				hideElementWithId('id_overtime','none');
+				hideElementWithId('id_keep_day','none');
+				hideElementWithId('id_change_payable','none')
 
 				if (day !== 'D') {
-					hideElementWithId('id_extra_hours','block');
+					hideElementWithId('id_overtime','block');
 				}
 				if (day == 'D' && shift !=="D") {
-					hideElementWithId('id_extra_hours','block');
-					hideElementWithId('id_keep_day','block');	
+					hideElementWithId('id_overtime','block');
+					hideElementWithId('id_keep_day','block');
 				}
 				if (day !== 'D' && shift !=="D" && shift !== day) {
-					hideElementWithId('id_extra_hours','block');
-					hideElementWithId('id_change_payable','block')		
-				}			
+					hideElementWithId('id_overtime','block');
+					hideElementWithId('id_change_payable','block')
+				}
 				if (day !== 'D' && shift == "D") {
-					hideElementWithId('id_extra_hours','none');
-					hideElementWithId('id_keep_day','none');				
-					hideElementWithId('id_change_payable','none')	
-				}						
+					hideElementWithId('id_overtime','none');
+					hideElementWithId('id_keep_day','none');
+					hideElementWithId('id_change_payable','none')
+				}
 			}
 			function addListeners() {
 				const s = document.getElementById('id_shift')
@@ -54,21 +54,21 @@
 					for_shift_hides(s.value);
 				}
 				);
-			};	
+			};
 			document.addEventListener("DOMContentLoaded", function() {
 				// Obtener una lista de elementos por su clase después de que la página se haya cargado
 				var elementos = document.querySelectorAll('.day');
-			
+
 				// Recorrer todos los elementos
 				elementos.forEach(function(elemento) {
 					// Obtener el color de fondo del atributo "data-color" del elemento
-					var colorFondo = elemento.getAttribute('data-color');	
+					var colorFondo = elemento.getAttribute('data-color');
 
 					// Establecer el color de fondo en el elemento
 					elemento.style.color = colorFondo;
-			
-						
-				var underline = elemento.getAttribute('data-alter_day');		
+
+
+				var underline = elemento.getAttribute('data-alter_day');
 				if (underline==="True") {
 					elemento.style.textDecoration = 'underline';
 
@@ -83,10 +83,10 @@
 			function evitarNavegacion(event) {
 				// Prevenir el comportamiento predeterminado del enlace
 				event.preventDefault();
-			
+
 				// Aquí puedes realizar cualquier otra acción que desees en lugar de navegar.
 				// Por ejemplo, mostrar u ocultar elementos, realizar operaciones, etc.
-			}			
+			}
 			function hideElementsWithClass(className, option) {
 				const elements = document.querySelectorAll('.' + className);
 				elements.forEach(element => {
@@ -106,17 +106,17 @@
 					for_shift_hides(shift)
 					//document.getElementById('form').elements.namedItem('shift').value = shift;
 
-				}				
-				
-			
-			
-			
-				
-					
-					
-				  		
+				}
 
-		
+
+
+
+
+
+
+
+
+
     </script>
   </head>
   <body>

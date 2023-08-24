@@ -23,7 +23,6 @@ class Schedule:
         self.__fill_with_pattern()
         self.create_spaces()
         self.fill_holydays()
-        self.__update_schedule()
         self.fill_colors()
 
     def __create(self):
@@ -95,17 +94,6 @@ class Schedule:
         # 1 DE MAYO DIA DEL TRABAJADOR
         self.months[5].days[0].holiday = True
 
-    def __update_schedule(self):
-        for month in self.months:
-            for day in month.days:
-                if day.shift.changed:
-                    day.shift_real = day.shift.new
-                else:
-                    day.shift_real = day.shift.primal
-
-                if day.shift_real in ["M", "T", "N", "P"]:
-                    day.working = True
-
     def search_day(self, date):
         month = date.month
         day = date.day
@@ -122,9 +110,9 @@ class Schedule:
             Boolean
         """
         form = self.clean_data_form(form)
-        if form.shift != day.shift_real:
+        if form.shift != day.get_shift():
             return True
-        if int(form.extra_hours) != int(day.shift.overtime):
+        if int(form.overtime) != int(day.shift.overtime):
             return True
         if form.keep_day != day.shift.keep_day:
             return True
@@ -143,27 +131,11 @@ class Schedule:
         Returns:
             Form: cleaned
         """
-        if not form.extra_hours:
-            form.extra_hours = "0"
+        if not form.overtime:
+            form.overtime = "0"
         if not form.comments:
             form.comments = ""
         return form
-
-    def update_day(self, day, form):
-        num_month = day.date.month - 1
-        num_day = day.date.day - 1
-        update_day = day
-        if form.shift != day.shift_real:
-            update_day.shift.changed = True
-            update_day.shift.new = form.shift
-            update_day.shift_real = form.shift
-            self.fill_colors()
-
-        update_day.shift.overtime = form.extra_hours
-        update_day.shift.keep_day = form.keep_day
-        update_day.shift.change_payable = form.change_payable
-
-        self.months[num_month].days[num_day] = update_day
 
     def load_alter_days_db(self, user):
         alter_days = AlterDay.objects.filter(user=user)
@@ -174,11 +146,12 @@ class Schedule:
 
             day = self.months[n_month].days[n_day]
 
-            day.shift_real = alter_day.shift
-            day.shift.extra_hours = alter_day.extra_hours
+            day.shift.new = alter_day.shift
+            day.shift.overtime = int(alter_day.overtime)
             day.shift.keep_day = alter_day.keep_day
             day.shift.change_payable = alter_day.change_payable
             day.alter_day = True
+            day.shift_real = alter_day.shift
 
             self.months[n_month].days[n_day] = day
 

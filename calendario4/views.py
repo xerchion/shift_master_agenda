@@ -6,7 +6,8 @@ from .config.constants import WEEK_DAYS_LETTER
 from .controllers.alterDayController import AlterDayController
 from .controllers.signUpController import SignUpController
 from .controllers.UserAdapter import UserAdapter
-from .forms import ColorForm, CustomPasswordChangeForm, SignUpForm, UserConfigForm
+from .forms import (ColorForm, CustomPasswordChangeForm, SignUpForm,
+                    UserConfigForm)
 from .models import Color, MyUser
 
 
@@ -15,6 +16,13 @@ def home(request):
 
 
 def necessary_team(func):
+    """sumary_line
+
+    Keyword arguments:
+    argument -- description
+    Return: return_description
+    """
+
     def wrapper(request, *args, **kwargs):
         user_adapter = UserAdapter()
         my_user = user_adapter.get_my_user(request.user.id)
@@ -124,7 +132,7 @@ def recap_month(request, month):
     schedule = request.schedule
     month = int(month)
     month = schedule.months[month - 1]
-    recap = month.calculate_recap()
+    recap = month.create_recap()
 
     context = {"recap": recap}
     return render(request, "recap.html", context)

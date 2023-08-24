@@ -1,4 +1,4 @@
-from ..config.constants import KINDS_SHIFTS, FREE_DAY
+from ..config.constants import FREE_DAY, KINDS_SHIFTS
 
 
 class Shift:
@@ -6,18 +6,9 @@ class Shift:
         assert name in KINDS_SHIFTS
         self.primal = name
         self.new = None
-        self.changed = False
         self.change_payable = False
         self.overtime = 0
         self.keep_day = False
-
-    # TODO, SIN USAR, HAZLO
-    def set_shift_change(self, new, payed=False):
-        assert new in self.KINDS_SHIFTS
-        self.new = new
-        self.changed = True
-        if payed:
-            self.change_payable = True
 
     # TODO, SIN USAR, HAZLO
     def is_extra(self):

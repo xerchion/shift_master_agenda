@@ -53,7 +53,7 @@ class AlterDayForm(forms.ModelForm):
         model = AlterDay
         fields = [
             "shift",
-            "extra_hours",
+            "overtime",
             "keep_day",
             "change_payable",
             "comments",

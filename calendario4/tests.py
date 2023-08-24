@@ -1,9 +1,11 @@
+
 from django.apps import apps
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from .config.constants import BASE_DAY_COLORS
+from .config.test_mocks import DATE_TEST, RECAP_BASE_MONTH, RECAP_BASE_YEAR
 from .controllers.alterDayController import AlterDayController
 from .controllers.UserAdapter import UserAdapter
 from .forms import AlterDayForm
@@ -78,11 +80,9 @@ class ScheduleTest(TestCase):
             "number",
             "shift",
             "shift_real",
-            "working",
         ]
         self.shift_attrs = [
             "change_payable",
-            "changed",
             "keep_day",
             "new",
             "overtime",
@@ -97,6 +97,7 @@ class ScheduleTest(TestCase):
                 for attr in dir(object)
                 if not callable(getattr(object, attr)) and not attr.startswith("__")
             ]
+            # print(attrs)
             name = type(object).__name__
             message = "La integridad de: " + name + "ha cambiado"
             self.assertEqual(attrs, obj_attrs, message)
@@ -143,56 +144,55 @@ class ScheduleTest(TestCase):
 
 
 class RecapTests(TestCase):
-    # Crea un schedule de ejemplo para usar en las pruebas
-    schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+    def setUp(self):
+        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        self.user = User.objects.create_user(
+            username="ejemplo", password="contraseña123"
+        )
 
     def check_recap(self, calculate, data):
         recap = calculate()
         # Loop through the data dictionary and check each field in recap
         for key, value in data.items():
-            self.assertEqual(getattr(recap, key), value)
+            self.assertEqual(getattr(recap, key), value, "Falla este campo: " + key)
 
-    def test_recap_month(self):
-        # November data test
-        data = {
-            "name": "Noviembre",
-            "number_of_days": 30,
-            "mornings": 4,
-            "evenings": 5,
-            "nights": 7,
-            "workings": 16,
-            "frees": 14,
-            "holidays": 1,
-            "extra_holidays": 1,
-            "holidays_not_worked": 0,
-            "change_payables": 0,
-            "keep_days": 0,
-            "overtimes": 0,
-            "laborals": 22,
-            "days_weekend": 8,
-        }
+    def test_base_recap_month(self):
+        data = RECAP_BASE_MONTH
         self.check_recap(self.schedule.months[10].create_recap, data)
 
-    def test_recap_year(self):
-        # 2023 data test
-        data = {
-            "name": 2023,
-            "number_of_days": 365,
-            "mornings": 72,
-            "evenings": 73,
-            "nights": 75,
-            "workings": 220,
-            "frees": 145,
-            "holidays": 15,
-            "extra_holidays": 6,
-            "holidays_not_worked": 9,
-            "change_payables": 0,
-            "keep_days": 0,
-            "overtimes": 0,
-            "laborals": 260,
-            "days_weekend": 105,
-        }
+    def test_base_recap_year(self):
+        data = RECAP_BASE_YEAR
         self.check_recap(self.schedule.calculate_recap_year, data)
+
+    def test_alter_day_recap(self):
+        # original day has "morning" shift, I put "evening (T)"
+        day = AlterDay(
+            user=self.user,
+            date=DATE_TEST,
+            shift="T",
+            keep_day=True,
+            change_payable=False,
+        )
+        day.save()
+        self.schedule.load_alter_days_db(self.user)
+        data = {"extra_keep": 1}
+        self.check_recap(self.schedule.months[DATE_TEST.month - 1].create_recap, data)
+
+        day = AlterDay(
+            user=self.user,
+            date=DATE_TEST,
+            shift="D",
+            keep_day=False,
+            change_payable=False,
+        )
+        day.save()
+        self.schedule.load_alter_days_db(self.user)
+
+        data = {"extra_keep": 1}
+        data = {
+            "extra_payed": 0,
+        }
+        self.check_recap(self.schedule.months[DATE_TEST.month - 1].create_recap, data)
 
 
 # Model Tests_______________________________________________________________
@@ -213,7 +213,6 @@ class ModelsIntegrity(TestCase):
             model_name = model.__name__
             field_count = len(model._meta.fields)
             data[model_name] = field_count
-        print(data)
 
     def test_model_integrity(self):
         data = {

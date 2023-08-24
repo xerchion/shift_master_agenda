@@ -16,3 +16,5 @@ class Recap:
         self.overtimes = 0
         self.laborals = 0
         self.days_weekend = 0
+        self.extra_keep = 0
+        self.extra_payed = 0

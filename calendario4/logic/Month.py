@@ -49,6 +49,17 @@ class Month:
     def count_change_payables(self):
         return sum(1 for day in self.days if day.is_change_payable())
 
+    def count_extra_keep(self):
+        return sum(1 for day in self.days if day.shift.keep_day)
+
+    def count_extra_payed(self):
+        result = 0
+        for day in self.days:
+            if day.is_extra_payable_day():
+                result += 1
+                print(day.date, day.shift.primal, day.shift.new)
+        return result
+
     def say_your_name(self):
         locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
         return calendar.month_name[self.number].capitalize()
@@ -61,7 +72,9 @@ class Month:
         result.evenings = self.count_shift("T")
         result.nights = self.count_shift("N")
         result.split_intensive = self.count_shift("P")
-        result.workings = result.mornings + result.evenings + result.nights + result.split_intensive
+        result.workings = (
+            result.mornings + result.evenings + result.nights + result.split_intensive
+        )
         result.frees = self.count_shift("D")
         result.holidays = self.count_holidays()
         result.extra_holidays = self.count_extra_holidays()
@@ -71,26 +84,7 @@ class Month:
         result.keep_days = self.count_change_payables()
         result.laborals = self.count_laborable_days()
         result.days_weekend = self.count_weekends_days()
-        return result
+        result.extra_keep = self.count_extra_keep()
+        result.extra_payed = self.count_extra_payed()
 
-    # Esta puede borrarse, ya tengo hecha la de arriba y COMPROBADA
-    def calculate_recap(self):
-        result = Recap()
-        for day in self.days:
-            result.name = self.name
-            result.number_of_days = len(self.days)
-            result.mornings += 1 if day.shift_real == "M" else 0
-            result.evenings += 1 if day.shift_real == "T" else 0
-            result.nights += 1 if day.shift_real == "N" else 0
-            result.workings = result.mornings + result.evenings + result.nights
-            result.frees += 1 if day.shift_real == "D" else 0
-            result.holidays += 1 if day.holiday else 0
-            result.extra_holidays += 1 if day.holiday and day.working else 0
-            result.holidays_not_worked = result.holidays - result.extra_holidays
-            result.overtimes += day.shift.overtime
-            result.change_payables += 1 if day.shift.change_payable else 0
-            result.keep_days += 1 if day.shift.keep_day else 0
-
-            result.laborals += 1 if day.is_laboral() else 0
-            result.days_weekend += 1 if day.is_weekend() else 0
         return result

@@ -52,14 +52,14 @@ class AlterDayController:
         alter_day = form.save(commit=False)
         alter_day.user = self.user
         alter_day.date = self.date
+
         if self.schedule.set_altered_day(self.day, alter_day):
             alter_day.save()
-            self.schedule.update_day(self.day, alter_day)
             self.schedule.fill_colors()
 
     def fill_form(self, form):
-        form.fields["shift"].initial = self.day.shift_real
-        form.fields["extra_hours"].initial = self.day.shift.overtime
+        form.fields["shift"].initial = self.day.get_shift()
+        form.fields["overtime"].initial = self.day.shift.overtime
         form.fields["keep_day"].initial = self.day.shift.keep_day
         form.fields["change_payable"].initial = self.day.shift.change_payable
         return form

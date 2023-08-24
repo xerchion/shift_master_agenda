@@ -1,4 +1,4 @@
-from ..config.constants import KINDS_SHIFTS, WEEK_DAYS
+from ..config.constants import FREE_DAY, KINDS_SHIFTS, WEEK_DAYS, WORK_DAYS
 from .Shift import Shift
 
 
@@ -10,14 +10,22 @@ class Day:
         )
         self.date = date
         self.name = self.say_your_name()
+        self.shift_real = "D"
         self.number = date.day
         self.holiday = False
         self.shift = Shift("D")
-        self.shift_real = self.shift.primal
-        self.working = False
         self.colour = ""
         self.alter_day = False
         self.comments = ""
+
+    def __str__(self):
+        return (
+            f"Fecha : {self.date}\n"
+            f"Turno shift_real : {self.shift_real}\n"
+            f"Turno primal : {self.shift.primal}\n"
+            f"Turno new: {self.shift.new}\n"
+            f"Dia keep_day: {self.shift.keep_day}"
+        )
 
     # TODO SIN APLICAR, USALO Y AÑADE A RECAPS
     def set_shift_change(self, new_shift, payed=False):
@@ -42,6 +50,12 @@ class Day:
     def is_extra_holiday(self):
         return self.holiday and not self.shift.is_free()
 
+    def is_extra_payable_day(self):
+        return (not self.shift.keep_day) and self.is_extra_day()
+
+    def is_extra_day(self):
+        return self.shift.primal == FREE_DAY and self.is_working_day()
+
     def is_holiday(self):
         return self.holiday
 
@@ -52,9 +66,20 @@ class Day:
         return WEEK_DAYS[self.date.weekday()]
 
     def aply_color(self, colors):
-        self.colour = colors[self.shift_real]
+        self.colour = colors[self.get_shift()]
 
         if self.holiday:
             self.colour = colors["F"]
-        if self.holiday and self.working:
+        if self.holiday and self.is_working_day():
             self.colour = colors["E"]
+
+    def get_shift(self):
+        shift = self.shift.new if self.shift.new else self.shift.primal
+        return shift
+
+    def is_working_day(self):
+        return (
+            (self.shift.new in WORK_DAYS)
+            if self.shift.new
+            else (self.shift.primal in WORK_DAYS)
+        )
