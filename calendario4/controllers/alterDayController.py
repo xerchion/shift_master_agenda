@@ -14,7 +14,7 @@ class AlterDayController:
         self.date = datetime.strptime(date, "%Y-%m-%d")
         self.day = schedule.search_day(self.date)
         self.month_name = schedule.months[self.date.month - 1].name
-        self.user = UserAdapter.get_user(self, user_id)
+        self.user = UserAdapter.get_user(user_id)
         self.day_saved = False
         self.schedule = schedule
         self.url_redirection = None

@@ -58,7 +58,6 @@ class Month:
         for day in self.days:
             if day.is_extra_payable_day():
                 result += 1
-                print(day.date, day.shift.primal, day.shift.new)
         return result
 
     def say_your_name(self):

@@ -99,35 +99,30 @@ class ScheduleTest(TestCase):
         )
 
     def test_months_len(self):
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        number_of_months = len(schedule.months)
+        number_of_months = len(self.schedule.months)
         self.assertEqual(number_of_months, 12)
 
     def test_type_month(self):
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        type_month = type(schedule.months[5]).__name__
+        type_month = type(self.schedule.months[MONTH_INDEX]).__name__
         self.assertEqual(type_month, "Month")
 
     def test_last_day_month(self):
         # February 2023 has 28 days
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        last_month_day = schedule.months[1].days[-1].date.day
+        last_month_day = self.schedule.months[1].days[-1].date.day
         self.assertEqual(last_month_day, 28)
-        self.assertEqual(len(schedule.months[1].days), last_month_day)
+        self.assertEqual(len(self.schedule.months[1].days), last_month_day)
 
     def test_shift_ok(self):
         # On 4th May 2023 the team C is free shift ("D") FREE_DAY
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        self.assertEqual(schedule.months[4].days[3].shift.primal, FREE_DAY)
+        self.assertEqual(self.schedule.months[4].days[3].shift.primal, FREE_DAY)
 
     def test_holidays(self):
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         # August 29 Loja Fair
-        self.assertEqual(schedule.months[8].days[28].holiday, True)
+        self.assertEqual(self.schedule.months[8].days[28].holiday, True)
         # february 28 day of Andalusia
-        self.assertEqual(schedule.months[2].days[27].holiday, True)
+        self.assertEqual(self.schedule.months[2].days[27].holiday, True)
         # And first day of May is holiday. It´s the worker´s day
-        self.assertEqual(schedule.months[5].days[0].holiday, True)
+        self.assertEqual(self.schedule.months[5].days[0].holiday, True)
 
 
 class RecapTests(TestCase):
@@ -301,11 +296,7 @@ class ColorModelTest(TestCase):
 class LoadViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.username = USERNAME
-        self.password = PASSWORD
-        self.team = TEAM
-        self.user_adapter = UserAdapter()
-        self.user = self.user_adapter.add_new_user(USERNAME, PASSWORD, self.team)
+        UserAdapter().add_new_user(USERNAME, PASSWORD, TEAM)
 
     def check_views(self, views):
         for view, text in views.items():

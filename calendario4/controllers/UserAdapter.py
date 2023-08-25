@@ -2,22 +2,30 @@ from django.contrib.auth.models import User
 
 from ..config.constants import (BASE_DAY_COLORS, EVENING, EXTRA_HOLIDAY,
                                 FREE_DAY, HOLIDAY, MORNING, NIGHT, SPLIT)
+from ..controllers.utils import parse_colors
 from ..models import Color, MyUser
 
 
 class UserAdapter:
-    def __init__(self) -> None:
-        self.user = ""
+    def __init__(self, id=None) -> None:
+        self.id = id
+        if id:
+            self.user = User.objects.get(id=id)
+            self.my_user = MyUser.objects.get(user=self.user)
+        else:
+            self.user = None
 
-    def add_new_user(self, name, pswd, team):
+    @classmethod
+    def add_new_user(cls, name, pswd, team):
         new_user = User.objects.create_user(username=name, password=pswd)
         new_user.save()
 
         new_myuser = MyUser(user_name=name, user=new_user, team=team)
-        self.apply_default_colors(new_user)
+        cls.apply_default_colors(new_user)
 
         new_myuser.save()
-        return new_user
+
+        return UserAdapter(new_user.id)
 
     def check_user(self, id):
         is_in_auth = User.objects.filter(id=id).exists()
@@ -26,7 +34,7 @@ class UserAdapter:
 
     def see_user(self, id):
         # ver los datos del usuario en ambas tablas.
-        user = User.objects.get(id=id)
+        user = self.get_user(id)
         print("Datos de la tabla Auth_user:")
         print("Username:", user.username, "Códico id: ", user.id)
 
@@ -39,14 +47,16 @@ class UserAdapter:
     def create_new_my_user(self, name, password):
         return MyUser(user_name=name, password=password)
 
-    def get_user(self, user_id):
-        return User.objects.get(id=user_id)
+    @classmethod
+    def get_user(cls, id):
+        return User.objects.get(id=id)
 
-    def get_my_user(self, user_id):
-        user = self.get_user(user_id)
-        return MyUser.objects.get(user=user)
+    # no funciona????
+    def get_my_user(self):
+        return MyUser.objects.get(user=self.id)
 
-    def apply_default_colors(self, my_user):
+    @classmethod
+    def apply_default_colors(cls, my_user):
         color_obj = Color(
             user=my_user
         )  # Rellenar los campos con los valores del diccionario BASICS
@@ -61,3 +71,9 @@ class UserAdapter:
 
     def exists(self, name):
         return User.objects.filter(username=name).exists()
+
+    def get_colors(self):
+        return parse_colors(Color.objects.get(user=self.id))
+
+    def get_team(self):
+        return self.my_user.team
