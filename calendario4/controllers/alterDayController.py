@@ -33,16 +33,6 @@ class AlterDayController:
     def get_month_number(self):
         return str(self.date.month)
 
-    def get_date(self):
-        return self.day.date
-
-    def filter_response(self, response):
-        if "restaurar_dia" in response:
-            self.restart_day()
-        if "Cancelar" in response or "restaurar_dia" in response:
-            return True
-        return False
-
     def exists_day(self):
         """Return True if exists in Database"""
         self.day_saved = AlterDay.objects.filter(user=self.user, date=self.date).first()

@@ -1,5 +1,9 @@
+from time import sleep
+
 from colorama import Fore, init
 
+from ..config.constants import (EVENING, EXTRA_HOLIDAY, FREE_DAY, HOLIDAY,
+                                MORNING, NIGHT, SPLIT)
 from ..models import Category, Team
 
 
@@ -15,13 +19,13 @@ def pRojo(message):
 
 def parse_colors(colors):
     return {
-        "M": colors.morning,
-        "T": colors.afternoon,
-        "N": colors.night,
-        "D": colors.free,
-        "F": colors.holiday,
-        "E": colors.extra_holiday,
-        "P": colors.split_shift,
+        MORNING: colors.morning,
+        EVENING: colors.afternoon,
+        NIGHT: colors.night,
+        FREE_DAY: colors.free,
+        HOLIDAY: colors.holiday,
+        EXTRA_HOLIDAY: colors.extra_holiday,
+        SPLIT: colors.split_shift,
     }
 
 
@@ -56,7 +60,5 @@ def init_tables_constants():
 
 
 def pausa(dato, tiempo):
-    from time import sleep
-
     pRojo(dato)
     sleep(tiempo)
