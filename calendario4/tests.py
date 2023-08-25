@@ -3,7 +3,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .config.constants import BASE_DAY_COLORS, FREE_DAY
+from .config.constants import BASE_DAY_COLORS, EVENING, FREE_DAY, NIGHT
 from .config.test_mocks import (DATE_STR, DATE_TEST, DAY_ATTRS, DAY_INDEX,
                                 END_PATTERN, HTTP_OK, MODELS, MONTH,
                                 MONTH_ATTRS, MONTH_INDEX, PASSWORD,
@@ -154,7 +154,7 @@ class RecapTests(TestCase):
         day = AlterDay(
             user=self.user,
             date=DATE_TEST,
-            shift="T",
+            shift=EVENING,
             keep_day=True,
             change_payable=False,
         )
@@ -248,15 +248,17 @@ class AlterDayModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        self.day = AlterDay.objects.create(shift="N", user=self.user, date="2023-05-05")
+        self.day = AlterDay.objects.create(
+            shift=NIGHT, user=self.user, date="2023-05-05"
+        )
 
     def test_creation(self):
-        alter_day = AlterDay.objects.create(shift="N", user=self.user)
-        self.assertEqual(alter_day.shift, "N")
+        alter_day = AlterDay.objects.create(shift=NIGHT, user=self.user)
+        self.assertEqual(alter_day.shift, NIGHT)
 
     def test_modify(self):
         controller = AlterDayController(self.user.id, self.day.date, self.schedule)
-        self.day.shift = "T"
+        self.day.shift = EVENING
         form = AlterDayForm(instance=self.day)
         controller.save_day(form)
 
@@ -303,9 +305,7 @@ class LoadViewsTests(TestCase):
         self.password = PASSWORD
         self.team = TEAM
         self.user_adapter = UserAdapter()
-        self.user = self.user_adapter.add_new_user(
-            self.username, self.password, self.team
-        )
+        self.user = self.user_adapter.add_new_user(USERNAME, PASSWORD, self.team)
 
     def check_views(self, views):
         for view, text in views.items():
@@ -319,12 +319,12 @@ class LoadViewsTests(TestCase):
         self.assertIsInstance(response.context["user"], AnonymousUser)
 
     def test_views_with_login_required(self):
-        self.client.login(username=self.username, password=self.password)
+        self.client.login(username=USERNAME, password=PASSWORD)
         self.check_views(VIEWS_WITH_LOGIN)
 
     # views tests with arguments
     def test_recap_month_load(self):
-        self.client.login(username=self.username, password=self.password)
+        self.client.login(username=USERNAME, password=PASSWORD)
         # This view has a month's number argument
         view_url = reverse("recap_month", kwargs={"month": MONTH})
         response = self.client.get(view_url)
@@ -332,7 +332,7 @@ class LoadViewsTests(TestCase):
         self.assertContains(response, "Resumen de")
 
     def test_alter_day_load(self):
-        self.client.login(username=self.username, password=self.password)
+        self.client.login(username=USERNAME, password=PASSWORD)
         # This view has a date argument
         argument = DATE_STR
         view_url = reverse("alter_day", kwargs={"date": argument})

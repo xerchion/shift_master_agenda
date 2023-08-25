@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 
-from ..config.constants import BASE_DAY_COLORS
+from ..config.constants import (BASE_DAY_COLORS, EVENING, EXTRA_HOLIDAY,
+                                FREE_DAY, HOLIDAY, MORNING, NIGHT, SPLIT)
 from ..models import Color, MyUser
 
 
@@ -46,32 +47,17 @@ class UserAdapter:
         return MyUser.objects.get(user=user)
 
     def apply_default_colors(self, my_user):
-        color_obj = Color(user=my_user)
-
-        # Rellenar los campos con los valores del diccionario BASICS
-        color_obj.morning = BASE_DAY_COLORS["M"]
-        color_obj.afternoon = BASE_DAY_COLORS["T"]
-        color_obj.night = BASE_DAY_COLORS["N"]
-        color_obj.split_shift = BASE_DAY_COLORS["P"]
-        color_obj.free = BASE_DAY_COLORS["D"]
-        color_obj.holiday = BASE_DAY_COLORS["F"]
-        color_obj.extra_holiday = BASE_DAY_COLORS["E"]
-
+        color_obj = Color(
+            user=my_user
+        )  # Rellenar los campos con los valores del diccionario BASICS
+        color_obj.morning = BASE_DAY_COLORS[MORNING]
+        color_obj.afternoon = BASE_DAY_COLORS[EVENING]
+        color_obj.night = BASE_DAY_COLORS[NIGHT]
+        color_obj.split_shift = BASE_DAY_COLORS[SPLIT]
+        color_obj.free = BASE_DAY_COLORS[FREE_DAY]
+        color_obj.holiday = BASE_DAY_COLORS[HOLIDAY]
+        color_obj.extra_holiday = BASE_DAY_COLORS[EXTRA_HOLIDAY]
         color_obj.save()
-
-    def restart_colors(self, my_user):
-        colours = Color.objects.filter(id=my_user.id).first()
-        if colours:
-            colours.morning = BASE_DAY_COLORS["M"]
-            colours.afternoon = BASE_DAY_COLORS["T"]
-            colours.night = BASE_DAY_COLORS["N"]
-            colours.split_shift = BASE_DAY_COLORS["P"]
-            colours.free = BASE_DAY_COLORS["D"]
-            colours.holiday = BASE_DAY_COLORS["F"]
-            colours.extra_holiday = BASE_DAY_COLORS["E"]
-
-            colours.save()
-        return
 
     def exists(self, name):
         return User.objects.filter(username=name).exists()

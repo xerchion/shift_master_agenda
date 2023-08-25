@@ -16,13 +16,6 @@ def home(request):
 
 
 def necessary_team(func):
-    """sumary_line
-
-    Keyword arguments:
-    argument -- description
-    Return: return_description
-    """
-
     def wrapper(request, *args, **kwargs):
         user_adapter = UserAdapter()
         my_user = user_adapter.get_my_user(request.user.id)

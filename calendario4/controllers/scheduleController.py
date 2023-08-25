@@ -38,13 +38,3 @@ class ScheduleController:
 
     def prepare_context(self):
         return {"schedule": self.schedule, "weekdays": WEEK_DAYS_LETTER}
-
-    # deverian pasarle el id_user y el año
-    def load_schedule(self):
-        # 1 buscar el calendario a partir de id_user y año
-
-        # 2 cargar los datos a self.schedule
-
-        return self.schedule
-
-    # ?? es necesario, o lo recoge cuando quiera??

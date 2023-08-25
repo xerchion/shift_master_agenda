@@ -3,8 +3,15 @@ from datetime import date
 SHIFT_STRING_ES = ["Mañana", "Tarde", "Noche", "Descanso", "Intensiva/Partida"]
 
 # Shift
-KINDS_SHIFTS = ["M", "T", "N", "D", "P"]
+MORNING = "M"
+EVENING = "T"
+NIGHT = "N"
+SPLIT = "P"
 FREE_DAY = "D"
+HOLIDAY = "F"
+EXTRA_HOLIDAY = "E"
+
+KINDS_SHIFTS = [MORNING, EVENING, NIGHT, FREE_DAY, SPLIT]
 WORK_DAYS = [shift for shift in KINDS_SHIFTS if shift != FREE_DAY]
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
@@ -75,11 +82,11 @@ CATEGORY = [
 
 
 BASE_DAY_COLORS = {
-    "M": "#5DADE2",
-    "T": "#F5B041",
-    "N": "#000000",
-    "D": "#7F8C8D",
+    MORNING: "#5DADE2",
+    EVENING: "#F5B041",
+    NIGHT: "#000000",
+    FREE_DAY: "#7F8C8D",
     "F": "#F1948A",
     "E": "#FA1D04",
-    "P": "#A9DFBF",
+    SPLIT: "#A9DFBF",
 }

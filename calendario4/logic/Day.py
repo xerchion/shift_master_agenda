@@ -1,4 +1,5 @@
-from ..config.constants import FREE_DAY, KINDS_SHIFTS, WEEK_DAYS, WORK_DAYS
+from ..config.constants import (EXTRA_HOLIDAY, FREE_DAY, HOLIDAY, KINDS_SHIFTS,
+                                WEEK_DAYS, WORK_DAYS)
 from .Shift import Shift
 
 
@@ -13,7 +14,7 @@ class Day:
         self.shift_real = "D"
         self.number = date.day
         self.holiday = False
-        self.shift = Shift("D")
+        self.shift = Shift(FREE_DAY)
         self.colour = ""
         self.alter_day = False
         self.comments = ""
@@ -69,9 +70,9 @@ class Day:
         self.colour = colors[self.get_shift()]
 
         if self.holiday:
-            self.colour = colors["F"]
+            self.colour = colors[HOLIDAY]
         if self.holiday and self.is_working_day():
-            self.colour = colors["E"]
+            self.colour = colors[EXTRA_HOLIDAY]
 
     def get_shift(self):
         shift = self.shift.new if self.shift.new else self.shift.primal

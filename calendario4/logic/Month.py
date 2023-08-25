@@ -1,6 +1,7 @@
 import calendar
 import locale
 
+from ..config.constants import EVENING, MORNING, NIGHT, SPLIT
 from .Recap import Recap
 
 
@@ -68,10 +69,10 @@ class Month:
         result = Recap()
         result.name = self.name
         result.number_of_days = len(self.days)
-        result.mornings = self.count_shift("M")
-        result.evenings = self.count_shift("T")
-        result.nights = self.count_shift("N")
-        result.split_intensive = self.count_shift("P")
+        result.mornings = self.count_shift(MORNING)
+        result.evenings = self.count_shift(EVENING)
+        result.nights = self.count_shift(NIGHT)
+        result.split_intensive = self.count_shift(SPLIT)
         result.workings = (
             result.mornings + result.evenings + result.nights + result.split_intensive
         )
