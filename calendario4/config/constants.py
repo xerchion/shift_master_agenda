@@ -5,14 +5,13 @@ SHIFT_STRING_ES = ["Mañana", "Tarde", "Noche", "Descanso", "Intensiva/Partida"]
 # Shift
 KINDS_SHIFTS = ["M", "T", "N", "D", "P"]
 FREE_DAY = "D"
-WORK_DAYS = [shift for shift in KINDS_SHIFTS if shift != "D"]
+WORK_DAYS = [shift for shift in KINDS_SHIFTS if shift != FREE_DAY]
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
 
 
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
-FREE_DAY = "D"
 
 # Pattern
 

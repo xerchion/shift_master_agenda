@@ -1,5 +1,41 @@
 from datetime import datetime
 
+# Schedule's mocks________________________________________________
+#  Pattern
+START_PATTERN = ["T", "N", "N", "D", "D", "D", "D"]
+END_PATTERN = ["M", "M", "T", "T", "N", "N", "N"]
+YEAR = 2023
+DATE_STR = "2023-11-8"
+DATE_TEST = datetime.strptime(DATE_STR, "%Y-%m-%d")
+MONTH = DATE_TEST.month
+MONTH_INDEX = MONTH - 1
+DAY = DATE_TEST.day
+DAY_INDEX = DAY - -1
+
+MONTH_TEST = MONTH - 1
+TEAM = "C"
+SCHEDULE_ATTRS = ["colors", "months", "months_view", "team", "year"]
+MONTH_ATTRS = ["days", "name", "number", "weeks"]
+DAY_ATTRS = [
+    "alter_day",
+    "colour",
+    "comments",
+    "date",
+    "holiday",
+    "name",
+    "number",
+    "shift",
+    "shift_real",
+]
+SHIFT_ATTRS = [
+    "change_payable",
+    "keep_day",
+    "new",
+    "overtime",
+    "primal",
+]
+
+
 # Recap's mocks________________________________________________
 # 2023 Base, whithout alterd days
 RECAP_BASE_YEAR = {
@@ -39,4 +75,40 @@ RECAP_BASE_MONTH = {
     "days_weekend": 8,
 }
 # MOCKS to:  test_alter_day_recap
-DATE_TEST = datetime.strptime("2023-11-08", "%Y-%m-%d")
+
+DATE_TEST = datetime.strptime(DATE_STR, "%Y-%m-%d")
+
+# Models's mocks________________________________________________
+USERNAME = "ejemplo"
+PASSWORD = "contraseña123"
+MODELS = {
+    "LogEntry": 8,
+    "Permission": 4,
+    "Group": 2,
+    "User": 11,
+    "ContentType": 3,
+    "Session": 3,
+    "Team": 4,
+    "Category": 4,
+    "MyUser": 8,
+    "Color": 9,
+    "AlterDay": 8,
+}
+
+VIEWS_WITHOUT_LOGIN = {
+    # Key: view name
+    # Value: text to search in the view
+    "home": "Bienvenido",
+    "signup": "Registro de Nuevo Usuario",
+}
+VIEWS_WITH_LOGIN = {
+    # Key: view name
+    # Values: text to search in the view
+    "agenda": "Calendario",
+    "config": "Datos Personales",
+    "recap_year": "Resumen de",
+    "signup": "Registro de Nuevo Usuario",
+    "change_pass": "Cambio de contraseña",
+    "change_color_days": "Cambio de Colores",
+}
+HTTP_OK = 200

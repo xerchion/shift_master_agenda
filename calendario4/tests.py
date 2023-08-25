@@ -1,11 +1,16 @@
-
 from django.apps import apps
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .config.constants import BASE_DAY_COLORS
-from .config.test_mocks import DATE_TEST, RECAP_BASE_MONTH, RECAP_BASE_YEAR
+from .config.constants import BASE_DAY_COLORS, FREE_DAY
+from .config.test_mocks import (DATE_STR, DATE_TEST, DAY_ATTRS, DAY_INDEX,
+                                END_PATTERN, HTTP_OK, MODELS, MONTH,
+                                MONTH_ATTRS, MONTH_INDEX, PASSWORD,
+                                RECAP_BASE_MONTH, RECAP_BASE_YEAR,
+                                SCHEDULE_ATTRS, SHIFT_ATTRS, START_PATTERN,
+                                TEAM, USERNAME, VIEWS_WITH_LOGIN,
+                                VIEWS_WITHOUT_LOGIN, YEAR)
 from .controllers.alterDayController import AlterDayController
 from .controllers.UserAdapter import UserAdapter
 from .forms import AlterDayForm
@@ -18,7 +23,7 @@ from .models import AlterDay, Color, MyUser
 
 class TestPrueba(TestCase):
     def OK_test_TestCountersRecap_TEMPORALY(self):
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         month = schedule.months[1]
         recap = month.calculate_recap()
         re = month.create_recap()
@@ -56,38 +61,16 @@ class TestPrueba(TestCase):
 class PatternTest(TestCase):
     def test_pattern(self):
         # Check the first 7 days and last ones of the year 2023 and team C
-        start_pattern = ["T", "N", "N", "D", "D", "D", "D"]
-        end_pattern = ["M", "M", "T", "T", "N", "N", "N"]
 
-        new_pattern = Pattern(2023, "C").pattern
+        new_pattern = Pattern(YEAR, TEAM).pattern
 
-        self.assertEqual(new_pattern[0:7], start_pattern)
-        self.assertEqual(new_pattern[-7:], end_pattern)
+        self.assertEqual(new_pattern[0:7], START_PATTERN)
+        self.assertEqual(new_pattern[-7:], END_PATTERN)
 
 
 class ScheduleTest(TestCase):
     def setUp(self):
-        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        self.sch_attrs = ["colors", "months", "months_view", "team", "year"]
-        self.month_attrs = ["days", "name", "number", "weeks"]
-        self.day_attrs = [
-            "alter_day",
-            "colour",
-            "comments",
-            "date",
-            "holiday",
-            "name",
-            "number",
-            "shift",
-            "shift_real",
-        ]
-        self.shift_attrs = [
-            "change_payable",
-            "keep_day",
-            "new",
-            "overtime",
-            "primal",
-        ]
+        self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
 
     def test_integrity_attrs_schedule(self):
         def check_integrity_attrs(object, obj_attrs):
@@ -103,38 +86,42 @@ class ScheduleTest(TestCase):
             self.assertEqual(attrs, obj_attrs, message)
 
         # Schedule integrity
-        check_integrity_attrs(self.schedule, self.sch_attrs)
+        check_integrity_attrs(self.schedule, SCHEDULE_ATTRS)
         # Month
-        check_integrity_attrs(self.schedule.months[1], self.month_attrs)
+        check_integrity_attrs(self.schedule.months[MONTH_INDEX], MONTH_ATTRS)
         # Day
-        check_integrity_attrs(self.schedule.months[1].days[1], self.day_attrs)
+        check_integrity_attrs(
+            self.schedule.months[MONTH_INDEX].days[DAY_INDEX], DAY_ATTRS
+        )
         # Shift
-        check_integrity_attrs(self.schedule.months[1].days[1].shift, self.shift_attrs)
+        check_integrity_attrs(
+            self.schedule.months[MONTH_INDEX].days[DAY_INDEX].shift, SHIFT_ATTRS
+        )
 
     def test_months_len(self):
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         number_of_months = len(schedule.months)
         self.assertEqual(number_of_months, 12)
 
     def test_type_month(self):
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         type_month = type(schedule.months[5]).__name__
         self.assertEqual(type_month, "Month")
 
     def test_last_day_month(self):
         # February 2023 has 28 days
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         last_month_day = schedule.months[1].days[-1].date.day
         self.assertEqual(last_month_day, 28)
         self.assertEqual(len(schedule.months[1].days), last_month_day)
 
     def test_shift_ok(self):
-        # On 4th May 2023 the team C is free shift ("D")
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        self.assertEqual(schedule.months[4].days[3].shift.primal, "D")
+        # On 4th May 2023 the team C is free shift ("D") FREE_DAY
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        self.assertEqual(schedule.months[4].days[3].shift.primal, FREE_DAY)
 
     def test_holidays(self):
-        schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         # August 29 Loja Fair
         self.assertEqual(schedule.months[8].days[28].holiday, True)
         # february 28 day of Andalusia
@@ -145,10 +132,8 @@ class ScheduleTest(TestCase):
 
 class RecapTests(TestCase):
     def setUp(self):
-        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
-        self.user = User.objects.create_user(
-            username="ejemplo", password="contraseña123"
-        )
+        self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
 
     def check_recap(self, calculate, data):
         recap = calculate()
@@ -176,7 +161,7 @@ class RecapTests(TestCase):
         day.save()
         self.schedule.load_alter_days_db(self.user)
         data = {"extra_keep": 1}
-        self.check_recap(self.schedule.months[DATE_TEST.month - 1].create_recap, data)
+        self.check_recap(self.schedule.months[MONTH_INDEX].create_recap, data)
 
         day = AlterDay(
             user=self.user,
@@ -192,7 +177,7 @@ class RecapTests(TestCase):
         data = {
             "extra_payed": 0,
         }
-        self.check_recap(self.schedule.months[DATE_TEST.month - 1].create_recap, data)
+        self.check_recap(self.schedule.months[MONTH_INDEX].create_recap, data)
 
 
 # Model Tests_______________________________________________________________
@@ -215,29 +200,17 @@ class ModelsIntegrity(TestCase):
             data[model_name] = field_count
 
     def test_model_integrity(self):
-        data = {
-            "LogEntry": 8,
-            "Permission": 4,
-            "Group": 2,
-            "User": 11,
-            "ContentType": 3,
-            "Session": 3,
-            "Team": 4,
-            "Category": 4,
-            "MyUser": 8,
-            "Color": 9,
-            "AlterDay": 8,
-        }
         for model in apps.get_models():
             number_of_fields = len(model._meta.fields)
-            self.assertEqual(number_of_fields, data[model.__name__])
+            message = "Cambios en: " + model.__name__
+            self.assertEqual(number_of_fields, MODELS[model.__name__], message)
 
 
 class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Crear un usuario de ejemplo para usar en las pruebas
-        User.objects.create_user(username="ejemplo", password="contraseña123")
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
 
     def test_object_name_is_username(self):
         user = User.objects.get(id=1)
@@ -251,32 +224,30 @@ class UserModelTest(TestCase):
 
 class MyUserModelTest(TestCase):
     def test_my_user_creation(self):
-        user = User.objects.create_user(username="usuarioJuan", password="password")
+        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         my_user = MyUser.objects.create(
             user=user,
-            user_name="usuarioJuan",
+            user_name=USERNAME,
             team="A",
             name="Juan",
             second_name="Sierra",
             category=1,
-            password="password",
+            password=PASSWORD,
         )
 
         self.assertEqual(my_user.user, user)
-        self.assertEqual(my_user.user_name, "usuarioJuan")
+        self.assertEqual(my_user.user_name, USERNAME)
         self.assertEqual(my_user.team, "A")
         self.assertEqual(my_user.name, "Juan")
         self.assertEqual(my_user.second_name, "Sierra")
         self.assertEqual(my_user.category, 1)
-        self.assertEqual(my_user.password, "password")
+        self.assertEqual(my_user.password, PASSWORD)
 
 
 class AlterDayModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", password="testpassword"
-        )
-        self.schedule = Schedule(2023, "C", BASE_DAY_COLORS)
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
         self.day = AlterDay.objects.create(shift="N", user=self.user, date="2023-05-05")
 
     def test_creation(self):
@@ -307,9 +278,7 @@ class AlterDayModelTest(TestCase):
 
 class ColorModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", password="testpassword"
-        )
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         self.color = Color.objects.create(morning="Verde", user=self.user)
 
     def test_creation(self):
@@ -330,9 +299,9 @@ class ColorModelTest(TestCase):
 class LoadViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.username = "Perico"
-        self.password = "Palotes"
-        self.team = "C"
+        self.username = USERNAME
+        self.password = PASSWORD
+        self.team = TEAM
         self.user_adapter = UserAdapter()
         self.user = self.user_adapter.add_new_user(
             self.username, self.password, self.team
@@ -341,49 +310,32 @@ class LoadViewsTests(TestCase):
     def check_views(self, views):
         for view, text in views.items():
             response = self.client.get(reverse(view))
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, HTTP_OK)
             self.assertContains(response, text)
         return response
 
     def test_views_without_login_required(self):
-        views = {
-            # Key: view name
-            # Value: text to search in the view
-            "home": "Bienvenido",
-            "signup": "Registro de Nuevo Usuario",
-        }
-        response = self.check_views(views)
+        response = self.check_views(VIEWS_WITHOUT_LOGIN)
         self.assertIsInstance(response.context["user"], AnonymousUser)
 
     def test_views_with_login_required(self):
-        views = {
-            # Key: view name
-            # Values: text to search in the view
-            "agenda": "Calendario",
-            "config": "Datos Personales",
-            "recap_year": "Resumen de",
-            "signup": "Registro de Nuevo Usuario",
-            "change_pass": "Cambio de contraseña",
-            "change_color_days": "Cambio de Colores",
-        }
         self.client.login(username=self.username, password=self.password)
-        self.check_views(views)
+        self.check_views(VIEWS_WITH_LOGIN)
 
     # views tests with arguments
     def test_recap_month_load(self):
         self.client.login(username=self.username, password=self.password)
         # This view has a month's number argument
-        month = "1"
-        view_url = reverse("recap_month", kwargs={"month": month})
+        view_url = reverse("recap_month", kwargs={"month": MONTH})
         response = self.client.get(view_url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTP_OK)
         self.assertContains(response, "Resumen de")
 
     def test_alter_day_load(self):
         self.client.login(username=self.username, password=self.password)
         # This view has a date argument
-        argument = "2023-02-02"
+        argument = DATE_STR
         view_url = reverse("alter_day", kwargs={"date": argument})
         response = self.client.get(view_url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTP_OK)
         self.assertContains(response, "Datos del turno")

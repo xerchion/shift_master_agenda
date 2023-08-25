@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 
-from ..config.constants import NAME_USER_EXISTS, PASSWORDS_NOT_MATCH, USER_SIGNUP_OK
+from ..config.constants import (NAME_USER_EXISTS, PASSWORDS_NOT_MATCH,
+                                USER_SIGNUP_OK)
 from ..forms import SignUpForm
 from ..models import MyUser
 from .UserAdapter import UserAdapter

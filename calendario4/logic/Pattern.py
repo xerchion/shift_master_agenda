@@ -1,12 +1,8 @@
 from calendar import isleap
 
-from ..config.constants import (
-    FIXED_SERIE_AMOUNT_DAYS,
-    INITIAL_YEAR,
-    TEAM_POSITION_DAYS,
-    TEAM_VALUES_SERIE,
-    TEAMS_LIST,
-)
+from ..config.constants import (FIXED_SERIE_AMOUNT_DAYS, INITIAL_YEAR,
+                                TEAM_POSITION_DAYS, TEAM_VALUES_SERIE,
+                                TEAMS_LIST)
 
 
 class Pattern:

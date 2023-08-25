@@ -1,16 +1,7 @@
 from django.urls import include, path
 
-from .views import (
-    agenda,
-    alter_day,
-    change_color_days,
-    change_pass,
-    config,
-    home,
-    recap_month,
-    recap_year,
-    sign_up_view,
-)
+from .views import (agenda, alter_day, change_color_days, change_pass, config,
+                    home, recap_month, recap_year, sign_up_view)
 
 urlpatterns = [
     path("", home, name="home"),
