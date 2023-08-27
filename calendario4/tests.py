@@ -3,14 +3,15 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .config.constants import BASE_DAY_COLORS, EVENING, FREE_DAY, NIGHT
+from .config.constants import (BASE_DAY_COLORS, EVENING, FIRST, FREE_DAY, LAST,
+                               NIGHT)
 from .config.test_mocks import (DATE_STR, DATE_TEST, DAY_ATTRS, DAY_INDEX,
-                                END_PATTERN, HTTP_OK, MODELS, MONTH,
-                                MONTH_ATTRS, MONTH_INDEX, PASSWORD,
+                                DAYS_IN_MONTH, END_PATTERN, HTTP_OK, MODELS,
+                                MONTH, MONTH_ATTRS, MONTH_INDEX, PASSWORD,
                                 RECAP_BASE_MONTH, RECAP_BASE_YEAR,
-                                SCHEDULE_ATTRS, SHIFT_ATTRS, START_PATTERN,
-                                TEAM, USERNAME, VIEWS_WITH_LOGIN,
-                                VIEWS_WITHOUT_LOGIN, YEAR)
+                                SCHEDULE_ATTRS, SHIFT_ATTRS, SLICE_SIZE,
+                                START_PATTERN, TEAM, USERNAME,
+                                VIEWS_WITH_LOGIN, VIEWS_WITHOUT_LOGIN, YEAR)
 from .controllers.alterDayController import AlterDayController
 from .controllers.UserAdapter import UserAdapter
 from .forms import AlterDayForm
@@ -64,8 +65,8 @@ class PatternTest(TestCase):
 
         new_pattern = Pattern(YEAR, TEAM).pattern
 
-        self.assertEqual(new_pattern[0:7], START_PATTERN)
-        self.assertEqual(new_pattern[-7:], END_PATTERN)
+        self.assertEqual(new_pattern[0:SLICE_SIZE], START_PATTERN)
+        self.assertEqual(new_pattern[-SLICE_SIZE:], END_PATTERN)
 
 
 class ScheduleTest(TestCase):
@@ -107,10 +108,9 @@ class ScheduleTest(TestCase):
         self.assertEqual(type_month, "Month")
 
     def test_last_day_month(self):
-        # February 2023 has 28 days
-        last_month_day = self.schedule.months[1].days[-1].date.day
-        self.assertEqual(last_month_day, 28)
-        self.assertEqual(len(self.schedule.months[1].days), last_month_day)
+        last_month_day = self.schedule.months[MONTH_INDEX].days[LAST].date.day
+        self.assertEqual(last_month_day, DAYS_IN_MONTH)
+        self.assertEqual(len(self.schedule.months[MONTH_INDEX].days), last_month_day)
 
     def test_shift_ok(self):
         # On 4th May 2023 the team C is free shift ("D") FREE_DAY
@@ -122,7 +122,7 @@ class ScheduleTest(TestCase):
         # february 28 day of Andalusia
         self.assertEqual(self.schedule.months[2].days[27].holiday, True)
         # And first day of May is holiday. It´s the worker´s day
-        self.assertEqual(self.schedule.months[5].days[0].holiday, True)
+        self.assertEqual(self.schedule.months[5].days[FIRST].holiday, True)
 
 
 class RecapTests(TestCase):

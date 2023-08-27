@@ -3,7 +3,7 @@ from datetime import date, timedelta
 
 import holidays
 
-from ..config.constants import NONE_DAY
+from ..config.constants import FIRST, LAST, NONE_DAY
 from ..models import AlterDay
 from .Day import Day
 from .Month import Month
@@ -52,14 +52,14 @@ class Schedule:
             self.months_view.append(Month(i + 1))
             init_days = []
             last_days = []
-            first_day = month.days[0]
+            first_day = month.days[FIRST]
             for j in range(first_day.date.weekday()):
                 init_days.append(Day(NONE_DAY))
-                init_days[-1].date = None
-            final_day = month.days[-1]
+                init_days[LAST].date = None
+            final_day = month.days[LAST]
             for k in range(final_day.date.weekday(), 6):
                 last_days.append(Day(NONE_DAY))
-                last_days[-1].date = None
+                last_days[LAST].date = None
             between_days = self.months[i].days
 
             self.months_view[i].days = init_days + between_days + last_days
@@ -78,8 +78,8 @@ class Schedule:
         year = self.year
         # From Spain
         for i in holidays.Spain(years=year).items():
-            mesFestivo = i[0].month
-            diaFestivo = i[0].day
+            mesFestivo = i[FIRST].month
+            diaFestivo = i[FIRST].day
 
             self.months[mesFestivo - 1].days[diaFestivo - 1].holiday = True
         # From loja
@@ -92,7 +92,7 @@ class Schedule:
         #   28 de febrero dia de andalucia
         self.months[2].days[27].holiday = True
         # 1 DE MAYO DIA DEL TRABAJADOR
-        self.months[5].days[0].holiday = True
+        self.months[5].days[FIRST].holiday = True
 
     def search_day(self, date):
         month = date.month

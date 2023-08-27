@@ -86,7 +86,9 @@ BASE_DAY_COLORS = {
     EVENING: "#F5B041",
     NIGHT: "#000000",
     FREE_DAY: "#7F8C8D",
-    "F": "#F1948A",
-    "E": "#FA1D04",
+    HOLIDAY: "#F1948A",
+    EXTRA_HOLIDAY: "#FA1D04",
     SPLIT: "#A9DFBF",
 }
+FIRST = 0
+LAST = -1

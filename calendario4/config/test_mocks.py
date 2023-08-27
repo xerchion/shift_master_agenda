@@ -1,7 +1,9 @@
+import calendar
 from datetime import datetime
 
 # Schedule's mocks________________________________________________
 #  Pattern
+SLICE_SIZE = 7
 START_PATTERN = ["T", "N", "N", "D", "D", "D", "D"]
 END_PATTERN = ["M", "M", "T", "T", "N", "N", "N"]
 YEAR = 2023
@@ -9,8 +11,10 @@ DATE_STR = "2023-11-8"
 DATE_TEST = datetime.strptime(DATE_STR, "%Y-%m-%d")
 MONTH = DATE_TEST.month
 MONTH_INDEX = MONTH - 1
+DAYS_IN_MONTH = calendar.monthrange(YEAR, MONTH)[1]
+print(DAYS_IN_MONTH)
 DAY = DATE_TEST.day
-DAY_INDEX = DAY - -1
+DAY_INDEX = DAY - 1
 
 MONTH_TEST = MONTH - 1
 TEAM = "C"
