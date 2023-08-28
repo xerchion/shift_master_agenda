@@ -119,7 +119,6 @@ class ScheduleTest(TestCase):
     def test_holidays(self):
         # August 29 Loja Fair
         self.assertEqual(self.schedule.months[7].days[28].holiday, True)
-
         # february 28 day of Andalusia
         self.assertEqual(self.schedule.months[1].days[27].holiday, True)
         # And first day of May is holiday. It´s the worker´s day
@@ -136,16 +135,16 @@ class RecapTests(TestCase):
         for key, value in data.items():
             self.assertEqual(getattr(recap, key), value, "Falla este campo: " + key)
 
-    def xtest_base_recap_month(self):
+    def test_base_recap_month(self):
         data = RECAP_BASE_MONTH
-        self.check_recap(self.schedule.months[10].create_recap, data)
+        self.check_recap(self.schedule.months[10].calculate_recap(), data)
 
     def test_base_recap_year(self):
         data = RECAP_BASE_YEAR
         recap = self.schedule.calculate_recap_year()
         self.check_recap(recap, data)
 
-    def xtest_alter_day_recap(self):
+    def test_alter_day_recap(self):
         # original day has "morning" shift, I put "evening (T)"
         day = AlterDay(
             user=self.user,
@@ -155,10 +154,10 @@ class RecapTests(TestCase):
             change_payable=False,
         )
         day.save()
-        self.schedule.load_alter_days_db(self.user)
+        self.schedule = AlterDayController.load_alter_days_db(self.user, self.schedule)
         data = {"extra_keep": 1}
 
-        self.check_recap(self.schedule.months[MONTH_INDEX].create_recap, data)
+        self.check_recap(self.schedule.months[MONTH_INDEX].calculate_recap(), data)
 
         day = AlterDay(
             user=self.user,
@@ -168,13 +167,13 @@ class RecapTests(TestCase):
             change_payable=False,
         )
         day.save()
-        self.schedule.load_alter_days_db(self.user)
+        self.schedule = AlterDayController.load_alter_days_db(self.user, self.schedule)
 
         data = {"extra_keep": 1}
         data = {
             "extra_payed": 0,
         }
-        self.check_recap(self.schedule.months[MONTH_INDEX].create_recap, data)
+        self.check_recap(self.schedule.months[MONTH_INDEX].calculate_recap(), data)
 
 
 # Model Tests_______________________________________________________________

@@ -77,3 +77,32 @@ class AlterDayController:
             form = AlterDayForm(instance=self.user)
             form = self.fill_form(form)
         return form
+
+    # TODO ESTA FUNCION PERTENECERIA A alterdaycontroller....
+    # con ello quitariamos la relacion de que Schedule conozca a Alterday
+    # como parametros habria que pasarle solo el user y el schedule.
+    # mira a ver como quedaria y que realaciones podrias quitar
+    @classmethod
+    def load_alter_days_db(cls, user, schedule):
+        alter_days = AlterDay.objects.filter(user=user)
+
+        for alter_day in alter_days:
+            index_day = alter_day.date.day - 1
+            index_month = alter_day.date.month - 1
+
+            day = schedule.months[index_month].days[index_day]
+            day = cls.load_day(day, alter_day)
+
+            schedule.months[index_month].days[index_day] = day
+
+        return schedule
+
+    @classmethod
+    def load_day(cls, day, alter_day):
+        day.shift.new = alter_day.shift
+        day.shift.overtime = int(alter_day.overtime)
+        day.shift.keep_day = alter_day.keep_day
+        day.shift.change_payable = alter_day.change_payable
+        day.alter_day = True
+        day.shift_real = alter_day.shift
+        return day

@@ -103,13 +103,16 @@ class Month:
                 result += 1
         return result
 
+    def extract_day(self, day):
+        return self.days[day - 1]
+
     def say_your_name(self):
         locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
         return calendar.month_name[self.number].capitalize()
 
     def calculate_recap(self):
         self.recap = Recap()
-        self.recap.name = self.name
+        self.recap.name = self.say_your_name()
         self.recap.number_of_days = len(self.days)
         self.recap.mornings = self.count_shift(MORNING)
         self.recap.evenings = self.count_shift(EVENING)
@@ -132,3 +135,4 @@ class Month:
         self.recap.days_weekend = self.count_weekends_days()
         self.recap.extra_keep = self.count_extra_keep()
         self.recap.extra_payed = self.count_extra_payed()
+        return self.recap

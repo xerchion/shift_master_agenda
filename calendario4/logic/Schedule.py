@@ -1,8 +1,6 @@
 import holidays
 
 from ..config.constants import FIRST
-from ..models import AlterDay
-# no deberia conocerlo
 from .Month import Month
 from .Pattern import Pattern
 
@@ -70,9 +68,8 @@ class Schedule:
             month.aply_colors(self.colors)
 
     def search_day(self, sdate):
-        month = sdate.month
-        day = sdate.day
-        return self.months[month - 1].days[day - 1]
+        month = self.months[sdate.month - 1]
+        return month.extract_day(sdate.day)
 
     def set_altered_day(self, day, form):
         """Check if a day has been modified by the user
@@ -111,26 +108,6 @@ class Schedule:
         if not form.comments:
             form.comments = ""
         return form
-
-    def load_alter_days_db(self, user):
-        alter_days = AlterDay.objects.filter(user=user)
-
-        for alter_day in alter_days:
-            n_day = alter_day.date.day - 1
-            n_month = alter_day.date.month - 1
-
-            day = self.months[n_month].days[n_day]
-
-            day.shift.new = alter_day.shift
-            day.shift.overtime = int(alter_day.overtime)
-            day.shift.keep_day = alter_day.keep_day
-            day.shift.change_payable = alter_day.change_payable
-            day.alter_day = True
-            day.shift_real = alter_day.shift
-
-            self.months[n_month].days[n_day] = day
-
-        self.fill_colors()
 
     def calculate_recap_year(self):
         all_months = []

@@ -4,6 +4,7 @@ from datetime import datetime
 from django.urls import resolve
 
 from ..config.constants import TEAMS_LIST
+from ..controllers.AlterDayController import AlterDayController
 from ..controllers.UserAdapter import UserAdapter
 from ..logic.Schedule import Schedule
 
@@ -24,8 +25,8 @@ class ScheduleMiddleware:
                 if team in TEAMS_LIST:
                     colors = user.get_colors()
                     schedule = Schedule(datetime.today().year, team, colors)
-                    schedule.load_alter_days_db(request.user)
-
+                    schedule = AlterDayController.load_alter_days_db(request.user, schedule)
+                    schedule.fill_colors()
                 request.schedule = schedule
 
         response = self.get_response(request)
