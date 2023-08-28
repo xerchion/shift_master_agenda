@@ -36,13 +36,14 @@ def necessary_team(func):
 def config(request):
     message = request.GET.get("data", "")
     user = request.user
+    my_user = UserAdapter(user.id).get_my_user()
     if request.method == "POST":
-        form = UserConfigForm(request.POST, instance=user)
+        form = UserConfigForm(request.POST, instance=my_user)
         if form.is_valid():
             form.save()
             return redirect("agenda")
     else:
-        form = UserConfigForm(instance=user)
+        form = UserConfigForm(instance=my_user)
     context = {"form": form, "message": message}
     return render(request, "config.html", context)
 
