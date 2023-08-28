@@ -130,7 +130,8 @@ def recap_month(request, month):
     schedule = request.schedule
     month = int(month)
     month = schedule.months[month - 1]
-    recap = month.create_recap()
+    month.calculate_recap()
+    recap = month.recap
 
     context = {"recap": recap}
     return render(request, "recap.html", context)
@@ -141,6 +142,5 @@ def recap_year(request):
     schedule = request.schedule
     year = schedule.year
     recap = schedule.calculate_recap_year()
-
     context = {"year": year, "recap": recap}
     return render(request, "recap.html", context)

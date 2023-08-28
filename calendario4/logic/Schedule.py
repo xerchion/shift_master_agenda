@@ -5,7 +5,6 @@ from ..models import AlterDay
 # no deberia conocerlo
 from .Month import Month
 from .Pattern import Pattern
-from .Recap import Recap
 
 
 class Schedule:
@@ -30,7 +29,7 @@ class Schedule:
         i = 0
         for month in self.months:
             final = i + month.days_number
-            month.fill_day_shifts(pattern.pattern[i: final + 1])
+            month.fill_day_shifts(pattern.pattern[i:final + 1])
             i = final
 
     def create_spaces_view(self):
@@ -134,13 +133,17 @@ class Schedule:
         self.fill_colors()
 
     def calculate_recap_year(self):
-        recap = Recap()
-        recap.name = self.year
+        all_months = []
         for month in self.months:
-            recap_month = month.create_recap()
-            for attr_name, attr_value in vars(recap_month).items():
+            month.calculate_recap()
+            all_months.append(month.recap)
+        total_recap = type(all_months[0])()
+        for recap in all_months:
+            for attr_name, attr_value in vars(recap).items():
                 if attr_name != "name":
-                    current_value = getattr(recap, attr_name, 0)
+                    current_value = getattr(total_recap, attr_name, 0)
                     total_value = int(current_value) + int(attr_value)
-                    setattr(recap, attr_name, total_value)
-        return recap
+                    setattr(total_recap, attr_name, total_value)
+
+        total_recap.name = self.year
+        return total_recap

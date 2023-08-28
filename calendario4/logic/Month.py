@@ -16,6 +16,7 @@ class Month:
         self.days_number = 0
         self.days = []
         self.weeks = []
+        self.recap = None
 
     def create_months_struct(self, year):
         months = []
@@ -106,27 +107,28 @@ class Month:
         locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
         return calendar.month_name[self.number].capitalize()
 
-    def create_recap(self):
-        result = Recap()
-        result.name = self.name
-        result.number_of_days = len(self.days)
-        result.mornings = self.count_shift(MORNING)
-        result.evenings = self.count_shift(EVENING)
-        result.nights = self.count_shift(NIGHT)
-        result.split_intensive = self.count_shift(SPLIT)
-        result.workings = (
-            result.mornings + result.evenings + result.nights + result.split_intensive
+    def calculate_recap(self):
+        self.recap = Recap()
+        self.recap.name = self.name
+        self.recap.number_of_days = len(self.days)
+        self.recap.mornings = self.count_shift(MORNING)
+        self.recap.evenings = self.count_shift(EVENING)
+        self.recap.nights = self.count_shift(NIGHT)
+        self.recap.split_intensive = self.count_shift(SPLIT)
+        self.recap.workings = (
+            self.recap.mornings
+            + self.recap.evenings
+            + self.recap.nights
+            + self.recap.split_intensive
         )
-        result.frees = self.count_shift("D")
-        result.holidays = self.count_holidays()
-        result.extra_holidays = self.count_extra_holidays()
-        result.holidays_not_worked = result.holidays - result.extra_holidays
-        result.overtimes = self.count_overtimes()
-        result.change_payables = self.count_change_payables()
-        result.keep_days = self.count_change_payables()
-        result.laborals = self.count_laborable_days()
-        result.days_weekend = self.count_weekends_days()
-        result.extra_keep = self.count_extra_keep()
-        result.extra_payed = self.count_extra_payed()
-
-        return result
+        self.recap.frees = self.count_shift("D")
+        self.recap.holidays = self.count_holidays()
+        self.recap.extra_holidays = self.count_extra_holidays()
+        self.recap.holidays_not_worked = self.recap.holidays - self.recap.extra_holidays
+        self.recap.overtimes = self.count_overtimes()
+        self.recap.change_payables = self.count_change_payables()
+        self.recap.keep_days = self.count_change_payables()
+        self.recap.laborals = self.count_laborable_days()
+        self.recap.days_weekend = self.count_weekends_days()
+        self.recap.extra_keep = self.count_extra_keep()
+        self.recap.extra_payed = self.count_extra_payed()

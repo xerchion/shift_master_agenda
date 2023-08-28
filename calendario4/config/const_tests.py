@@ -18,7 +18,14 @@ DAY_INDEX = DAY - 1
 MONTH_TEST = MONTH - 1
 TEAM = "C"
 SCHEDULE_ATTRS = ["colors", "months", "months_view", "team", "year"]
-MONTH_ATTRS = ["days", "days_number", "name", "number", "weeks", ]
+MONTH_ATTRS = [
+    "days",
+    "days_number",
+    "name",
+    "number",
+    "recap",
+    "weeks",
+]
 DAY_ATTRS = [
     "alter_day",
     "colour",
@@ -57,6 +64,8 @@ RECAP_BASE_YEAR = {
     "overtimes": 0,
     "laborals": 260,
     "days_weekend": 105,
+    "extra_keep": 0,
+    "extra_payed": 0,
 }
 
 # 2023 November Team C Base, whithout altered days
