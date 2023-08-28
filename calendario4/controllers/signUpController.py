@@ -26,9 +26,8 @@ class SignUpController:
             new_user = False
         else:
             self.message = USER_SIGNUP_OK
-            new_user = self.user_adapter.add_new_user(
-                user.user_name, user.password, None
-            )
+            new = self.user_adapter.add_new_user(user.user_name, user.password, None)
+            new_user = new.user
         return (new_user, self.message)
 
     def post(self):

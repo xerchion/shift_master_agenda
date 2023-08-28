@@ -1,7 +1,11 @@
 import calendar
 import locale
+from calendar import monthrange
+from datetime import date, timedelta
 
-from ..config.constants import EVENING, MORNING, NIGHT, SPLIT
+from ..config.constants import (EVENING, FIRST, LAST, MORNING, NIGHT, NONE_DAY,
+                                SPLIT)
+from .Day import Day
 from .Recap import Recap
 
 
@@ -9,22 +13,60 @@ class Month:
     def __init__(self, number):
         self.number = number
         self.name = self.say_your_name()
+        self.days_number = 0
         self.days = []
         self.weeks = []
 
-    def create_months_struct(self):
+    def create_months_struct(self, year):
         months = []
-        while len(months) < 12:
-            months.append(Month(1))
+        i = len(months)
+        while i < 12:
+            months.append(Month(i + 1))
+            months[i].create_days_struct(date(year, i + 1, 1))
+            months[i].days_number = len(months[i].days)
+            i += 1
         assert_comment = "Num incorrecto de meses: " + str(len(months))
         assert len(months) == 12, assert_comment
         return months
 
-    # no Usado
+    def create_days_struct(self, xdate):
+        actual_day = xdate
+        cont = 0
+        cont += 1
+        last_month_day = monthrange(xdate.year, xdate.month)[1]
+        cont2 = 0
+        for _ in range(0, last_month_day):
+            cont2 += 1
+            self.days.append(Day(actual_day))
+            actual_day += timedelta(days=1)
 
     def fill_day_shifts(self, pattern):
+        i = 0
         for day in self.days:
-            day.shift.primal = pattern.__next__()
+            day.set_shift(pattern[i])
+            i += 1
+        return
+
+    def create_month_spaces(self):
+        init_days = []
+        last_days = []
+        first_day = self.days[FIRST]
+        for j in range(first_day.date.weekday()):
+            init_days.append(Day(NONE_DAY))
+            init_days[LAST].date = None
+        final_day = self.days[LAST]
+        for k in range(final_day.date.weekday(), 6):
+            last_days.append(Day(NONE_DAY))
+            last_days[LAST].date = None
+        between_days = self.days
+        return init_days + between_days + last_days
+
+    def aply_holiday(self, holiday_day):
+        self.days[holiday_day].set_holiday()
+
+    def aply_colors(self, colors):
+        for day in self.days:
+            day.set_color(colors)
 
     def count_overtimes(self):
         return sum(day.shift.overtime for day in self.days)

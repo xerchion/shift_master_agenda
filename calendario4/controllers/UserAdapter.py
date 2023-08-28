@@ -15,15 +15,16 @@ class UserAdapter:
         else:
             self.user = None
 
-    @classmethod
-    def add_new_user(cls, name, pswd, team):
+    def add_new_user(self, name, pswd, team):
         new_user = User.objects.create_user(username=name, password=pswd)
         new_user.save()
+        self.user = new_user
 
-        new_myuser = MyUser(user_name=name, user=new_user, team=team)
-        cls.apply_default_colors(new_user)
+        new_my_user = MyUser(user_name=name, user=new_user, team=team)
+        new_my_user.save()
+        self.my_user = new_my_user
 
-        new_myuser.save()
+        self.apply_default_colors()
 
         return UserAdapter(new_user.id)
 
@@ -51,15 +52,15 @@ class UserAdapter:
     def get_user(cls, id):
         return User.objects.get(id=id)
 
-    # no funciona????
     def get_my_user(self):
         return MyUser.objects.get(user=self.id)
 
-    @classmethod
-    def apply_default_colors(cls, my_user):
-        color_obj = Color(
-            user=my_user
-        )  # Rellenar los campos con los valores del diccionario BASICS
+    def apply_default_colors(self):
+        if self.exists(self.id):
+            color_obj = Color.objects.get(user=self.user)
+        else:
+            color_obj = Color(user=self.user)
+
         color_obj.morning = BASE_DAY_COLORS[MORNING]
         color_obj.afternoon = BASE_DAY_COLORS[EVENING]
         color_obj.night = BASE_DAY_COLORS[NIGHT]
@@ -69,11 +70,19 @@ class UserAdapter:
         color_obj.extra_holiday = BASE_DAY_COLORS[EXTRA_HOLIDAY]
         color_obj.save()
 
-    def exists(self, name):
-        return User.objects.filter(username=name).exists()
+    def exists(self, data):
+        if type(data) == int:
+            return User.objects.filter(id=data).exists()
+        elif type(data) == str:
+            return User.objects.filter(username=data).exists()
 
     def get_colors(self):
         return parse_colors(Color.objects.get(user=self.id))
 
     def get_team(self):
         return self.my_user.team
+
+    @classmethod
+    @property
+    def team(cls):
+        return MyUser.objects.get(user=id).team

@@ -33,6 +33,9 @@ class Day:
         assert new_shift in KINDS_SHIFTS and payed is False or payed
         self.shift.set_shift_change(new_shift, payed)
 
+    def set_shift(self, shift):
+        self.shift.primal = shift
+
     def equal(self, shift):
         assert shift in KINDS_SHIFTS
 
@@ -66,13 +69,16 @@ class Day:
     def say_your_name(self):
         return WEEK_DAYS[self.date.weekday()]
 
-    def aply_color(self, colors):
+    def set_color(self, colors):
         self.colour = colors[self.get_shift()]
 
         if self.holiday:
             self.colour = colors[HOLIDAY]
         if self.holiday and self.is_working_day():
             self.colour = colors[EXTRA_HOLIDAY]
+
+    def set_holiday(self):
+        self.holiday = True
 
     def get_shift(self):
         shift = self.shift.new if self.shift.new else self.shift.primal

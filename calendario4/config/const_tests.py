@@ -12,14 +12,13 @@ DATE_TEST = datetime.strptime(DATE_STR, "%Y-%m-%d")
 MONTH = DATE_TEST.month
 MONTH_INDEX = MONTH - 1
 DAYS_IN_MONTH = calendar.monthrange(YEAR, MONTH)[1]
-print(DAYS_IN_MONTH)
 DAY = DATE_TEST.day
 DAY_INDEX = DAY - 1
 
 MONTH_TEST = MONTH - 1
 TEAM = "C"
 SCHEDULE_ATTRS = ["colors", "months", "months_view", "team", "year"]
-MONTH_ATTRS = ["days", "name", "number", "weeks"]
+MONTH_ATTRS = ["days", "days_number", "name", "number", "weeks", ]
 DAY_ATTRS = [
     "alter_day",
     "colour",
@@ -50,9 +49,9 @@ RECAP_BASE_YEAR = {
     "nights": 75,
     "workings": 220,
     "frees": 145,
-    "holidays": 15,
+    "holidays": 13,
     "extra_holidays": 6,
-    "holidays_not_worked": 9,
+    "holidays_not_worked": 7,
     "change_payables": 0,
     "keep_days": 0,
     "overtimes": 0,
@@ -60,7 +59,7 @@ RECAP_BASE_YEAR = {
     "days_weekend": 105,
 }
 
-# 2023 November Team C Base, whithout alterd days
+# 2023 November Team C Base, whithout altered days
 RECAP_BASE_MONTH = {
     "name": "Noviembre",
     "number_of_days": 30,

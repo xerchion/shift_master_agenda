@@ -3,10 +3,10 @@ from datetime import datetime
 from django.urls import reverse
 
 from ..config.constants import DAY_MODIFIED_OK
-from ..controllers.UserAdapter import UserAdapter
 from ..forms import AlterDayForm
 from ..logic.Day import Day
 from ..models import AlterDay
+from .UserAdapter import UserAdapter
 
 
 class AlterDayController:

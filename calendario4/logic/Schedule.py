@@ -1,11 +1,8 @@
-from calendar import monthrange
-from datetime import date, timedelta
-
 import holidays
 
-from ..config.constants import FIRST, LAST, NONE_DAY
+from ..config.constants import FIRST
 from ..models import AlterDay
-from .Day import Day
+# no deberia conocerlo
 from .Month import Month
 from .Pattern import Pattern
 from .Recap import Recap
@@ -21,82 +18,61 @@ class Schedule:
 
         self.__create()
         self.__fill_with_pattern()
-        self.create_spaces()
+        self.create_spaces_view()
         self.fill_holydays()
         self.fill_colors()
 
     def __create(self):
-        self.months = Month.create_months_struct(self)
-        actual_day = date(self.year, 1, 1)
-        cont = 0
-        for i, month in enumerate(self.months):
-            self.months[i] = Month(i + 1)
-            cont += 1
-            last_month_day = monthrange(self.year, i + 1)[1]
-            cont2 = 0
-            for _ in range(0, last_month_day):
-                cont2 += 1
-                self.months[i].days.append(Day(actual_day))
-                actual_day += timedelta(days=1)
+        self.months = Month.create_months_struct(self, self.year)
 
     def __fill_with_pattern(self):
         pattern = Pattern(self.year, self.team)
         i = 0
         for month in self.months:
-            for day in month.days:
-                day.shift.primal = pattern.pattern[i]
-                i += 1
+            final = i + month.days_number
+            month.fill_day_shifts(pattern.pattern[i: final + 1])
+            i = final
 
-    def create_spaces(self):
+    def create_spaces_view(self):
         for i, month in enumerate(self.months):
             self.months_view.append(Month(i + 1))
-            init_days = []
-            last_days = []
-            first_day = month.days[FIRST]
-            for j in range(first_day.date.weekday()):
-                init_days.append(Day(NONE_DAY))
-                init_days[LAST].date = None
-            final_day = month.days[LAST]
-            for k in range(final_day.date.weekday(), 6):
-                last_days.append(Day(NONE_DAY))
-                last_days[LAST].date = None
-            between_days = self.months[i].days
+            total_days = month.create_month_spaces()
 
-            self.months_view[i].days = init_days + between_days + last_days
+            self.months_view[i].days = total_days
 
             tam = len(self.months_view[i].days)
-            tam_sum = len(init_days) + len(between_days) + len(last_days)
+            tam_sum = len(total_days)
 
             assert tam == tam_sum, "La suma no corresponde"
-
-    def fill_colors(self):
-        for month in self.months:
-            for day in month.days:
-                day.aply_color(self.colors)
 
     def fill_holydays(self):
         year = self.year
         # From Spain
         for i in holidays.Spain(years=year).items():
-            mesFestivo = i[FIRST].month
-            diaFestivo = i[FIRST].day
+            holiday_month = i[FIRST].month
+            holiday_day = i[FIRST].day
+            self.months[holiday_month - 1].aply_holiday(holiday_day - 1)
 
-            self.months[mesFestivo - 1].days[diaFestivo - 1].holiday = True
+            # self.months[mesFestivo - 1].days[diaFestivo - 1].holiday = True
         # From loja
         #   25 de Abril Dia de San Marcos
-        self.months[4].days[24].holiday = True
+        self.months[3].aply_holiday(24)
         #   15 de agosto  Asunción de la Virgen.
-        self.months[8].days[14].holiday = True
+        self.months[7].aply_holiday(14)
         #   29 de agosto  Feria de Loja.
-        self.months[8].days[28].holiday = True
+        self.months[7].aply_holiday(28)
         #   28 de febrero dia de andalucia
-        self.months[2].days[27].holiday = True
-        # 1 DE MAYO DIA DEL TRABAJADOR
-        self.months[5].days[FIRST].holiday = True
+        self.months[1].aply_holiday(27)
+        # 1 DE MAYO DIAaply_holiday(28)
+        self.months[4].aply_holiday(FIRST)
 
-    def search_day(self, date):
-        month = date.month
-        day = date.day
+    def fill_colors(self):
+        for month in self.months:
+            month.aply_colors(self.colors)
+
+    def search_day(self, sdate):
+        month = sdate.month
+        day = sdate.day
         return self.months[month - 1].days[day - 1]
 
     def set_altered_day(self, day, form):

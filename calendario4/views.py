@@ -1,14 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
 from .config.constants import WEEK_DAYS_LETTER
-from .controllers.alterDayController import AlterDayController
-from .controllers.signUpController import SignUpController
+from .controllers.AlterDayController import AlterDayController
+from .controllers.SignUpController import SignUpController
 from .controllers.UserAdapter import UserAdapter
 from .forms import (ColorForm, CustomPasswordChangeForm, SignUpForm,
                     UserConfigForm)
-from .models import Color, MyUser
+from .models import Color
 
 
 def home(request):
@@ -17,8 +16,14 @@ def home(request):
 
 def necessary_team(func):
     def wrapper(request, *args, **kwargs):
-        user_adapter = UserAdapter()
-        my_user = user_adapter.get_my_user(request.user.id)
+        # TODO INTENTA ELIMINAR ESTO, USA DIRECTAMENTE EL ADAPTADOR SIN USAR VARIABLE INTERMEDIA
+        # PARACE QUE SOLO SE USA AQUI LA DE GET_MY_USER ASI QUE PUEDES PROBAR A CONVERTIRLA
+        # EN UN METODO DE CLASE DIRECTAMENTE....
+        user_adapter = UserAdapter(request.user.id)
+        my_user = user_adapter.get_my_user()
+        print(my_user.team, "----------------------------------")
+        team = UserAdapter(request.user.id).team
+        print(team, my_user.team)
         if my_user.team:
             return func(request, *args, **kwargs)
         else:
@@ -30,8 +35,7 @@ def necessary_team(func):
 @login_required
 def config(request):
     message = request.GET.get("data", "")
-
-    user = MyUser.objects.get(user=request.user.id)
+    user = request.user
     if request.method == "POST":
         form = UserConfigForm(request.POST, instance=user)
         if form.is_valid():
@@ -71,6 +75,7 @@ def change_pass(request):
 
 
 @login_required
+# @necessary_team
 def agenda(request):
     schedule = request.schedule
     weekdays = WEEK_DAYS_LETTER
@@ -96,15 +101,14 @@ def alter_day(request, date):
 @login_required
 def change_color_days(request):
     user_id = request.user.id
-    user = User.objects.get(id=user_id)
+    user = request.user
     user_colors = Color.objects.get(user=user_id)
 
     if request.method == "POST":
         form = ColorForm(request.POST, instance=user_colors)
         if "restaurar_colores" in request.POST:
-            user_adapter = UserAdapter()
-            user_adapter.restart_colors(user)
-            return redirect("change_color_days.html")
+            UserAdapter(user.id).apply_default_colors()
+            return redirect("config")
 
         if form.is_valid():
             colors = form.save(commit=False)
