@@ -70,7 +70,7 @@ class AlterDayController:
                 self.save_day(self.form)
                 self.message = DAY_MODIFIED_OK
 
-    def without_post(self):
+    def generate_form(self):
         if self.exists_day():
             form = AlterDayForm(instance=self.day_saved)
         else:

@@ -116,6 +116,10 @@ class ScheduleTest(TestCase):
         # On 4th May 2023 the team C is free shift ("D") FREE_DAY
         self.assertEqual(self.schedule.months[4].days[3].shift.primal, FREE_DAY)
 
+    def test_shifts_real_and_primal_equeal(self):
+        day = self.schedule.months[FIRST].days[FIRST]
+        self.assertAlmostEqual(day.shift.primal, day.shift_real)
+
     def test_holidays(self):
         # August 29 Loja Fair
         self.assertEqual(self.schedule.months[7].days[28].holiday, True)

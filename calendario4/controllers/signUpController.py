@@ -3,13 +3,12 @@ from django.contrib.auth import login, logout
 from ..config.constants import (NAME_USER_EXISTS, PASSWORDS_NOT_MATCH,
                                 USER_SIGNUP_OK)
 from ..forms import SignUpForm
-from ..models import MyUser
 from .UserAdapter import UserAdapter
 
 
 class SignUpController:
     def __init__(self, request):
-        self.user = MyUser()
+        self.user = None
         self.response = request.POST
         self.request = request
         self.form = None

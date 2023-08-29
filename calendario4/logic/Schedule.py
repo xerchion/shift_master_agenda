@@ -27,20 +27,14 @@ class Schedule:
         i = 0
         for month in self.months:
             final = i + month.days_number
-            month.fill_day_shifts(pattern.pattern[i:final + 1])
+            month.fill_day_shifts(pattern.pattern[i: final + 1])
             i = final
 
     def create_spaces_view(self):
         for i, month in enumerate(self.months):
             self.months_view.append(Month(i + 1))
-            total_days = month.create_month_spaces()
-
-            self.months_view[i].days = total_days
-
-            tam = len(self.months_view[i].days)
-            tam_sum = len(total_days)
-
-            assert tam == tam_sum, "La suma no corresponde"
+            month_view = month.create_month_spaces(self.months_view[i])
+            self.months_view[i] = month_view
 
     def fill_holydays(self):
         year = self.year
@@ -71,6 +65,7 @@ class Schedule:
         month = self.months[sdate.month - 1]
         return month.extract_day(sdate.day)
 
+    # TODO esta funcion deberia ser de day o bien del controller AlterDayControler
     def set_altered_day(self, day, form):
         """Check if a day has been modified by the user
 

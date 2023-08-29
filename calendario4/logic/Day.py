@@ -11,7 +11,7 @@ class Day:
         )
         self.date = date
         self.name = self.say_your_name()
-        self.shift_real = "D"
+        self.shift_real = FREE_DAY
         self.number = date.day
         self.holiday = False
         self.shift = Shift(FREE_DAY)
@@ -35,6 +35,7 @@ class Day:
 
     def set_shift(self, shift):
         self.shift.primal = shift
+        self.shift_real = shift
 
     def equal(self, shift):
         assert shift in KINDS_SHIFTS

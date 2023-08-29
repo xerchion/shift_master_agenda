@@ -94,7 +94,7 @@ def alter_day(request, date):
             form = controller.form
         return redirect(controller.url_redirection)
     else:
-        form = controller.without_post()
+        form = controller.generate_form()
     context = {"day": controller.day, "month_name": controller.month_name, "form": form}
     return render(request, "alter_day.html", context)
 

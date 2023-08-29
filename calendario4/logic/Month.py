@@ -48,7 +48,7 @@ class Month:
             i += 1
         return
 
-    def create_month_spaces(self):
+    def create_month_spaces(self, month_view):
         init_days = []
         last_days = []
         first_day = self.days[FIRST]
@@ -60,7 +60,8 @@ class Month:
             last_days.append(Day(NONE_DAY))
             last_days[LAST].date = None
         between_days = self.days
-        return init_days + between_days + last_days
+        month_view.days = init_days + between_days + last_days
+        return month_view
 
     def aply_holiday(self, holiday_day):
         self.days[holiday_day].set_holiday()
