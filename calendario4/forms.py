@@ -32,17 +32,6 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         self.fields["old_password"].widget.attrs.update({"class": "form-control"})
         self.fields["new_password1"].widget.attrs.update({"class": "form-control"})
         self.fields["new_password2"].widget.attrs.update({"class": "form-control"})
-        print(
-            self.fields["new_password2"].widget.attrs.update({"class": "form-control"})
-        )
-
-    # Prueba de campo con opciones, seleccionable
-
-
-class BooleanSelect(forms.Select):
-    def __init__(self, *args, **kwargs):
-        choices = ((True, "Si"), (False, "No"))
-        super().__init__(*args, choices=choices, **kwargs)
 
 
 class AlterDayForm(forms.ModelForm):

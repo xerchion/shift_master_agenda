@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from ..config.constants import (BASE_DAY_COLORS, EVENING, EXTRA_HOLIDAY,
                                 FREE_DAY, HOLIDAY, MORNING, NIGHT, SPLIT)
 from ..controllers.utils import parse_colors
+from ..forms import ColorForm, CustomPasswordChangeForm, UserConfigForm
 from ..models import Color, MyUser
 
 
@@ -12,6 +13,8 @@ class UserAdapter:
         if id:
             self.user = User.objects.get(id=id)
             self.my_user = MyUser.objects.get(user=self.user)
+            self.colors = Color.objects.get(user=self.id)
+            self.color_form = self.get_color_form(self.colors)
         else:
             self.user = None
 
@@ -86,3 +89,30 @@ class UserAdapter:
     @property
     def team(cls):
         return MyUser.objects.get(user=id).team
+
+    def set_color_form(self, response, instance):
+        self.color_form = ColorForm(response, instance=instance)
+        return self.color_form
+
+    @property
+    def color_saved(self):
+        return Color.objects.filter(user=self.user).first()
+
+    def get_color_form(self, instance=None):
+        return (
+            ColorForm(instance=instance) if instance else ColorForm(instance=self.user)
+        )
+
+    def get_config_form(self, response=None):
+        if response:
+            form = UserConfigForm(response, instance=self.my_user)
+        else:
+            form = UserConfigForm(instance=self.my_user)
+        return form
+
+    def get_pass_form(self, response=None):
+        if response:
+            form = CustomPasswordChangeForm(self.user, response)
+        else:
+            form = CustomPasswordChangeForm(self.user)
+        return form

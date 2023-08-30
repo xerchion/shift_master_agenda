@@ -21,7 +21,6 @@ KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
 
 # Pattern
-
 INITIAL_YEAR = 2022
 FIXED_SERIE_AMOUNT_DAYS = [2, 2, 3, 4, 3, 2, 2, 5, 2, 3, 2, 5]
 TEAM_VALUES_SERIE = KINDS_SHIFTS[:4] * 3
@@ -33,11 +32,12 @@ DAY_MODIFIED_OK = "Dia modificado con exito"
 # signUpController
 PASSWORDS_NOT_MATCH = "La contraseña no coincide al repetirla, \
                        por favor intentalo de nuevo."
-NAME_USER_EXISTS = "Ya existe un usuario con ese nombre"
-USER_SIGNUP_OK = "Usuario dado de alta con exito"
+NAME_USER_EXISTS = "Ya existe un usuario con ese nombre, elige otro."
+USER_SIGNUP_OK = "Usuario dado de alta con exito."
+FORM_NOT_VALID = "Datos introducidos incorrectos."
+NECESSARY_TEAM = "La elección del Turno es obligatoria."
 
 # Day
-
 WEEK_DAYS = [
     "Lunes",
     "Martes",
@@ -52,7 +52,6 @@ WEEK_DAYS_LETTER = ["L", "M", "X", "J", "V", "S", "D"]
 NONE_DAY = date(2000, 1, 1)
 
 # Teams
-
 # Initial data to DB
 TEAMS_INITIAL = [
     {"id": 1, "letter": "A", "text": "Turno A", "color": None},
