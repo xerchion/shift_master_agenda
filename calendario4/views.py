@@ -24,7 +24,6 @@ def config(request):
             return redirect("agenda")
     else:
         form = UserAdapter(id).get_form()
-        print("Es en el else.............................")
     context = {"form": form, "message": message}
     return render(request, "config.html", context)
 
