@@ -2,6 +2,7 @@ from datetime import date
 
 SHIFT_STRING_ES = ["Mañana", "Tarde", "Noche", "Descanso", "Intensiva/Partida"]
 
+
 # Shift
 MORNING = "M"
 EVENING = "T"
@@ -12,6 +13,10 @@ HOLIDAY = "F"
 EXTRA_HOLIDAY = "E"
 
 KINDS_SHIFTS = [MORNING, EVENING, NIGHT, FREE_DAY, SPLIT]
+
+SHIFT_DICT = dict(zip(KINDS_SHIFTS, SHIFT_STRING_ES))
+
+
 WORK_DAYS = [shift for shift in KINDS_SHIFTS if shift != FREE_DAY]
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
@@ -91,3 +96,10 @@ BASE_DAY_COLORS = {
 }
 FIRST = 0
 LAST = -1
+
+
+FORMS = {
+    "change_pass": "get_pass_form",
+    "config": "get_config_form",
+    "change_color_days": "get_color_form",
+}

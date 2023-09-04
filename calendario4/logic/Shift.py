@@ -10,10 +10,6 @@ class Shift:
         self.overtime = 0
         self.keep_day = False
 
-    # TODO, SIN USAR, HAZLO
-    def is_extra(self):
-        return self.primal == self.FREE_DAY and self.new != self.FREE_DAY
-
     def is_free(self):
         compare_new = self.new == FREE_DAY
         compare_primal = self.primal == FREE_DAY

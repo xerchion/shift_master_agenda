@@ -28,11 +28,6 @@ class Day:
             f"Dia keep_day: {self.shift.keep_day}"
         )
 
-    # TODO SIN APLICAR, USALO Y AÑADE A RECAPS
-    def set_shift_change(self, new_shift, payed=False):
-        assert new_shift in KINDS_SHIFTS and payed is False or payed
-        self.shift.set_shift_change(new_shift, payed)
-
     def set_shift(self, shift):
         self.shift.primal = shift
         self.shift_real = shift

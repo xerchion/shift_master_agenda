@@ -6,18 +6,21 @@ from django.urls import reverse
 from .config.const_tests import (DATE_STR, DATE_TEST, DAY_ATTRS, DAY_INDEX,
                                  DAYS_IN_MONTH, END_PATTERN, HTTP_OK, MODELS,
                                  MONTH, MONTH_ATTRS, MONTH_INDEX, PASSWORD,
-                                 RECAP_BASE_MONTH, RECAP_BASE_YEAR,
-                                 SCHEDULE_ATTRS, SHIFT_ATTRS, SLICE_SIZE,
-                                 START_PATTERN, TEAM, USERNAME,
+                                 RECAP_ATTRS, RECAP_BASE_MONTH,
+                                 RECAP_BASE_YEAR, SCHEDULE_ATTRS, SHIFT_ATTRS,
+                                 SLICE_SIZE, START_PATTERN, TEAM, USERNAME,
                                  VIEWS_WITH_LOGIN, VIEWS_WITHOUT_LOGIN, YEAR)
 from .config.constants import (BASE_DAY_COLORS, EVENING, FIRST, FREE_DAY, LAST,
-                               NIGHT)
+                               NAME_USER_EXISTS, NIGHT)
 from .controllers.AlterDayController import AlterDayController
 from .controllers.UserAdapter import UserAdapter
+from .controllers.utils import check_integrity_attrs, init_tables_constants
 from .forms import AlterDayForm
+from .logic.Month import Month
 from .logic.Pattern import Pattern
+from .logic.Recap import Recap
 from .logic.Schedule import Schedule
-from .models import AlterDay, Color, MyUser
+from .models import AlterDay, Category, Color, MyUser, Team
 
 # tests de prueba nueva funcionalidad:
 
@@ -72,32 +75,31 @@ class PatternTest(TestCase):
 class ScheduleTest(TestCase):
     def setUp(self):
         self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        self.result = None
+        self.message = None
 
     def test_integrity_attrs_schedule(self):
-        def check_integrity_attrs(object, obj_attrs):
-            """Check that the attributes of an object have not changed."""
-            attrs = [
-                attr
-                for attr in dir(object)
-                if not callable(getattr(object, attr)) and not attr.startswith("__")
-            ]
-            # print(attrs)
-            name = type(object).__name__
-            message = "La integridad de: " + name + "ha cambiado"
-            self.assertEqual(attrs, obj_attrs, message)
-
         # Schedule integrity
-        check_integrity_attrs(self.schedule, SCHEDULE_ATTRS)
+        result, message = check_integrity_attrs(self.schedule, SCHEDULE_ATTRS)
+        self.assertTrue(result, message)
+
         # Month
-        check_integrity_attrs(self.schedule.months[MONTH_INDEX], MONTH_ATTRS)
+        result, message = check_integrity_attrs(
+            self.schedule.months[MONTH_INDEX], MONTH_ATTRS
+        )
+        self.assertTrue(result, message)
+
         # Day
-        check_integrity_attrs(
+        result, message = check_integrity_attrs(
             self.schedule.months[MONTH_INDEX].days[DAY_INDEX], DAY_ATTRS
         )
+        self.assertTrue(result, message)
+
         # Shift
-        check_integrity_attrs(
+        result, message = check_integrity_attrs(
             self.schedule.months[MONTH_INDEX].days[DAY_INDEX].shift, SHIFT_ATTRS
         )
+        self.assertTrue(result, message)
 
     def test_months_len(self):
         number_of_months = len(self.schedule.months)
@@ -139,13 +141,21 @@ class RecapTests(TestCase):
         for key, value in data.items():
             self.assertEqual(getattr(recap, key), value, "Falla este campo: " + key)
 
+    def test_integrity_attrs_recap(self):
+        result, message = check_integrity_attrs(Recap(), RECAP_ATTRS)
+        self.assertTrue(result, message)
+
     def test_base_recap_month(self):
+        # Checks that a specific month has its recap correctly.
         data = RECAP_BASE_MONTH
-        self.check_recap(self.schedule.months[10].calculate_recap(), data)
+        month = Month.extract_month_number(RECAP_BASE_MONTH)
+        month = self.schedule.months[month]
+        recap = Recap.calculate(month, month.name)
+        self.check_recap(recap, data)
 
     def test_base_recap_year(self):
         data = RECAP_BASE_YEAR
-        recap = self.schedule.calculate_recap_year()
+        recap = Recap.calculate(self.schedule.months, self.schedule.year)
         self.check_recap(recap, data)
 
     def test_alter_day_recap(self):
@@ -160,8 +170,9 @@ class RecapTests(TestCase):
         day.save()
         self.schedule = AlterDayController.load_alter_days_db(self.user, self.schedule)
         data = {"extra_keep": 1}
-
-        self.check_recap(self.schedule.months[MONTH_INDEX].calculate_recap(), data)
+        month = self.schedule.months[MONTH_INDEX]
+        recap = Recap.calculate(month, month.name)
+        self.check_recap(recap, data)
 
         day = AlterDay(
             user=self.user,
@@ -177,7 +188,9 @@ class RecapTests(TestCase):
         data = {
             "extra_payed": 0,
         }
-        self.check_recap(self.schedule.months[MONTH_INDEX].calculate_recap(), data)
+        month = self.schedule.months[MONTH_INDEX]
+        recap = Recap.calculate(month, month.name)
+        self.check_recap(recap, data)
 
 
 # Model Tests_______________________________________________________________
@@ -335,3 +348,67 @@ class LoadViewsTests(TestCase):
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, HTTP_OK)
         self.assertContains(response, "Datos del turno")
+
+
+# Utils Tests_______________________________________________________________
+class UtilsTests(TestCase):
+    def setUp(self):
+        init_tables_constants()
+
+    def test_category(self):
+        cat_reg = Category.objects.get(number=1)
+        self.assertEqual(cat_reg.text, "Tácnico Titulado Superior")
+
+    def test_team(self):
+        team_reg = Team.objects.get(letter="A")
+        self.assertEqual(team_reg.text, "Turno A")
+
+
+# SignUpController Tests_______________________________________________________________
+
+
+class SignUpViewTest(TestCase):
+    def test_signup_view_user_ok(self):
+        """
+        Test the sign-up view to ensure that user registration works correctly.
+        This test sends a POST request to the sign-up view with valid form data
+        and checks that the view redirects to the configuration page.
+        It also verifies that a new user is created in the database.
+        """
+        url = reverse("signup")
+        response = self.client.post(
+            url,
+            data={
+                "username": "user_test",
+                "password": "pass_test",
+                "repeat_pass": "pass_test",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username="user_test").exists())
+
+    def test_signup_view_user_exists(self):
+        """
+        Check if the user from the form is already in the database:
+
+            Verify that, after the failure, it returns to the view.
+            Confirm that the returned message is 'user already exists.'
+            Check that the user has not been created in the database."
+        """
+        name = "user_test"
+        psw = "pass_test"
+        user = User(username=name, password=psw)
+        user.save()
+        url = reverse("signup")
+        response = self.client.post(
+            url,
+            data={
+                "username": name,
+                "password": "other",
+                "repeat_pass": "other",
+            },
+        )
+        actual_message = response.context["msg"]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(actual_message, NAME_USER_EXISTS)
+        self.assertFalse(User.objects.filter(username="name", password="psw").exists())

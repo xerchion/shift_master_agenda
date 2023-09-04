@@ -29,7 +29,6 @@ class SignUpController:
             new = self.user_adapter.add_new_user(
                 user.user_name, user.password, None
             ).user
-            # new_user = new.user
         return (new, self.message)
 
     def handle_signup_post(self):

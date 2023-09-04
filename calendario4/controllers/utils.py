@@ -44,7 +44,6 @@ def init_tables_constants():
     ]
     for cat in CATEGORY:
         cat_id = cat["id"]
-        print(cat["number"], "Typo: ", type(cat_id))
         catreg = Category(number=int(cat_id), text=cat["text"], precio1=None)
         catreg.save()
     TEAMS = [
@@ -62,3 +61,22 @@ def init_tables_constants():
 def pausa(dato, tiempo):
     pRojo(dato)
     sleep(tiempo)
+
+
+# Tests utils.........................
+def check_integrity_attrs(object, obj_attrs):
+    """Check that the attributes of an object have not changed."""
+    result = True
+    message = None
+    attrs = [
+        attr
+        for attr in dir(object)
+        if not callable(getattr(object, attr)) and not attr.startswith("__")
+    ]
+    # print(attrs)
+    name = type(object).__name__
+    message = "La integridad de: " + name + "ha cambiado"
+    if attrs != obj_attrs:
+        result = False
+        message = message
+    return result, message

@@ -3,10 +3,8 @@ import locale
 from calendar import monthrange
 from datetime import date, timedelta
 
-from ..config.constants import (EVENING, FIRST, LAST, MORNING, NIGHT, NONE_DAY,
-                                SPLIT)
+from ..config.constants import FIRST, LAST, NONE_DAY
 from .Day import Day
-from .Recap import Recap
 
 
 class Month:
@@ -111,29 +109,9 @@ class Month:
         locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
         return calendar.month_name[self.number].capitalize()
 
-    def calculate_recap(self):
-        self.recap = Recap()
-        self.recap.name = self.say_your_name()
-        self.recap.number_of_days = len(self.days)
-        self.recap.mornings = self.count_shift(MORNING)
-        self.recap.evenings = self.count_shift(EVENING)
-        self.recap.nights = self.count_shift(NIGHT)
-        self.recap.split_intensive = self.count_shift(SPLIT)
-        self.recap.workings = (
-            self.recap.mornings
-            + self.recap.evenings
-            + self.recap.nights
-            + self.recap.split_intensive
-        )
-        self.recap.frees = self.count_shift("D")
-        self.recap.holidays = self.count_holidays()
-        self.recap.extra_holidays = self.count_extra_holidays()
-        self.recap.holidays_not_worked = self.recap.holidays - self.recap.extra_holidays
-        self.recap.overtimes = self.count_overtimes()
-        self.recap.change_payables = self.count_change_payables()
-        self.recap.keep_days = self.count_change_payables()
-        self.recap.laborals = self.count_laborable_days()
-        self.recap.days_weekend = self.count_weekends_days()
-        self.recap.extra_keep = self.count_extra_keep()
-        self.recap.extra_payed = self.count_extra_payed()
-        return self.recap
+    @classmethod
+    def extract_month_number(cls, data: dict):
+        month = data["name"].lower()
+        locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+        lista = list(calendar.month_name)
+        return lista.index(month) - 1

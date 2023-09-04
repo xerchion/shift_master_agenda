@@ -30,7 +30,6 @@ class Recap:
             for elem in data:
                 elem_recap = Recap.calculate(elem, elem.name)
                 for attr_name, attr_value in vars(elem_recap).items():
-                    print(attr_name, attr_value)
                     if attr_name != "name":
                         current_value = getattr(recap, attr_name, 0)
                         total_value = int(current_value) + int(attr_value)

@@ -124,3 +124,25 @@ VIEWS_WITH_LOGIN = {
     "change_color_days": "Cambio de Colores",
 }
 HTTP_OK = 200
+
+
+RECAP_ATTRS = [
+    "change_payables",
+    "days_weekend",
+    "evenings",
+    "extra_holidays",
+    "extra_keep",
+    "extra_payed",
+    "frees",
+    "holidays",
+    "holidays_not_worked",
+    "keep_days",
+    "laborals",
+    "mornings",
+    "name",
+    "nights",
+    "number_of_days",
+    "overtimes",
+    "split_intensive",
+    "workings",
+]

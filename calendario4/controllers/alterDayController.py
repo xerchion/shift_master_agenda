@@ -43,7 +43,7 @@ class AlterDayController:
         alter_day.user = self.user
         alter_day.date = self.date
 
-        if self.schedule.set_altered_day(self.day, alter_day):
+        if self.is_altered_by_user(self.day, alter_day):
             alter_day.save()
             self.schedule.fill_colors()
 
@@ -78,10 +78,6 @@ class AlterDayController:
             form = self.fill_form(form)
         return form
 
-    # TODO ESTA FUNCION PERTENECERIA A alterdaycontroller....
-    # con ello quitariamos la relacion de que Schedule conozca a Alterday
-    # como parametros habria que pasarle solo el user y el schedule.
-    # mira a ver como quedaria y que realaciones podrias quitar
     @classmethod
     def load_alter_days_db(cls, user, schedule):
         alter_days = AlterDay.objects.filter(user=user)
@@ -103,6 +99,43 @@ class AlterDayController:
         day.shift.overtime = int(alter_day.overtime)
         day.shift.keep_day = alter_day.keep_day
         day.shift.change_payable = alter_day.change_payable
-        day.alter_day = True
         day.shift_real = alter_day.shift
+        day.alter_day = True
+
         return day
+
+    def is_altered_by_user(self, day, form):
+        """Check if a day has been modified by the user
+
+        Args:
+            day (Day): day to check
+            form (Form): Form response
+
+        Returns:
+            Boolean
+        """
+        form = self.clean_data_form(form)
+        if form.shift != day.get_shift():
+            return True
+        if int(form.overtime) != int(day.shift.overtime):
+            return True
+        if form.keep_day != day.shift.keep_day:
+            return True
+        if form.change_payable != day.shift.change_payable:
+            return True
+        if form.comments != day.comments:
+            return True
+        return False
+
+    def clean_data_form(self, form):
+        """Clear the form of empty or null data
+        Args:
+            form (Form): Form response
+        Returns:
+            Form: cleaned
+        """
+        if not form.overtime:
+            form.overtime = "0"
+        if not form.comments:
+            form.comments = ""
+        return form

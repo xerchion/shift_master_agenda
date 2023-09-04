@@ -1,6 +1,8 @@
+import inspect
+
 from django.contrib.auth.models import User
 
-from ..config.constants import (BASE_DAY_COLORS, EVENING, EXTRA_HOLIDAY,
+from ..config.constants import (BASE_DAY_COLORS, EVENING, EXTRA_HOLIDAY, FORMS,
                                 FREE_DAY, HOLIDAY, MORNING, NIGHT, SPLIT)
 from ..controllers.utils import parse_colors
 from ..forms import ColorForm, CustomPasswordChangeForm, UserConfigForm
@@ -31,32 +33,12 @@ class UserAdapter:
 
         return UserAdapter(new_user.id)
 
-    def check_user(self, id):
-        is_in_auth = User.objects.filter(id=id).exists()
-        is_in_custom = MyUser.objects.filter(user=id).exists()
-        return is_in_auth and is_in_custom
-
-    def see_user(self, id):
-        # ver los datos del usuario en ambas tablas.
-        user = self.get_user(id)
-        print("Datos de la tabla Auth_user:")
-        print("Username:", user.username, "Códico id: ", user.id)
-
-        print("..........................................................")
-
-        user = MyUser.objects.get(user=id)
-        print("Datos de la tabla MyUser:")
-        print("Username:", user.user_name, "Códico id: ", user.user)
-
     def create_new_my_user(self, name, password):
         return MyUser(user_name=name, password=password)
 
     @classmethod
     def get_user(cls, id):
         return User.objects.get(id=id)
-
-    def get_my_user(self):
-        return MyUser.objects.get(user=self.id)
 
     def apply_default_colors(self):
         if self.exists(self.id):
@@ -98,21 +80,29 @@ class UserAdapter:
     def color_saved(self):
         return Color.objects.filter(user=self.user).first()
 
-    def get_color_form(self, instance=None):
+    def get_color_form(self, instance=None, response=None):
         return (
             ColorForm(instance=instance) if instance else ColorForm(instance=self.user)
         )
 
-    def get_config_form(self, response=None):
+    def get_config_form(self, response=None, instance=None):
         if response:
             form = UserConfigForm(response, instance=self.my_user)
         else:
             form = UserConfigForm(instance=self.my_user)
         return form
 
-    def get_pass_form(self, response=None):
+    def get_pass_form(self, response=None, instance=None):
         if response:
             form = CustomPasswordChangeForm(self.user, response)
         else:
             form = CustomPasswordChangeForm(self.user)
+        return form
+
+    def get_form(self, response=None, instance=None):
+        form = None
+        view = inspect.currentframe().f_back.f_code.co_name
+        method = eval("self." + FORMS[view])
+        if method and callable(method):
+            form = method(response=response, instance=instance)
         return form
