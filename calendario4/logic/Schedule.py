@@ -27,7 +27,7 @@ class Schedule:
         i = 0
         for month in self.months:
             final = i + month.days_number
-            month.fill_day_shifts(pattern.pattern[i: final + 1])
+            month.fill_day_shifts(pattern.pattern[i : final + 1])
             i = final
 
     def create_spaces_view(self):

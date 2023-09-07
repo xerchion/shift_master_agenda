@@ -5,6 +5,7 @@ from .config.constants import WEEK_DAYS_LETTER
 from .controllers.AlterDayController import AlterDayController
 from .controllers.SignUpController import SignUpController
 from .controllers.UserAdapter import UserAdapter
+from .forms import NextYearsForm
 from .logic.Recap import Recap
 
 
@@ -68,6 +69,32 @@ def agenda(request):
     return render(request, "agenda.html", context)
 
 
+def only_year_now_access(view_func):
+    def wrapper(request, *args, **kwargs):
+        from datetime import datetime
+
+        if request.session.get("year") != datetime.now().year:
+            # Esto deberia redirigir a una pagina en la que muestre que no
+            # no se puede acceder a los dias de la agenda en otro año que no sea el actual.
+            # una opcion seria poner en la pagina de calendario la opcion de volver al actual
+            # de manera que asi se borre la eleccion del usuario, de momento se borra en el
+            # mddlware despues de usarse
+            # o meter el año en la variable de sesion seria una opcion...
+            # return redirect("agenda")
+            weekdays = WEEK_DAYS_LETTER
+            context = {
+                "schedule": request.schedule,
+                "weekdays": weekdays,
+                "msg": "La agenda está limitada al año actual, no a futuros años...",
+            }
+            return render(request, "agenda.html", context)
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+# @only_year_now_access
 @login_required
 def alter_day(request, date):
     schedule = request.schedule
@@ -83,7 +110,12 @@ def alter_day(request, date):
         return redirect(controller.url_redirection)
     else:
         form = controller.generate_form()
-    context = {"day": controller.day, "month_name": controller.month_name, "form": form}
+    context = {
+        "day": controller.day,
+        "month_name": controller.month_name,
+        "form": form,
+        "year": schedule.year,
+    }
 
     return render(request, "alter_day.html", context)
 
@@ -129,3 +161,18 @@ def recap_year(request):
     recap = Recap.calculate(request.schedule.months, request.schedule.year)
     context = {"year": request.schedule.year, "recap": recap}
     return render(request, "recap.html", context)
+
+
+@login_required
+def next_years(request):
+    schedule = request.schedule
+    years = []
+    for year in range(2023, schedule.year + 100):
+        years.append(year)
+    form = NextYearsForm()
+    context = {"years": years, "form": form}
+    if request.method == "POST":
+        year_selected = int(request.POST["year"])
+        request.session["year"] = year_selected
+        return redirect("agenda")
+    return render(request, "next_years.html", context)

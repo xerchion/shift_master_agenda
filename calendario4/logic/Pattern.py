@@ -15,6 +15,7 @@ class Pattern:
     def __create(self):
         extended_shift_serie = self.__extend_shift_serie(self.year)
         start_day, end_day = self.__calculate_range_period()
+
         return extended_shift_serie[start_day:end_day]
 
     def __extend_shift_serie(self, year):
@@ -31,7 +32,7 @@ class Pattern:
     def __calculate_range_period(self):
         total_days_period = self.__calculate_total_days(INITIAL_YEAR, self.year)
         start_day = TEAM_POSITION_DAYS[self.team] + total_days_period
-        end_day = 366 if isleap(self.year) else 365 + start_day
+        end_day = (366 if isleap(self.year) else 365) + start_day
         return start_day, end_day
 
     def __calculate_total_days(self, INITIAL_YEAR, year):

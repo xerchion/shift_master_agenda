@@ -73,3 +73,8 @@ class ColorForm(forms.ModelForm):
             "holiday": forms.TextInput(attrs={"type": "color"}),
             "extra_holiday": forms.TextInput(attrs={"type": "color"}),
         }
+
+
+class NextYearsForm(forms.ChoiceField):
+    choices = [2024, 2025]
+    year = forms.ChoiceField(choices=[choices], required=False)
