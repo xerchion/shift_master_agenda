@@ -2,7 +2,7 @@
 {% load static %}
 {% block titulo_pagina %}
   <h2>Modificación de:</h2>
-  <h2>{{ day.name }}, {{ day.number }} de {{ month_name }}</h2>
+  <h2>{{ day.name }}, {{ day.number }} de {{ month_name }} de {{ year }}</h2>
 {% endblock titulo_pagina %}
 {{ form.errors }}
 {% block wrapper %}
@@ -34,9 +34,7 @@
         <section class="features">
           <article class="major">
             <h3 class="major">Datos del turno</h3>
-            {% if day.shift.primal != form.shift.value %}
-              <h3>Elegiste un cambio de turno</h3>
-            {% endif %}
+            {% if day.shift.primal != form.shift.value %}<h3>Elegiste un cambio de turno</h3>{% endif %}
             <div id="formulario">{{ form.as_p }}</div>
             <div class="inner">
               <ul class="actions">

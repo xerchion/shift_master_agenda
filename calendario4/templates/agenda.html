@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 {% block titulo_pagina %}
-  <h2 class="rojo">Calendario {{ schedule.year }} Turno {{ schedule.team }}</h2>
+  <h2 class="rojo">Calendario Turno {{ schedule.team }}
+    <a href="{% url 'next_years' %}" class=""><h2> {{ schedule.year }} </h2></a> </h2>
+  <h3>{{ msg }} </h3>
+
 {% endblock titulo_pagina %}
 {% block wrapper %}
   <div id="page-wrapper">
     <section id="banner">
       <div class="inner">
         <a href="{% url 'recap_year' %}" class="special">Ver resumen Anual</a>
+
         <style>
                   /* Estilos para el contenedor que centra los elementos */
                   .flex-container {
@@ -26,7 +30,6 @@
         </style>
         <!-- Accesos directos a meses -->
         <a href="#" class="special">Accesos directos</a>
-        <ul class="errorlist"><li>shift<ul class="errorlist"><li>Este campo es obligatorio.</li></ul></li><li>change_payable<ul class="errorlist"><li>Este campo es obligatorio.</li></ul></li></ul>
         <section class="flex-container ">
           {% for month in schedule.months_view %}
             <a href="#seccion_{{ month.number }}" class="mes  ">

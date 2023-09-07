@@ -13,6 +13,7 @@ class AlterDayController:
     def __init__(self, user_id, date, schedule) -> None:
         self.date = datetime.strptime(date, "%Y-%m-%d")
         self.day = schedule.search_day(self.date)
+
         self.month_name = schedule.months[self.date.month - 1].name
         self.user = UserAdapter.get_user(user_id)
         self.day_saved = False
@@ -25,7 +26,9 @@ class AlterDayController:
         new_day = Day(self.day.date)
         new_day.shift.primal = self.day.shift.primal
         new_day.shift_real = self.day.shift.primal
-        day_saved = AlterDay.objects.filter(user=self.user, date=self.day.date).first()
+        day_saved = AlterDay.objects.filter(
+            user=self.user, date=self.day.date, date__year=self.schedule.year
+        ).first()
         if day_saved:
             day_saved.delete()
         return
@@ -35,7 +38,9 @@ class AlterDayController:
 
     def exists_day(self):
         """Return True if exists in Database"""
-        self.day_saved = AlterDay.objects.filter(user=self.user, date=self.date).first()
+        self.day_saved = AlterDay.objects.filter(
+            user=self.user, date=self.date, date__year=self.schedule.year
+        ).first()
         return True if self.day_saved else False
 
     def save_day(self, form):
@@ -80,12 +85,11 @@ class AlterDayController:
 
     @classmethod
     def load_alter_days_db(cls, user, schedule):
-        alter_days = AlterDay.objects.filter(user=user)
+        alter_days = AlterDay.objects.filter(user=user, date__year=schedule.year)
 
         for alter_day in alter_days:
             index_day = alter_day.date.day - 1
             index_month = alter_day.date.month - 1
-
             day = schedule.months[index_month].days[index_day]
             day = cls.load_day(day, alter_day)
 

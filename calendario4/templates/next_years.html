@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo_pagina %}
+  <h2 class="rojo">Elige el año</h2>
+  <form method="post" action="#" id="form">
+    {% csrf_token %}
+    {% for year in years %}<input type="submit" value={{ year }} name="year" />{% endfor %}
+  </form>
+{% endblock titulo_pagina %}
+{% block wrapper %}
+  <div id="page-wrapper">
+    <section id="banner">
+      <div class="inner">
+        <style>
+                  /* Estilos para el contenedor que centra los elementos */
+                  .flex-container {
+                    display: flex;
+                    flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas */
+
+                    justify-content: center; /* Alineación horizontal en el centro */
+                  }
+
+                  /* Estilos opcionales para los elementos (puedes adaptarlos según tus necesidades) */
+                  .mes {
+                    margin: 20px;
+                    padding: 10px;
+                  }
+
+        </style>
+        <!-- Accesos directos a meses -->
+        <section class="flex-container ">
+        </section>
+      </div>
+    </section>
+  </div>
+  <!-- Calendario -->
+{% endblock wrapper %}
+{% block footer %}
+{% endblock footer %}

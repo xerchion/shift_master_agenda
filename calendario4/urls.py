@@ -1,7 +1,7 @@
 from django.urls import include, path
 
 from .views import (agenda, alter_day, change_color_days, change_pass, config,
-                    home, recap_month, recap_year, sign_up_view)
+                    home, next_years, recap_month, recap_year, sign_up_view)
 
 urlpatterns = [
     path("", home, name="home"),
@@ -14,4 +14,7 @@ urlpatterns = [
     path("alter_day/<str:date>/", alter_day, name="alter_day"),
     path("recap_month/<str:month>/", recap_month, name="recap_month"),
     path("recap_year/", recap_year, name="recap_year"),
+    path("next_years/", next_years, name="next_years"),
+
+
 ]
