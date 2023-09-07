@@ -58,9 +58,9 @@ def init_tables_constants():
         catreg.save()
 
 
-def pausa(dato, tiempo):
+def pausa(dato, time=0):
     pRojo(dato)
-    sleep(tiempo)
+    sleep(time)
 
 
 # Tests utils.........................

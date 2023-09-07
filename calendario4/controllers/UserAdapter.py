@@ -64,6 +64,9 @@ class UserAdapter:
     def get_colors(self):
         return parse_colors(Color.objects.get(user=self.id))
 
+    def set_team(self, team):
+        self.my_user.team = team
+
     def get_team(self):
         return self.my_user.team
 

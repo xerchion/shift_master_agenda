@@ -18,16 +18,21 @@ class ScheduleMiddleware:
             views_with_schedule = ["agenda", "alter_day", "recap_month", "recap_year"]
             current_view = resolve(request.path_info).url_name
             if current_view in views_with_schedule:
-                # user_id = request.user.id
                 user = UserAdapter(request.user.id)
                 team = user.get_team()
                 schedule = None
                 if team in TEAMS_LIST:
                     colors = user.get_colors()
                     schedule = Schedule(datetime.today().year, team, colors)
-                    schedule = AlterDayController.load_alter_days_db(request.user, schedule)
+                    schedule = AlterDayController.load_alter_days_db(
+                        request.user, schedule
+                    )
                     schedule.fill_colors()
-                request.schedule = schedule
 
+                request.schedule = schedule
+            else:
+                ...
+        else:
+            ...
         response = self.get_response(request)
         return response

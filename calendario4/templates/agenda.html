@@ -16,16 +16,17 @@
 
                     justify-content: center; /* Alineación horizontal en el centro */
                   }
-              
+
                   /* Estilos opcionales para los elementos (puedes adaptarlos según tus necesidades) */
                   .mes {
                     margin: 20px;
                     padding: 10px;
                   }
-                
+
         </style>
         <!-- Accesos directos a meses -->
         <a href="#" class="special">Accesos directos</a>
+        <ul class="errorlist"><li>shift<ul class="errorlist"><li>Este campo es obligatorio.</li></ul></li><li>change_payable<ul class="errorlist"><li>Este campo es obligatorio.</li></ul></li></ul>
         <section class="flex-container ">
           {% for month in schedule.months_view %}
             <a href="#seccion_{{ month.number }}" class="mes  ">
@@ -49,16 +50,16 @@
 												justify-content: space-between;
 											}
 											.elemento {
-												width: calc(100% / 7 ); 
+												width: calc(100% / 7 );
 											}
 											.centrar {
-												width: 100%; 
-    											text-align: center; 
+												width: 100%;
+    											text-align: center;
 											.oculto{
 												display: none;
-											
+
 											}
-										
+
           </style>
           <article class="elemento wrapper  spotlight style1 major">
             <h2 class=" major">{{ month.name }}</h2>

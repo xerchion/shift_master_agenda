@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.contrib.auth.models import AnonymousUser, User
-from django.test import Client, TestCase
+from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 
 from .config.const_tests import (DATE_STR, DATE_TEST, DAY_ATTRS, DAY_INDEX,
@@ -21,43 +21,6 @@ from .logic.Pattern import Pattern
 from .logic.Recap import Recap
 from .logic.Schedule import Schedule
 from .models import AlterDay, Category, Color, MyUser, Team
-
-# tests de prueba nueva funcionalidad:
-
-
-class TestPrueba(TestCase):
-    def OK_test_TestCountersRecap_TEMPORALY(self):
-        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
-        month = schedule.months[1]
-        recap = month.calculate_recap()
-        re = month.create_recap()
-        atributos = [
-            attr
-            for attr in dir(recap)
-            if not callable(getattr(recap, attr)) and not attr.startswith("__")
-        ]
-        atributos_re = [
-            attr
-            for attr in dir(re)
-            if not callable(getattr(re, attr)) and not attr.startswith("__")
-        ]
-        if len(atributos) != len(atributos_re):
-            print(len(atributos), "////", len(atributos_re))
-            assert False, "nO TIENE LOS MISMOS ATRIBUTOS"
-        if recap == re:
-            assert False, "todo correcto"
-        else:
-            for atributo in atributos:
-                if getattr(recap, atributo) == getattr(re, atributo):
-                    print(f"Los tributos '{atributo}' son iguales en ambos objetos.")
-                    print("tODO CORRECTO")
-
-                else:
-                    print(
-                        f"Los atributos '{atributo}' no son iguales en ambos objetos."
-                    )
-                    print(getattr(recap, atributo), "----", getattr(re, atributo))
-
 
 #  Logic Tests_______________________________________________________________
 
@@ -364,6 +327,7 @@ class UtilsTests(TestCase):
         self.assertEqual(team_reg.text, "Turno A")
 
 
+# Controllers Tests-----------------------------------------------------------------
 # SignUpController Tests_______________________________________________________________
 
 
@@ -412,3 +376,141 @@ class SignUpViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(actual_message, NAME_USER_EXISTS)
         self.assertFalse(User.objects.filter(username="name", password="psw").exists())
+
+
+# AlterDayController Tests_______________________________________________________________
+
+
+class AlterDayControllerTests(TestCase):
+    def setUp(self):
+        date = DATE_STR  # Month is 11
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        self.controller = AlterDayController(self.user.id, date, self.schedule)
+
+    def test_get_month_number(self):
+        self.assertEqual(self.controller.get_month_number(), str(11))
+
+
+class AlterDayViewTests(TestCase):
+    def setUp(self):
+        self.date = DATE_STR  # Month is 11
+        adapter = UserAdapter()
+        self.user = adapter.add_new_user(USERNAME, PASSWORD, TEAM).user
+        self.schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        self.controller = AlterDayController(self.user.id, self.date, self.schedule)
+        self.response = self.client.login(username=USERNAME, password=PASSWORD)
+
+    def test_alter_day_view_cancel_button_action(self):
+        """
+        Simulates Cancelar button press in form
+        No accitions, no data to save
+        """
+        factory = RequestFactory()
+        view_url = reverse("alter_day", kwargs={"date": DATE_STR})
+        self.form = {
+            "shift": ["T"],  # Shift is changed by test. Original is "M"
+            "overtime": ["0"],
+            "keep_day": ["False"],
+            "change_payable": ["False"],
+            "comments": [""],
+            "Cancelar": ["Cancelar"],
+        }
+        # con client.post obtengo la funcionalidad, osea me redirecciona bien
+        response = self.client.post(view_url, data=self.form)
+
+        # con factory obtengo el contenido del request.POST, pero no redirecciona
+        # creo que pk no acepta middleware o eso dice en la doc....
+        respon = factory.post(view_url, data=self.form)
+
+        # Un request tiene este tipo:      <class 'django.core.handlers.wsgi.WSGIRequest'>
+        # y es el que tiene el QueryDict que es el atributo POST (request.POST)
+        # AHI ESTAN LOS DATOS DE LA CONSULTA Y LO QUE DEVUELVE...
+
+        # Redirection code ok?
+        self.assertEqual(response.status_code, 302)
+        # url redirection ok?
+        self.assertEqual(response.url, "/agenda/#seccion_11")
+        # response from form ok?
+        self.assertIn("Cancelar", respon.POST["Cancelar"])
+
+    def test_alter_day_view_change_data_form_action(self):
+        """
+        Simulates User input data in form
+        data to save
+        """
+        view_url = reverse("alter_day", kwargs={"date": self.date})
+        self.form = {
+            "shift": ["T"],  # Shift is changed by test. Original is "M"
+            "overtime": ["0"],
+            "keep_day": ["False"],
+            "change_payable": ["False"],
+            "comments": [""],
+        }
+        self.client.post(view_url, data=self.form, follow=True)
+
+        # User changes are saved?
+        self.assertTrue(AlterDay.objects.filter(date=self.date).exists())
+
+    def test_alter_day_view_restore_button_action(self):
+        """
+        Simulates Cancelar button press in form
+        No accitions, no data to save
+        """
+        factory = RequestFactory()
+        view_url = reverse("alter_day", kwargs={"date": DATE_STR})
+        self.form = {
+            "shift": ["T"],
+            "overtime": ["0"],
+            "keep_day": ["False"],
+            "change_payable": ["False"],
+            "comments": [""],
+            "restaurar_dia": ["Restaurar Dia"],  # Button pressed
+        }
+        response = self.client.post(view_url, data=self.form)
+
+        respon = factory.post(view_url, data=self.form)
+
+        #  Redirection code ok?
+        self.assertEqual(response.status_code, 302)
+        # url redirection ok?
+        self.assertEqual(response.url, "/agenda/#seccion_11")
+        # response from form ok?
+        self.assertIn("Restaurar Dia", respon.POST["restaurar_dia"])
+        # changes are deleted?
+        self.assertFalse(AlterDay.objects.filter(date=self.date).exists())
+
+
+# New funcionality tests, use only in new adds fields or funcionality:
+class TestPrueba(TestCase):
+    def OK_test_TestCountersRecap_TEMPORALY(self):
+        schedule = Schedule(YEAR, TEAM, BASE_DAY_COLORS)
+        month = schedule.months[1]
+        recap = month.calculate_recap()
+        re = month.create_recap()
+        atributos = [
+            attr
+            for attr in dir(recap)
+            if not callable(getattr(recap, attr)) and not attr.startswith("__")
+        ]
+        atributos_re = [
+            attr
+            for attr in dir(re)
+            if not callable(getattr(re, attr)) and not attr.startswith("__")
+        ]
+        if len(atributos) != len(atributos_re):
+            print(len(atributos), "////", len(atributos_re))
+            assert False, "nO TIENE LOS MISMOS ATRIBUTOS"
+        if recap == re:
+            assert False, "todo correcto"
+        else:
+            for atributo in atributos:
+                if getattr(recap, atributo) == getattr(re, atributo):
+                    print(f"Los atributos '{atributo}' son iguales en ambos objetos.")
+                    print("TODO CORRECTO")
+
+                else:
+                    print(
+                        f"Los atributos '{atributo}' no son iguales en ambos objetos."
+                    )
+                    print(getattr(recap, atributo), "----", getattr(re, atributo))

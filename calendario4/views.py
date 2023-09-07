@@ -18,7 +18,6 @@ def config(request):
     id = request.user.id
     if request.method == "POST":
         form = UserAdapter(id).get_form(request.POST)
-        print("si es aqui......................")
         if form.is_valid():
             form.save()
             return redirect("agenda")
@@ -72,7 +71,11 @@ def agenda(request):
 @login_required
 def alter_day(request, date):
     schedule = request.schedule
-    controller = AlterDayController(request.user.id, date, schedule)
+    controller = AlterDayController(
+        request.user.id,
+        date,
+        schedule,
+    )
     if request.method == "POST":
         controller.control_response(request)
         if controller.message != "exit":
@@ -80,8 +83,8 @@ def alter_day(request, date):
         return redirect(controller.url_redirection)
     else:
         form = controller.generate_form()
-    # controller.day.shift.primal = SHIFT_DICT[controller.day.shift.primal]
     context = {"day": controller.day, "month_name": controller.month_name, "form": form}
+
     return render(request, "alter_day.html", context)
 
 
