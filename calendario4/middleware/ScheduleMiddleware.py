@@ -1,13 +1,12 @@
 # calendario_middleware.py
 from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.urls import resolve
 
 from ..config.constants import TEAMS_LIST
-from ..controllers.utils import parse_colors
+from ..controllers.AlterDayController import AlterDayController
+from ..controllers.UserAdapter import UserAdapter
 from ..logic.Schedule import Schedule
-from ..models import Color, MyUser
 
 
 class ScheduleMiddleware:
@@ -16,23 +15,24 @@ class ScheduleMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
-            views_with_schedule = ["agenda", "alter_day", "recap_month",
-                                   "recap_year"]
+            views_with_schedule = ["agenda", "alter_day", "recap_month", "recap_year"]
             current_view = resolve(request.path_info).url_name
             if current_view in views_with_schedule:
-                user_id = request.user.id
-                my_user = MyUser.objects.get(user=user_id)
-                user = User.objects.get(id=user_id)
-
-                colors = parse_colors(Color.objects.get(user=user_id))
+                user = UserAdapter(request.user.id)
+                team = user.get_team()
                 schedule = None
-
-                if my_user.team in TEAMS_LIST:
-                    schedule = Schedule(datetime.today().year, my_user.team,
-                                        colors)
-                    schedule.load_alter_days_db(user)
+                if team in TEAMS_LIST:
+                    colors = user.get_colors()
+                    schedule = Schedule(datetime.today().year, team, colors)
+                    schedule = AlterDayController.load_alter_days_db(
+                        request.user, schedule
+                    )
+                    schedule.fill_colors()
 
                 request.schedule = schedule
-
+            else:
+                ...
+        else:
+            ...
         response = self.get_response(request)
         return response

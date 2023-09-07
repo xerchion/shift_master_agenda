@@ -2,18 +2,30 @@ from datetime import date
 
 SHIFT_STRING_ES = ["Mañana", "Tarde", "Noche", "Descanso", "Intensiva/Partida"]
 
+
 # Shift
-KINDS_SHIFTS = ["M", "T", "N", "D", "P"]
+MORNING = "M"
+EVENING = "T"
+NIGHT = "N"
+SPLIT = "P"
+FREE_DAY = "D"
+HOLIDAY = "F"
+EXTRA_HOLIDAY = "E"
+
+KINDS_SHIFTS = [MORNING, EVENING, NIGHT, FREE_DAY, SPLIT]
+
+SHIFT_DICT = dict(zip(KINDS_SHIFTS, SHIFT_STRING_ES))
+
+
+WORK_DAYS = [shift for shift in KINDS_SHIFTS if shift != FREE_DAY]
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
-FREE_DAY = "D"
+
 
 KINDS_SHIFTS_STRING = SHIFT_STRING_ES
 SHIFTS = tuple(zip(KINDS_SHIFTS, KINDS_SHIFTS_STRING))
-FREE_DAY = "D"
 
 # Pattern
-
 INITIAL_YEAR = 2022
 FIXED_SERIE_AMOUNT_DAYS = [2, 2, 3, 4, 3, 2, 2, 5, 2, 3, 2, 5]
 TEAM_VALUES_SERIE = KINDS_SHIFTS[:4] * 3
@@ -25,11 +37,12 @@ DAY_MODIFIED_OK = "Dia modificado con exito"
 # signUpController
 PASSWORDS_NOT_MATCH = "La contraseña no coincide al repetirla, \
                        por favor intentalo de nuevo."
-NAME_USER_EXISTS = "Ya existe un usuario con ese nombre"
-USER_SIGNUP_OK = "Usuario dado de alta con exito"
+NAME_USER_EXISTS = "Ya existe un usuario con ese nombre, elige otro."
+USER_SIGNUP_OK = "Usuario dado de alta con exito."
+FORM_NOT_VALID = "Datos introducidos incorrectos."
+NECESSARY_TEAM = "La elección del Turno es obligatoria."
 
 # Day
-
 WEEK_DAYS = [
     "Lunes",
     "Martes",
@@ -44,7 +57,6 @@ WEEK_DAYS_LETTER = ["L", "M", "X", "J", "V", "S", "D"]
 NONE_DAY = date(2000, 1, 1)
 
 # Teams
-
 # Initial data to DB
 TEAMS_INITIAL = [
     {"id": 1, "letter": "A", "text": "Turno A", "color": None},
@@ -60,8 +72,7 @@ TEAMS_LIST = [team["letter"] for team in TEAMS_INITIAL]
 # Categories
 # Initial data to DB
 CATEGORY = [
-    {"id": 1, "number": 1, "text": "Técnico Titulado Superior",
-     "precio1": None},
+    {"id": 1, "number": 1, "text": "Técnico Titulado Superior", "precio1": None},
     {"id": 2, "number": 2, "text": "Técnico Titulado Medio", "precio1": None},
     {"id": 3, "number": 3, "text": "Técnico No Titulado", "precio1": None},
     {"id": 4, "number": 4, "text": "Encargado", "precio1": None},
@@ -75,11 +86,20 @@ CATEGORY = [
 
 
 BASE_DAY_COLORS = {
-    "M": "#5DADE2",
-    "T": "#F5B041",
-    "N": "#000000",
-    "D": "#7F8C8D",
-    "F": "#F1948A",
-    "E": "#FA1D04",
-    "P": "#A9DFBF",
+    MORNING: "#5DADE2",
+    EVENING: "#F5B041",
+    NIGHT: "#000000",
+    FREE_DAY: "#7F8C8D",
+    HOLIDAY: "#F1948A",
+    EXTRA_HOLIDAY: "#FA1D04",
+    SPLIT: "#A9DFBF",
+}
+FIRST = 0
+LAST = -1
+
+
+FORMS = {
+    "change_pass": "get_pass_form",
+    "config": "get_config_form",
+    "change_color_days": "get_color_form",
 }

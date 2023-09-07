@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+
 from .config.constants import SHIFTS
 
 
@@ -49,8 +50,7 @@ class MyUser(models.Model):
         blank=True,
         verbose_name="(Opcional) Nombre real",
     )
-    second_name = models.CharField(max_length=20, default="",
-                                   null=True, blank=True)
+    second_name = models.CharField(max_length=20, default="", null=True, blank=True)
     category = models.IntegerField(
         default="0",
         null=True,
@@ -59,8 +59,7 @@ class MyUser(models.Model):
         choices=CATEGORIES,
     )
     password = models.CharField(
-        max_length=10, default="", null=True, blank=True,
-        verbose_name="Contraseña:"
+        max_length=10, default="", null=True, blank=True, verbose_name="Contraseña:"
     )
 
     def __str__(self):
@@ -79,20 +78,16 @@ class Color(models.Model):
         default="", max_length=8, verbose_name="Noche ", null=True, blank=True
     )
     split_shift = models.CharField(
-        default="", max_length=8, verbose_name="Jornada Partida ",
-        null=True, blank=True
+        default="", max_length=8, verbose_name="Jornada Partida ", null=True, blank=True
     )
     free = models.CharField(
-        default="", max_length=8, verbose_name="Descanso ",
-        null=True, blank=True
+        default="", max_length=8, verbose_name="Descanso ", null=True, blank=True
     )
     holiday = models.CharField(
-        default="", max_length=8, verbose_name="Festivo ",
-        null=True, blank=True
+        default="", max_length=8, verbose_name="Festivo ", null=True, blank=True
     )
     extra_holiday = models.CharField(
-        default="", max_length=8, verbose_name="Extra-Festivo ",
-        null=True, blank=True
+        default="", max_length=8, verbose_name="Extra-Festivo ", null=True, blank=True
     )
 
 
@@ -116,13 +111,11 @@ class AlterDay(models.Model):
         verbose_name="Turno ",
         choices=SHIFTS,
     )
-    extra_hours = models.CharField(
-        default="0", null=True, blank=True, verbose_name="Horas extra ",
-        max_length=2
+    overtime = models.CharField(
+        default="0", null=True, blank=True, verbose_name="Horas extra ", max_length=2
     )
     comments = models.CharField(
-        default="", max_length=200, null=True, blank=True,
-        verbose_name="Comentarios "
+        default="", max_length=200, null=True, blank=True, verbose_name="Comentarios "
     )
     keep_day = models.BooleanField(
         default=False,
