@@ -105,6 +105,8 @@ MODELS = {
     "MyUser": 8,
     "Color": 9,
     "AlterDay": 8,
+    "Player": 3,
+    "Prize": 4
 }
 
 VIEWS_WITHOUT_LOGIN = {

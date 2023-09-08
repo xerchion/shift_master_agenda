@@ -13,6 +13,9 @@ class Team(models.Model):
         return str(self.text)
 
 
+TEAMS_TUPLE = tuple(Team.objects.values_list("letter", "text"))
+
+
 class Category(models.Model):
     number = models.IntegerField(null=False, blank=False, unique=True)
     text = models.CharField(max_length=50, default="", null=True, blank=True)
@@ -25,7 +28,6 @@ class Category(models.Model):
 
 
 class MyUser(models.Model):
-    TEAMS = tuple(Team.objects.values_list("letter", "text"))
     CATEGORIES = tuple(Category.objects.values_list("number", "text"))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_name = models.CharField(
@@ -41,7 +43,7 @@ class MyUser(models.Model):
         null=True,
         blank=True,
         verbose_name=" (Obligatorio) Turno",
-        choices=TEAMS,
+        choices=TEAMS_TUPLE,
     )
     name = models.CharField(
         max_length=20,
