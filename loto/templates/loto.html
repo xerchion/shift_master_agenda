@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo_pagina %}
+    <h2>Loteria  Turno C</h2>
+    <h2>Bote: {{ total }}€</h2>
+    <form method="post" action="#">
+        <div class="field">
+            {% csrf_token %}
+            <section class="features">
+                <article class="major">
+                    <h3 class="major">Premio semanal</h3>
+                    {{ form.as_p }}
+                    <div>
+                        <input type="submit" />
+                    </div>
+                    <div>
+                        <h1></h1>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </form>
+{% endblock titulo_pagina %}
+{% block wrapper %}
+    <!-- Wrapper -->
+    <section id="wrapper">
+        <!-- Ranking de premios -->
+        <section id="one" class="wrapper alt  spotlight style2 ">
+            <div class="inner">
+                <a href="#" class="image"></a>
+                <div>
+                    <h2 class="major">Ranking de jugadores</h2>
+                    <div class="fields ">
+                        {% for player in players %}
+                            <div class="field">
+                                <h2>{{ player.id }}- {{ player.name }} : {{ player.prize }}€</h2>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Two -->
+        <section id="two" class="wrapper alt spotlight style2">
+            <div class="inner">
+                <div class="content">
+                    <h2 class="major">Orden semanal</h2>
+                    <p>
+                        La semana pasada la echó : {{ turns.past }}, obtuvo un premio de :  BUSCAR Y PONER, ESTE ESTA MAL{{ turns.past.prize }} €
+                    </p>
+                    <p>Esta semana le toca a : {{ turns.current }}</p>
+                    <p>Y la semana que viene le tocará a : {{ turns.future }}</p>
+                </div>
+            </div>
+        </section>
+        <!-- Three -->
+        <section id="three" class="wrapper  alt style3">
+            <div class="inner">
+                <a href="#" class=""></a>
+                <div class="content"></div>
+            </section>
+            <!-- Three -->
+            <section id="three" class="wrapper spotlight  style4">
+                <div class="inner">
+                    <a href="#" class=""></a>
+                    <div class="content">
+                        <h2 class="major">Apuestas Jugadas</h2>
+                        <h1>Loteria Nacional:</h1>
+                        {{ bets.nacional }}
+                        <h1></h1>
+                        <h1>Primitiva:</h1>
+                        {% for ap in bets.primitiva %}<p>{{ ap }}</p>{% endfor %}
+                        <h1>Euromillones:</h1>
+                        {% for ap in bets.euromillones %}<p>{{ ap }}</p>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- User Profiles -->
+    </section>
+{% endblock wrapper %}
+{% block footer %}
+{% endblock footer %}
