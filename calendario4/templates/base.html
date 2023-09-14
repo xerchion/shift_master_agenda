@@ -152,6 +152,12 @@
                 <li>
                   <a href="{% url "agenda" %}">Calendario</a>
                 </li>
+                <!-- Contenido para usuarios de este grupo -->
+                {% if user.groups.first %}
+                  <li>
+                    <a href="{% url "loto" %}">Loterias</a>
+                  </li>
+                {% endif %}
                 <li>
                   <a href="{% url "config" %}">Configuración</a>
                 </li>
