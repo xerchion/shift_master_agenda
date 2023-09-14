@@ -6,18 +6,24 @@
     <form method="post" action="#">
         <div class="field">
             {% csrf_token %}
-            <section class="features">
-                <article class="major">
-                    <h3 class="major">Premio semanal</h3>
-                    {{ form.as_p }}
-                    <div>
-                        <input type="submit" />
-                    </div>
-                    <div>
-                        <h1></h1>
-                    </div>
-                </article>
-            </section>
+            {% if user.is_staff %}
+                <!-- Contenido para usuarios administradores -->
+                <a href="{% url 'admin:index' %}" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary">Panel de Administración</button>
+                </a>
+                <section class="features">
+                    <article class="major">
+                        <h3 class="major">Premio semanal</h3>
+                        {{ form.as_p }}
+                        <div>
+                            <input type="submit" />
+                        </div>
+                        <div>
+                            <h1></h1>
+                        </div>
+                    </article>
+                </section>
+            {% endif %}
         </div>
     </form>
 {% endblock titulo_pagina %}
@@ -45,11 +51,9 @@
             <div class="inner">
                 <div class="content">
                     <h2 class="major">Orden semanal</h2>
-                    <p>
-                        La semana pasada la echó : {{ turns.past }}, obtuvo un premio de :  BUSCAR Y PONER, ESTE ESTA MAL{{ turns.past.prize }} €
-                    </p>
+                    <p>La semana pasada la echó : {{ turns.last }} y obtuvo un premio de :  {{ last_prize }} €</p>
                     <p>Esta semana le toca a : {{ turns.current }}</p>
-                    <p>Y la semana que viene le tocará a : {{ turns.future }}</p>
+                    <p>Y la semana que viene le tocará a : {{ turns.next }}</p>
                 </div>
             </div>
         </section>

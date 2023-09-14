@@ -1,12 +1,17 @@
 from datetime import datetime
 
+from django.db.models.query import QuerySet
+
 from ..config.constants import EURNOMILLONES, NACIONAL, PRIMITIVA
 from ..models import Player, Prize
 from .PlayerTurn import PlayerTurn
 
 
 class LotoController:
-    def calculate_player_prizes(self, player):
+    def __init__(self):
+        self.pppppp = 0  # borralo cuando tengas atributos de esta clase...
+
+    def calculate_player_prizes(self, player: Player) -> float:
         """
         Calculates the total sum of prizes for a specific player.
 
@@ -19,45 +24,33 @@ class LotoController:
         total = 0
 
         # Iterate through all prizes associated with the player
-        for prize in Prize.objects.filter(player=player):
-            total += prize.prize  # Add the prize amount to the total
+        for element in Prize.objects.filter(player=player):
+            total += element.prize  # Add the prize amount to the total
 
         return total
 
-    def calculate_total_prizes(self):
+    def calculate_total_prizes(self) -> float:
         """
         Calculates the total sum of prizes for all players.
 
-        Returns:
-            total (float): The total sum of prizes for all players.
         """
 
         total = 0  # Initialize the total to zero
 
         # Iterate through all prizes
-        for prize in Prize.objects.all():
-            total += prize.prize
-
+        for element in Prize.objects.all():
+            total += element.prize
         return total
 
-    def calculate_total_spent(self):
-        # TODO faltaria sumar la cantidad que teniamos de antes, pero eso ya en la vista
-        """Returns the Total Spent money from 1-1-2023"""
-
-        weeks = PlayerTurn().current_week_number()
-        return weeks * 17
-
-    def get_prizes(self):
+    def get_prizes(self) -> QuerySet[Prize]:
         """Returns every Prize in history"""
         # TODO falta por ver como lo devuelvo, si como una lista o como
         return Prize.objects.all()
 
-    def money_for_players(self):
+    def money_for_players(self) -> float:
         """
         Calculates and returns the money each player should receive.
 
-        Returns:
-            float: The amount of money per player.
         """
         total = self.calculate_total_prizes()
         number_players = Player.objects.count()
@@ -65,11 +58,11 @@ class LotoController:
         # Calculate the amount of money per player and round to two decimal places
         money_per_player = round(total / number_players, 2)
 
-        return money_per_player
+        return float(money_per_player)
 
-    def set_week_prize(self, prize):
+    def set_week_prize(self, prize: float | int) -> None:
         """
-        Sets the prize for the current week.
+        Sets the prize for the last week.
 
         Args:
             prize (float): The prize amount.
@@ -78,13 +71,13 @@ class LotoController:
         date = datetime.now()
 
         # 2. Get the player who played last week
-        last_player = PlayerTurn().other_week_player(-1)
+        last_player = PlayerTurn(date).last_player
         player = Player.objects.get(name=last_player)
 
         # 3. Create a new prize entry with provided prize, date, and player
         Prize.objects.create(prize=prize, date=date, player=player)
 
-    def get_players_prizes(self):
+    def get_players_prizes(self) -> list[dict]:
         """
         Retrieves a list of players along with their corresponding prizes.
 
@@ -107,18 +100,24 @@ class LotoController:
             player_and_prizes, key=lambda x: x["prize"], reverse=True
         )
 
-        # Add an 'id' field to each player for identification
-        # TODO esta funcion pdria refactorizarse sacandola de aqui y creando el campo
-        # id en ella a la vez que mete el valor. Entonces arriba el id se lo quitabamos....
+        # Add an 'id' field its value to each player (ranking´s order)
         players = []
         for i, player in enumerate(player_and_prizes_sorted):
             player["id"] = i + 1
             players.append(player)
-
         return players
 
-    def get_bets(self):
-        def add_separator(origin):
+    def get_bets(self) -> dict:
+        """
+        Retrieves bets for different games.
+
+        """
+
+        def add_separator(origin: list[int]) -> str:
+            """
+            Adds a separator to a list of numbers.
+
+            """
             result = ""
             for i, num in enumerate(origin):
                 sign = "-"
@@ -127,25 +126,42 @@ class LotoController:
                 result += str(num) + sign
             return result
 
-        apuestas_primitiva = []
-        for ap, val in PRIMITIVA.items():
-            apuesta = add_separator(val)
+        primitiva_bets = []
+        for _, value in PRIMITIVA.items():
+            bet = add_separator(value)
+            primitiva_bets.append(bet)
 
-            # print(apuesta)
-            apuestas_primitiva.append(apuesta)
-        apuestas_euromillones = []
-        for elemento in EURNOMILLONES:
-            apuesta_numeros = add_separator(elemento["numeros"])
-            apuesta_estrellas = add_separator(elemento["estrellas"])
-            apuesta = apuesta_numeros + ", Estrellas: " + apuesta_estrellas
-            apuestas_euromillones.append(apuesta)
+        euromillones_bet = []
+        for element in EURNOMILLONES:
+            numbers_bets = add_separator(element["numbers"])
+            stars_bets = add_separator(element["stars"])
+            bet = numbers_bets + ", Estrellas: " + stars_bets
+            euromillones_bet.append(bet)
+
         bets = {
             "nacional": NACIONAL,
-            "primitiva": apuestas_primitiva,
-            "euromillones": apuestas_euromillones,
+            "primitiva": primitiva_bets,
+            "euromillones": euromillones_bet,
         }
         return bets
 
-    def get_last_week_prize(self):
+    def get_last_week_prize(self) -> Prize:
+        """
+        Retrieves the prize for the last week.
+
+        """
         prize = Prize.objects.latest("date")
         return prize
+
+    def get_last_prize(self, player: str | Player) -> float:
+        """
+        Retrieves the last prize for a player.
+
+        Args:
+            player :str | Player The player's name or Player object.
+
+        """
+        if isinstance(player, str):
+            player = Player.objects.get(name=player)
+        query = Prize.objects.filter(player=player).order_by("-id").first()
+        return query.prize if query else 0

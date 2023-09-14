@@ -10,9 +10,13 @@ from .models import Player, Prize
 
 # Create your views here.
 def loto_view(request):
+    # TODO vale, hay que meter en el grupo de la loteria a todos los participantes
+    # TODO tienes que inicializar la tabla de usuarios con los viejos, haz un script ç
+    # para pasar todos los que hay en la BD vieja y poder meterlos en esta
     controller = LotoController()
-    turn_controller = PlayerTurn()
+    turn_controller = PlayerTurn(datetime.now())
     turns = turn_controller.generate_list_turns()
+
     # player_name = "Sergio"
     # player = Player.objects.get(name=player_name)
 
@@ -28,7 +32,7 @@ def loto_view(request):
             print("formulario no valido")
         prize = float(prize)
         # grabar en premios
-        last_week_player = turns["past"]["name"]
+        last_week_player = turns["past"]
         date = datetime.now().date()
         last_week_player = Player.objects.get(name=last_week_player)
         Prize.objects.create(prize=prize, date=date, player=last_week_player)
@@ -65,8 +69,7 @@ def loto_view(request):
     # print("Cantidad de dinero para cada uno: ", money_for_player)
 
     # Ejemplo de creación de formulario para meter el premio semanal
-    # TODO falta hacer el if request.method=="POST" y recogerlo
-    # TODO y el boton de guardar en la vista, vaya meterlo en un form_imput
+
     form = SimplePrizeForm()
 
     # Ejemplo de set premio semanal, una vez obtenido
@@ -78,6 +81,9 @@ def loto_view(request):
     players_and_prizes = controller.get_players_prizes()
     # print(players_and_prizes)
 
+    # coger ultimo premio semanal
+    last_prize = controller.get_last_prize(turns['last'])
+
     bets = controller.get_bets()
     context = {
         "players": players_and_prizes,
@@ -85,8 +91,8 @@ def loto_view(request):
         "turns": turns,
         "bets": bets,
         "total": total_prizes,
+        "last_prize": last_prize,
     }
     # print("-----------------------------------")
     # print("Bets completos: ")
-    print("Primitiva: ", bets["euromillones"])
     return render(request, "loto.html", context)

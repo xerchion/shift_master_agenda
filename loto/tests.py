@@ -1,7 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.test import TestCase
-from django.utils import timezone
 
 from .config.constants import NACIONAL
 from .config.constants_tests import (EUROMILLONES, FIRST, PLAYER_DATA,
@@ -20,20 +19,39 @@ def save_player_initial_data():
         Player.objects.create(name=name, team=team)
 
 
-# TODO Modificalo para que sigua la serie, de momento solo trabaja para el año en curso
 class PlayerTurnTests(TestCase):
     def setUp(self):
         save_player_initial_data()
-        self.turn = PlayerTurn()
+        self.date = "11-09-2023"
+        self.turn = PlayerTurn(self.date)
 
-    # TODO Posibles tests:
-    # 1- Que el numero de semanas y el nombre coincida con 10 valores cogidos por mi viendo
-    # la serie expandida en 5 años
-    # TODO ESTO HAY QUE Hhacerlo para que sirva siempre, no solo en la actual
     def test_correct_week_and_player(self):
-        # solo funciona en esta semana, cuando cambie la semana no va
-        self.assertEqual(self.turn.current_week_number(), 36)
-        self.assertEqual(self.turn.get_current_turn_player(), "Vero")
+        date_base = datetime.strptime(self.date, "%d-%m-%Y").date()
+
+        # case for week Number 38, date : 2023-09-21
+        date = date_base + timedelta(days=10)
+        self.turn = PlayerTurn(date)
+        self.assertEqual(self.turn.get_current_week(date), 38)
+        self.assertEqual(
+            self.turn.get_current_turn_player(date),
+            self.turn.current_player,
+        )
+        # case for week Number 179, date :  2026-06-07
+        date = date_base + timedelta(days=1000)
+        self.turn = PlayerTurn(date)
+        self.assertEqual(self.turn.get_current_week(date), 179)
+        self.assertEqual(
+            self.turn.get_current_turn_player(date),
+            self.turn.current_player,
+        )
+        # case for week Number 1465,  date : 2051-01-26
+        date = date_base + timedelta(days=9999)
+        self.turn = PlayerTurn(date)
+        self.assertEqual(self.turn.get_current_week(date), 1465)
+        self.assertEqual(
+            self.turn.get_current_turn_player(date),
+            self.turn.current_player,
+        )
 
 
 class PlayerTests(TestCase):
@@ -63,16 +81,11 @@ class PlayerTests(TestCase):
 
 class LotoControllerTests(TestCase):
     def setUp(self):
-        prizes = [10, 20]
         players = PLAYER_NAMES
         name = players[FIRST]
-        self.total_prizes = sum(prizes)
         self.player = Player.objects.create(name=name, team=TEAM)
         self.date = datetime.now().date()
-        for prize in prizes:
-            Prize.objects.create(player=self.player, date=self.date, prize=prize)
         self.ctrl = LotoController()
-        self.pl_ctrl = PlayerTurn()
 
     def test_total_prizes_ok(self):
         """
@@ -82,6 +95,11 @@ class LotoControllerTests(TestCase):
         and compares the result with the expected total number of prizes.
 
         """
+        prizes = [10, 20]
+        for prize in prizes:
+            Prize.objects.create(player=self.player, date=self.date, prize=prize)
+        self.total_prizes = sum(prizes)
+
         total_method = self.ctrl.calculate_total_prizes()
         self.assertEqual(total_method, self.total_prizes)
 
@@ -168,41 +186,35 @@ class LotoControllerTests(TestCase):
         7. Compare the calculated results with the expected results.
 
         """
+
         save_player_initial_data()
+        self.pl_ctrl = PlayerTurn(self.date)
+
         self.ctrl.set_week_prize(10)
         self.ctrl.set_week_prize(50)
 
-        last_week_player_name = self.pl_ctrl.other_week_player(-1)
+        last_week_player_name = self.pl_ctrl.last_player
 
-        name = self.pl_ctrl.get_current_turn_player()
+        name = self.pl_ctrl.get_current_turn_player(self.date)
         current_week_player_name = Player.objects.get(name=name).name
-        print("In the test, the user for this week is: ")
 
-        next_week_player_name = self.pl_ctrl.other_week_player(+1)
+        next_week_player_name = self.pl_ctrl.next_player
 
         turns = self.pl_ctrl.generate_list_turns()
 
-        self.assertEqual(last_week_player_name, turns["past"])
+        self.assertEqual(last_week_player_name, turns["last"])
         self.assertEqual(current_week_player_name, turns["current"])
-        self.assertEqual(next_week_player_name, turns["future"])
-
-    def test_calculate_total_spent(self):
-        # TODO en realidad habria que inicializar las bd y meter un par de
-        # prize y ver si lo hace bien
-
-        result = self.ctrl.calculate_total_spent()
-        self.assertEqual(result, 612)
+        self.assertEqual(next_week_player_name, turns["next"])
 
     def test_money_for_players(self):
-        # TODO en realidad habria que inicializar las bd y meter un par de
-        # prize y ver si lo hace bien
-
+        save_player_initial_data()
+        player = Player.objects.filter().first()
+        Prize.objects.create(player=player, prize=1000)
         result = self.ctrl.money_for_players()
-        self.assertEqual(result, 30)
+        self.assertEqual(result, 66.67)
 
     def test_get_players_prizes(self):
-        """
-        """
+        """ """
         save_player_initial_data()
         player = Player.objects.get(name="Sergio")
         for i in range(10, 100, 10):
@@ -225,17 +237,19 @@ class LotoControllerTests(TestCase):
 
         self.assertEqual(player_prizes, all_players_prizes[1]["prize"])
 
-    def test_get_last_week_prize(self):
-        self.assertEqual(Prize.objects.latest("date"), self.ctrl.get_last_week_prize())
+    def test_get_last_user_prize(self):
+        date = datetime.now().date()
+        for i in range(1, 4):
+            date = date + timedelta(days=i)  # Suma un día
+            Prize.objects.create(player=self.player, date=date, prize=i)
+
+        Prize.objects.latest("date")
+        self.assertEqual(
+            Prize.objects.latest("date").prize, self.ctrl.get_last_prize(self.player)
+        )
 
     def test_get_prizes(self):
         prizes = Prize.objects.count()
         count_in_method = len(self.ctrl.get_prizes())
         # no lo comparo directamente, sino sus tamaños, pk si los comparo directos da error
         self.assertEqual(prizes, count_in_method)
-
-    def test_fecha_simulada(self):
-        # Simula estar en un año diferente (por ejemplo, 2024)
-        fecha_simulada = timezone.now().replace(year=2024)
-
-        self.assertEqual(2024, fecha_simulada.year)

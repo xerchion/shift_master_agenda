@@ -1,99 +1,100 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from ..config.constants import INITIAL_DATE
 from ..models import Player
 
 
 class PlayerTurn:
-    def __init__(self):
+    def __init__(self, date):
         self.players = Player.objects.all()
         self.players_names = [player.name for player in self.players]
-        self.today = datetime.now()
-        self.week = self.current_week_number()
-
-    def current_week_number(self):
-        """calculate and returns the number of week"""
-        return self.today.isocalendar()[1]
-
-    def get_current_turn_player(self):
-        player_name = " "
-        """Funcion que devuelve el nombre del participante al que le toca,
-        calculado por semanas.
-
-        """
-
-        # print("Usuario en la bd dentro de get_current_turn_player...")
-        # print(Player.objects.count())
-        weeks_previous_years = 0
-        if self.today.year > 2023:
-            weeks_previous_years = self.calculate_total_weeks()
-        # print("las semanas previas son: ", weeks_previous_years)
-        # print("la self.week es: ", self.week)
-        indice = self.get_index(self.week + weeks_previous_years)
-        # print("El indice dentro de el usuario de esta semana es: ", indice)
-        player_name = self.players[indice].name
-        # print("el usuario es: ", player_name)
-        return player_name
-
-    def get_index(self, week):
-        """
-        Funcion que devuelve el inidce para la lista personas.
-        Args:
-            week (integer): numero de la semana que se quiere usar para el indice.
-                        si es menor que la logitud de la lista, toma ese valor-1 sino
-                        hace una division con resto para calcular el indice siguiendo
-                        la serie.
-
-        Returns:
-            _type_: el numero de indice correcto para usar en la lista.
-        """
-
-        self.players = Player.objects.all()
-        if week <= len(self.players):
-            index = week - 1
-            # print("lo coge del if")
+        if type(date) == str:
+            self.date = datetime.strptime(date, "%d-%m-%Y")
         else:
-            index = (week % len(self.players)) - 1
+            self.date = date
+        self.week = self.get_current_week(self.date)
+        self.current_player = self.get_current_turn_player(self.date)
+        self.last_player = self.__get_last_turn_player()
+        self.next_player = self.__get_next_turn_player()
 
-        return index
+    # TODO, APLICA EL TIPO DE ARGUMENTO SI ES DATE O K PUEDE SER
+    def get_current_turn_player(self, date) -> str:
+        """Returns the name of the participant who is currently up,
+        calculated by weeks.
 
-    def weeks_in_year(self, year):
-        """Calcula las semanas totales que tiene un año. Recibe un
-            numero de año como integer
-
-        Returns:
-            entero: la cantidad de semanas del año
-        """
-        first_day = datetime.datetime(year, 1, 1)
-        last_day = datetime.datetime(year, 12, 31)
-        return (last_day - first_day).days // 7 + 1
-
-    def calculate_total_weeks(self):
-        """Funcion que calcula las semanas totales desde 2023
-        #TODO está sin probar, habra que probar en 2024 a ver si trabaja bien.
-        #TODO o bien hacer test cambiando la fecha, en lugar de coger now ponerle una manual
+        Args:
+            date (datetime.date): The current date.
 
         Returns:
-            _type_: _description_
+            str: The name of the player whose turn it is.
+
         """
+        week_number = self.get_current_week(date)
+        index = self.get_index(week_number)
+        return self.players[index].name
 
-        total_weeks = 0
-        for year in range(2023, self.today.year - 1):
-            total_weeks += self.year_weeks(year)
-        return total_weeks
+    # TODO, APLICA EL TIPO DE ARGUMENTO SI ES DATE O K PUEDE SER
 
-    def other_week_player(self, tam):
-        player_name = ""
-        player_now = self.get_current_turn_player()
-        id_player_now = Player.objects.get(name=player_now).id
+    def get_current_week(self, date) -> int:
+        """Returns the current week number based on the provided date.
 
-        player_name = Player.objects.get(id=id_player_now + (tam)).name
+        Args:
+            date (datetime.date): The date for which to determine the week.
 
-        return player_name
+        Returns:
+            int: The current week number.
 
-    def generate_list_turns(self):
+        """
+        if isinstance(date, datetime):
+            date = date.date()
+
+        # initial´s values
+        monday = datetime.strptime(INITIAL_DATE, "%Y-%m-%d").date()
+        sunday = monday + timedelta(days=6)
+        week_number = 1
+
+        while not (monday <= date <= sunday):
+            week_number += 1
+            monday = sunday + timedelta(days=1)
+            sunday = monday + timedelta(days=6)
+        return week_number
+
+    def get_index(self, week: int) -> int:
+        """
+        Returns the index for the list of individuals.
+
+        Args:
+            week (int): The week number to use as the index.
+                        It calculates the index following the series using modulo operation.
+        """
+        return week % len(self.players)
+
+    def __get_last_turn_player(self) -> str:
+        """
+        Obtains the name of the player who had the last turn.
+        """
+        index = self.get_index(self.week - 1)
+        return self.players[index].name
+
+    def __get_next_turn_player(self) -> str:
+        """
+        Obtains the name of the player who will have the next turn.
+        """
+        index = self.get_index(self.week + 1)
+        return self.players[index].name
+
+    def generate_list_turns(self) -> dict:
+        """
+        Generates a dictionary containing information about the last, current,
+        and next players' turns.
+
+        Returns:
+            dict: A dictionary with keys "last", "current", and "next",
+            each corresponding to a player's name.
+        """
         turns = {
-            "past": self.other_week_player(-1),
-            "current": self.get_current_turn_player(),
-            "future": self.other_week_player(1),
+            "last": self.last_player,
+            "current": self.get_current_turn_player(self.date),
+            "next": self.next_player,
         }
         return turns
