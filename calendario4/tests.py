@@ -176,10 +176,22 @@ class ModelsIntegrity(TestCase):
             data[model_name] = field_count
 
     def test_model_integrity(self):
+        """
+        Test the integrity of models.
+
+        Checks if the models have the expected number of fields and are integrated properly.
+        """
+
         for model in apps.get_models():
             number_of_fields = len(model._meta.fields)
-            message = "Cambios en: " + model.__name__
-            self.assertEqual(number_of_fields, MODELS[model.__name__], message)
+
+            integration_message = f"The model {model.__name__} with {number_of_fields} fields is not integrated properly"
+            self.assertTrue(model.__name__ in MODELS, integration_message)
+
+            field_change_message = f"Changes in fields of: {model.__name__}"
+            self.assertEqual(
+                number_of_fields, MODELS[model.__name__], field_change_message
+            )
 
 
 class UserModelTest(TestCase):
@@ -244,14 +256,14 @@ class AlterDayModelTest(TestCase):
     def test_restore(self):
         # whith alterDay exists
         controller = AlterDayController(self.user.id, self.day.date, self.schedule)
-        self.assertEqual(controller.exists_day(), True)
+        self.assertEqual(controller.check_if_day_exists(), True)
         controller.restart_day()
-        self.assertEqual(controller.exists_day(), False)
+        self.assertEqual(controller.check_if_day_exists(), False)
         # no exists
         controller = AlterDayController(self.user.id, "2023-01-01", self.schedule)
-        self.assertEqual(controller.exists_day(), False)
+        self.assertEqual(controller.check_if_day_exists(), False)
         controller.restart_day()
-        self.assertEqual(controller.exists_day(), False)
+        self.assertEqual(controller.check_if_day_exists(), False)
 
 
 class ColorModelTest(TestCase):

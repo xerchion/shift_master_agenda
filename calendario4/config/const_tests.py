@@ -106,7 +106,10 @@ MODELS = {
     "Color": 9,
     "AlterDay": 8,
     "Player": 3,
-    "Prize": 4
+    "Prize": 4,
+    "Token": 3,
+    "TokenProxy": 3
+
 }
 
 VIEWS_WITHOUT_LOGIN = {

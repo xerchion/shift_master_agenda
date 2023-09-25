@@ -10,9 +10,6 @@ from .models import Player, Prize
 
 # Create your views here.
 def loto_view(request):
-    # TODO vale, hay que meter en el grupo de la loteria a todos los participantes
-    # TODO tienes que inicializar la tabla de usuarios con los viejos, haz un script ç
-    # para pasar todos los que hay en la BD vieja y poder meterlos en esta
     controller = LotoController()
     turn_controller = PlayerTurn(datetime.now())
     turns = turn_controller.generate_list_turns()
@@ -53,7 +50,7 @@ def loto_view(request):
     # print("la loteria le toca a: ", nombre)
 
     # EjemplO de suma total de premios
-    total_prizes = controller.calculate_total_prizes()
+    total_prizes = Prize.calculate_total_prizes()
     # print("Suma de premios Total", total_prizes)
 
     # Ejemplo de suma total de gastos en loteria desde 1-enero-2023

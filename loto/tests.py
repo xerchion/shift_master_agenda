@@ -8,6 +8,7 @@ from .config.constants_tests import (EUROMILLONES, FIRST, PLAYER_DATA,
                                      SAMPLE_PRIZES, SECOND, TEAM)
 from .controllers.LotoController import LotoController
 from .controllers.PlayerTurn import PlayerTurn
+from .forms import PrizeForm
 from .models import Player, Prize
 
 
@@ -67,7 +68,7 @@ class PlayerTests(TestCase):
 
         """
         current_date = datetime.now().date()
-        Prize.objects.create(date=current_date, prize=PRIZE, player=self.player)
+        Prize.objects.create(date=current_date, amount=PRIZE, player=self.player)
 
         condition = Prize.objects.filter(player=self.player).exists()
         self.assertTrue(condition)
@@ -78,6 +79,10 @@ class PlayerTests(TestCase):
         expected = "Dani"
         self.assertEqual(name, expected)
 
+    def test_player_name(self):
+        name = Player.objects.filter().last().name
+        self.assertEqual(name, Player.objects.all().last().__str__())
+
 
 class LotoControllerTests(TestCase):
     def setUp(self):
@@ -86,22 +91,6 @@ class LotoControllerTests(TestCase):
         self.player = Player.objects.create(name=name, team=TEAM)
         self.date = datetime.now().date()
         self.ctrl = LotoController()
-
-    def test_total_prizes_ok(self):
-        """
-        Test the calculation of total prizes.
-
-        This method calls the 'calculate_total_prizes' method from the controller
-        and compares the result with the expected total number of prizes.
-
-        """
-        prizes = [10, 20]
-        for prize in prizes:
-            Prize.objects.create(player=self.player, date=self.date, prize=prize)
-        self.total_prizes = sum(prizes)
-
-        total_method = self.ctrl.calculate_total_prizes()
-        self.assertEqual(total_method, self.total_prizes)
 
     def test_total_player_prizes(self):
         """
@@ -122,7 +111,7 @@ class LotoControllerTests(TestCase):
 
         # Create prizes for the player with specified amounts
         for prize in prizes:
-            Prize.objects.create(date=self.date, player=player, prize=prize)
+            Prize.objects.create(date=self.date, player=player, amount=prize)
 
         # Calculate the total prizes for the player using the controller method
         total_method = self.ctrl.calculate_player_prizes(player)
@@ -147,7 +136,7 @@ class LotoControllerTests(TestCase):
         self.ctrl.set_week_prize(prize)
 
         # Check if a prize with the specified amount exists in the database
-        self.assertTrue(Prize.objects.filter(prize=prize).exists())
+        self.assertTrue(Prize.objects.filter(amount=prize).exists())
 
     def test_get_bets(self):
         """
@@ -209,16 +198,15 @@ class LotoControllerTests(TestCase):
     def test_money_for_players(self):
         save_player_initial_data()
         player = Player.objects.filter().first()
-        Prize.objects.create(player=player, prize=1000)
+        Prize.objects.create(player=player, amount=1000)
         result = self.ctrl.money_for_players()
         self.assertEqual(result, 66.67)
 
     def test_get_players_prizes(self):
-        """ """
         save_player_initial_data()
         player = Player.objects.get(name="Sergio")
         for i in range(10, 100, 10):
-            Prize.objects.create(prize=i, player=player)
+            Prize.objects.create(amount=i, player=player)
 
         # el primer player
         player = Player.objects.first()
@@ -226,7 +214,7 @@ class LotoControllerTests(TestCase):
         all_players_prizes = self.ctrl.get_players_prizes()
         for p in all_players_prizes:
             if p["name"] == player.name:
-                prize = p["prize"]
+                prize = p["amount"]
         self.assertEqual(player_prizes, prize)
 
         # el ultimo player
@@ -235,21 +223,90 @@ class LotoControllerTests(TestCase):
 
         all_players_prizes = self.ctrl.get_players_prizes()
 
-        self.assertEqual(player_prizes, all_players_prizes[1]["prize"])
+        self.assertEqual(player_prizes, all_players_prizes[1]["amount"])
 
     def test_get_last_user_prize(self):
         date = datetime.now().date()
         for i in range(1, 4):
             date = date + timedelta(days=i)  # Suma un día
-            Prize.objects.create(player=self.player, date=date, prize=i)
+            Prize.objects.create(player=self.player, date=date, amount=i)
 
         Prize.objects.latest("date")
         self.assertEqual(
-            Prize.objects.latest("date").prize, self.ctrl.get_last_prize(self.player)
+            Prize.objects.latest("date").amount, self.ctrl.get_last_prize(self.player)
         )
 
     def test_get_prizes(self):
         prizes = Prize.objects.count()
-        count_in_method = len(self.ctrl.get_prizes())
+        count_in_method = len(Prize.get_prizes())
         # no lo comparo directamente, sino sus tamaños, pk si los comparo directos da error
         self.assertEqual(prizes, count_in_method)
+
+
+class PrizeTests(TestCase):
+    def setUp(self):
+        players = PLAYER_NAMES
+        name = players[FIRST]
+        self.player = Player.objects.create(name=name, team=TEAM)
+
+    def test_total_prizes_ok(self):
+        """
+        Test the calculation of total prizes.
+
+        This method calls the 'calculate_total_prizes' method from the controller
+        and compares the result with the expected total number of prizes.
+
+        """
+        amounts = [10, 20]
+        for amount in amounts:
+            Prize.objects.create(player=self.player, amount=amount)
+        self.total_prizes = sum(amounts)
+
+        total_method = Prize.calculate_total_prizes()
+        self.assertEqual(total_method, self.total_prizes)
+
+    # TODO FALTAN ESTOS TESTS....
+    # TODO este no es de prizes....
+    def test_get_last_turn_player(self):
+        ...
+
+    def test_get_last_week_prize(self):
+        """
+        Gets the prize from the last week.
+
+        Returns:
+            Prize or None if no prize is found.
+        """
+        sample_dates = [
+            "2023-01-15",
+            "2023-01-07",
+            "2023-01-30",
+            "2023-05-15",
+            "2023-07-07",  # last
+            "2023-04-30",
+        ]
+        for i, date in enumerate(sample_dates):
+            player = Player.objects.create(name="Fede")
+            player.save()
+            player_prize = Prize.objects.create(
+                player=player, amount=float(i), date=date
+            )
+            player_prize.save()
+
+        test_amount = float(i - 1)
+        last_prize = Prize.get_last_week_prize()
+        test_date = datetime.strptime("2023-07-07", "%Y-%m-%d").date()
+
+        self.assertEqual(test_amount, last_prize.amount)
+        self.assertEqual(test_date, last_prize.date)
+        self.assertEqual(4, last_prize.id - 1)
+
+    def test_get_last_player_prize(self):
+        ...
+
+
+class PrizeFormTest(TestCase):
+    # TODO no funciona
+    def xtest_prize_form_init(self):
+        form = PrizeForm()
+        self.assertTrue(form.is_valid())

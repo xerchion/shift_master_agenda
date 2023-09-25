@@ -1,62 +1,27 @@
 from datetime import datetime
 
-from django.db.models.query import QuerySet
-
 from ..config.constants import EURNOMILLONES, NACIONAL, PRIMITIVA
 from ..models import Player, Prize
 from .PlayerTurn import PlayerTurn
 
 
 class LotoController:
-    def __init__(self):
-        self.pppppp = 0  # borralo cuando tengas atributos de esta clase...
-
     def calculate_player_prizes(self, player: Player) -> float:
         """
         Calculates the total sum of prizes for a specific player.
 
-        Args:
-            player: The player object for which prizes are being calculated.
-
-        Returns:
-            total (float): The total sum of prizes for the player.
         """
-        total = 0
-
-        # Iterate through all prizes associated with the player
-        for element in Prize.objects.filter(player=player):
-            total += element.prize  # Add the prize amount to the total
-
-        return total
-
-    def calculate_total_prizes(self) -> float:
-        """
-        Calculates the total sum of prizes for all players.
-
-        """
-
-        total = 0  # Initialize the total to zero
-
-        # Iterate through all prizes
-        for element in Prize.objects.all():
-            total += element.prize
-        return total
-
-    def get_prizes(self) -> QuerySet[Prize]:
-        """Returns every Prize in history"""
-        # TODO falta por ver como lo devuelvo, si como una lista o como
-        return Prize.objects.all()
+        return sum(element.amount for element in Prize.objects.filter(player=player))
 
     def money_for_players(self) -> float:
         """
         Calculates and returns the money each player should receive.
 
         """
-        total = self.calculate_total_prizes()
+        total_amount = Prize.calculate_total_prizes()
         number_players = Player.objects.count()
 
-        # Calculate the amount of money per player and round to two decimal places
-        money_per_player = round(total / number_players, 2)
+        money_per_player = round(total_amount / number_players, 2)
 
         return float(money_per_player)
 
@@ -75,7 +40,7 @@ class LotoController:
         player = Player.objects.get(name=last_player)
 
         # 3. Create a new prize entry with provided prize, date, and player
-        Prize.objects.create(prize=prize, date=date, player=player)
+        Prize.objects.create(amount=prize, date=date, player=player)
 
     def get_players_prizes(self) -> list[dict]:
         """
@@ -90,14 +55,16 @@ class LotoController:
         # Iterate through each player
         for player in Player.objects.all():
             # Calculate the total prizes for the player
-            prize = self.calculate_player_prizes(player)
+            total_prizes = self.calculate_player_prizes(player)
 
             # Append player information to the list
-            player_and_prizes.append({"name": player.name, "prize": prize, "id": 0})
+            player_and_prizes.append(
+                {"name": player.name, "amount": total_prizes, "id": 0}
+            )
 
         # Sort the list of players based on prize amount (descending order)
         player_and_prizes_sorted = sorted(
-            player_and_prizes, key=lambda x: x["prize"], reverse=True
+            player_and_prizes, key=lambda x: x["amount"], reverse=True
         )
 
         # Add an 'id' field its value to each player (ranking´s order)
@@ -128,8 +95,7 @@ class LotoController:
 
         primitiva_bets = []
         for _, value in PRIMITIVA.items():
-            bet = add_separator(value)
-            primitiva_bets.append(bet)
+            primitiva_bets.append(add_separator(value))
 
         euromillones_bet = []
         for element in EURNOMILLONES:
@@ -145,14 +111,6 @@ class LotoController:
         }
         return bets
 
-    def get_last_week_prize(self) -> Prize:
-        """
-        Retrieves the prize for the last week.
-
-        """
-        prize = Prize.objects.latest("date")
-        return prize
-
     def get_last_prize(self, player: str | Player) -> float:
         """
         Retrieves the last prize for a player.
@@ -164,4 +122,4 @@ class LotoController:
         if isinstance(player, str):
             player = Player.objects.get(name=player)
         query = Prize.objects.filter(player=player).order_by("-id").first()
-        return query.prize if query else 0
+        return query.amount if query else 0

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.query import QuerySet
 
 from calendario4.models import TEAMS_TUPLE
 
@@ -27,22 +28,19 @@ class Player(models.Model):
 
 class Prize(models.Model):
     date = models.DateField(default=None, null=True, blank=True)
-    prize = models.DecimalField(
+    amount = models.DecimalField(
         default=0.0, null=True, blank=True, decimal_places=2, max_digits=15
     )
     # este podria ser una referencia al de player...
     # player = models.CharField(default="", null=False, blank=False, max_length=20)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
 
-    # TODO NO USADA, PERO CREEO QUE ES UTIL
+    def __str__(self):
+        return f"Prize of {self.player} - {self.date} - {self.id} - Prize: {self.amount}"
+
     @classmethod
     def get_last_week_prize(cls) -> "Prize":
-        """
-        Retrieves the prize for the last week.
-
-        """
-        prize = Prize.objects.latest("date")
-        return prize
+        return Prize.objects.latest("date")
 
     def get_last_player_prize(self, player: str | Player) -> float:
         """
@@ -55,18 +53,14 @@ class Prize(models.Model):
         if isinstance(player, str):
             player = Player.objects.get(name=player)
         query = Prize.objects.filter(player=player).order_by("-id").first()
-        return query.prize if query else 0.0
+        return query.amount if query else 0.0
 
     @classmethod
     def calculate_total_prizes(cls) -> float:
-        """
-        Calculates the total sum of prizes for all players.
+        return sum(element.amount for element in Prize.objects.all())
 
-        """
-
-        total = 0  # Initialize the total to zero
-
-        # Iterate through all prizes
-        for element in Prize.objects.all():
-            total += element.prize
-        return total
+    @classmethod
+    def get_prizes(cls) -> QuerySet["Prize"]:
+        """Returns every Prize in history"""
+        # TODO falta por ver como lo devuelvo, si como una lista o como
+        return Prize.objects.all()

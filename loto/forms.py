@@ -11,7 +11,7 @@ class PrizeForm(forms.ModelForm):
         model = Prize
         fields = [
             "date",
-            "prize",
+            "amount",
             "player",
         ]
 

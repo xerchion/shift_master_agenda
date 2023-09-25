@@ -148,6 +148,12 @@
               <li>
                 <a href="{% url "home" %}">Home</a>
               </li>
+              {% if user.is_staff %}
+              <li>
+                <a href="{% url "admin:index" %}">Admin</a>
+              </li>
+              {% endif %}
+
               {% if user.username %}
                 <li>
                   <a href="{% url "agenda" %}">Calendario</a>

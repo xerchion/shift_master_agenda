@@ -17,7 +17,6 @@ class PlayerTurn:
         self.last_player = self.__get_last_turn_player()
         self.next_player = self.__get_next_turn_player()
 
-    # TODO, APLICA EL TIPO DE ARGUMENTO SI ES DATE O K PUEDE SER
     def get_current_turn_player(self, date) -> str:
         """Returns the name of the participant who is currently up,
         calculated by weeks.
@@ -33,9 +32,7 @@ class PlayerTurn:
         index = self.get_index(week_number)
         return self.players[index].name
 
-    # TODO, APLICA EL TIPO DE ARGUMENTO SI ES DATE O K PUEDE SER
-
-    def get_current_week(self, date) -> int:
+    def get_current_week(self, date: datetime) -> int:
         """Returns the current week number based on the provided date.
 
         Args:
@@ -74,7 +71,7 @@ class PlayerTurn:
         Obtains the name of the player who had the last turn.
         """
         index = self.get_index(self.week - 1)
-        return self.players[index].name
+        return self.players[index - 1].name
 
     def __get_next_turn_player(self) -> str:
         """

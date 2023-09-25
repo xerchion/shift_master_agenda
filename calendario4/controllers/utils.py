@@ -4,20 +4,36 @@ from colorama import Fore, init
 
 from ..config.constants import (EVENING, EXTRA_HOLIDAY, FREE_DAY, HOLIDAY,
                                 MORNING, NIGHT, SPLIT)
-from ..models import Category, Team
+from ..models import Category, Color, Team
 
 
-def pRojo(message):
-    # Inicializa colorama para sistemas Windows
+def print_red(message: str) -> None:
+    """
+    Prints a message in red color.
+
+    Args:
+        message (str): The message to be printed.
+
+    """
+    # Initializes colorama for Windows systems
     init()
-    # Mensaje en rojo
+    # Prints message in red
     print(Fore.RED + "-" * 50)
     print(str(message))
     print("-" * 50)
     print(Fore.WHITE)
 
 
-def parse_colors(colors):
+def create_color_mapping(colors: Color) -> dict:
+    """
+    Creates a mapping of color values.
+
+    Args:
+        colors (Color): An instance of the Color class containing color values.
+
+    Returns:
+        dict: A mapping of color constants to their respective values.
+    """
     return {
         MORNING: colors.morning,
         EVENING: colors.afternoon,
@@ -58,8 +74,18 @@ def init_tables_constants():
         catreg.save()
 
 
-def pausa(dato, time=0):
-    pRojo(dato)
+def pause(message: str, time: float = 0) -> None:
+    """
+    Prints a message in red and then pauses for a specified amount of time.
+
+    Args:
+        message (str): The message to be printed.
+        time (float, optional): The duration of the pause in seconds. Defaults to 0.
+
+    Returns:
+        None
+    """
+    print_red(message)
     sleep(time)
 
 
