@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import DecimalField, F, Sum, Value
@@ -77,30 +79,24 @@ class LotoApi(APIView):
         print("llega al metodo de get de LotoApi")
         # Aquí puedes acceder al token con self.request.auth
         # Tu lógica para la vista protegida aquí
-        from datetime import datetime
         date_now = datetime.now()
         ranking = LotoController().get_players_prizes()
         bets = LotoController().get_bets()
         turns = PlayerTurn(date_now).generate_list_turns()
-        print("hace las funciones")
-        ranking_serialized = RankingSerializer(ranking, many=True).data
-        print("hace el serie de ranking")
+        from loto.models import Prize
 
+        jackpot = Prize.calculate_total_prizes()
+        ranking_serialized = RankingSerializer(ranking, many=True).data
         bets_serialized = BetsSerializer(bets).data
-        print("hace el serie de bets")
         turns_serialized = TurnsSerializer(turns).data
-        print("hace el serie de turns")
+        jackpot_serialized = jackpot
 
         all_loto_data = {
             "ranking": ranking_serialized,
             "bets": bets_serialized,
-            'turns': turns_serialized
+            "turns": turns_serialized,
+            "jackpot": jackpot_serialized,
         }
-        print("guarda el objeto entero ranking")
-        # from django.http import JsonResponse
-
-        # return JsonResponse(all_loto_data)
-
         return Response(all_loto_data)
 
 

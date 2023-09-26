@@ -78,3 +78,9 @@ class ColorForm(forms.ModelForm):
 class NextYearsForm(forms.ChoiceField):
     choices = [2024, 2025]
     year = forms.ChoiceField(choices=[choices], required=False)
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100, label="Name")
+    email = forms.EmailField(label="Email")
+    message = forms.CharField(widget=forms.Textarea, label="Message")

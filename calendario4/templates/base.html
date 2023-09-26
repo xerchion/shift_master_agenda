@@ -149,11 +149,10 @@
                 <a href="{% url "home" %}">Home</a>
               </li>
               {% if user.is_staff %}
-              <li>
-                <a href="{% url "admin:index" %}">Admin</a>
-              </li>
+                <li>
+                  <a href="{% url "admin:index" %}">Admin</a>
+                </li>
               {% endif %}
-
               {% if user.username %}
                 <li>
                   <a href="{% url "agenda" %}">Calendario</a>
@@ -205,6 +204,8 @@
             <p>I appreciate your interest in my project and value your input.</p>
             <p>Your feedback helps me enhance the project and create a better experience for everyone.</p>
             <form method="post" action="#" class="major">
+              {% csrf_token %}
+
               <div class="fields major">
                 <div class="field">
                   <label for="name">Name</label>

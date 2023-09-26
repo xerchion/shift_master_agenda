@@ -133,3 +133,10 @@ class AlterDay(models.Model):
         choices=BOOL_OPTIONS,
         verbose_name="¿Plus de cambio de turno?",
     )
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)

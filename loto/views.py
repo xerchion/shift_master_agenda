@@ -8,7 +8,6 @@ from .forms import SimplePrizeForm
 from .models import Player, Prize
 
 
-# Create your views here.
 def loto_view(request):
     controller = LotoController()
     turn_controller = PlayerTurn(datetime.now())

@@ -5,12 +5,27 @@ from .config.constants import WEEK_DAYS_LETTER
 from .controllers.AlterDayController import AlterDayController
 from .controllers.SignUpController import SignUpController
 from .controllers.UserAdapter import UserAdapter
-from .forms import NextYearsForm
+from .forms import ContactForm, NextYearsForm
 from .logic.Recap import Recap
+from .models import ContactMessage
 
 
 def home(request):
-    return render(request, "home.html")
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Crear y guardar el mensaje en la base de datos
+            ContactMessage.objects.create(
+                name=form.cleaned_data["name"],
+                email=form.cleaned_data["email"],
+                message=form.cleaned_data["message"],
+            )
+
+            # Redirigir o mostrar un mensaje de éxito
+    else:
+        form = ContactForm()
+
+    return render(request, "home.html", {"form": form})
 
 
 @login_required

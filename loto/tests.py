@@ -27,12 +27,25 @@ class PlayerTurnTests(TestCase):
         self.turn = PlayerTurn(self.date)
 
     def test_correct_week_and_player(self):
+        # case for week Number 38, complete week
+        for day in range(18, 25):
+            date_str = str(day) + "-09-2023"
+            date = datetime.strptime(date_str, "%d-%m-%Y").date()
+
+            self.turn = PlayerTurn(date)
+            self.assertEqual(self.turn.get_current_week(date), 38)
+            self.assertEqual(
+                self.turn.get_current_turn_player(date),
+                self.turn.current_player,
+            )
+
         date_base = datetime.strptime(self.date, "%d-%m-%Y").date()
 
-        # case for week Number 38, date : 2023-09-21
-        date = date_base + timedelta(days=10)
+        # case for week Number 39, date : 2023-10-01
+
+        date = date_base + timedelta(days=20)
         self.turn = PlayerTurn(date)
-        self.assertEqual(self.turn.get_current_week(date), 38)
+        self.assertEqual(self.turn.get_current_week(date), 39)
         self.assertEqual(
             self.turn.get_current_turn_player(date),
             self.turn.current_player,

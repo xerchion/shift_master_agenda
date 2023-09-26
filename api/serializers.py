@@ -22,9 +22,6 @@ class TurnsSerializer(serializers.Serializer):
     next = serializers.CharField()
 
 
-# En api/serializers.py
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

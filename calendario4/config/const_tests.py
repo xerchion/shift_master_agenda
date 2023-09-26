@@ -108,8 +108,8 @@ MODELS = {
     "Player": 3,
     "Prize": 4,
     "Token": 3,
-    "TokenProxy": 3
-
+    "TokenProxy": 3,
+    "ContactMessage": 5,
 }
 
 VIEWS_WITHOUT_LOGIN = {
